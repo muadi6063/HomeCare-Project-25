@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 
-public class ShiftController : Controller
+public class AppointmentController : Controller
 {
-    private readonly ILogger<ShiftController> _logger;
+    private readonly ILogger<AppointmentController> _logger;
     
-    public ShiftController(ILogger<ShiftController> logger){
+    public AppointmentController(ILogger<AppointmentController> logger){
         _logger = logger;
     }
     public IActionResult Index()

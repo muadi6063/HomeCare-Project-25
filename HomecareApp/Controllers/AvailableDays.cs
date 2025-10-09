@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 
-public class PatientController : Controller
+public class AvailableDays : Controller
 {
-    private readonly ILogger<PatientController> _logger;
-    public PatientController(ILogger <PatientController> logger){
+    private readonly ILogger<AvailableDays> _logger;
+    public AvailableDays(ILogger <AvailableDays> logger){
         _logger = logger;
     }
     public IActionResult Index()
