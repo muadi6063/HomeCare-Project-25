@@ -1,0 +1,16 @@
+# Build output
+bin/
+obj/
+
+# Logs
+Logs/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Mac
+.DS_Store

@@ -1,10 +1,17 @@
+using Serilog;
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
+var loggerConfiguration = new LoggerConfiguration()
+.MinimumLevel.Information()
+.WriteTo.Console()
+.WriteTo.File($"Logs/app_{DateTime.Now:yyyyMMdd_HHmmss}.log");
 
+var logger = loggerConfiguration.CreateLogger();
+builder.Logging.AddSerilog(logger);
+
+var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
