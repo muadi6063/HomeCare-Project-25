@@ -14,3 +14,12 @@ Logs/
 
 # Mac
 .DS_Store
+
+.DS_Store
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/build
+**/Logs
+**/APILogs
