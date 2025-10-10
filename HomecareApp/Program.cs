@@ -1,7 +1,16 @@
 using Serilog;
+using Microsoft.EntityFrameworkCore;
+using HomecareApp.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<HomeCareDbContext>(options =>
+{
+    options.UseSqlite(
+        builder.Configuration["ConnectionStrings:HomeCareDbContextConnection"]);
+});
 
 var loggerConfiguration = new LoggerConfiguration()
 .MinimumLevel.Information()
