@@ -6,6 +6,6 @@ public class AvailableDay
     public DateTime Date { get; set; }
     public TimeSpan StartTime { get; set; }
     public TimeSpan EndTime { get; set; }
-    public User HealthcarePersonnel { get; set; }
+    public User? HealthcarePersonnel { get; set; }
     public List<Appointment>? Appointments { get; set; } 
 }

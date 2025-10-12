@@ -1,0 +1,39 @@
+@model IEnumerable<AvailableDay>
+
+<div class="container">
+    <table class="table table-striped">
+        <tr>
+            <th>Id</th>
+            <th>Healthcare Personnel</th>
+            <th>Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Appointments</th>
+            <th>Actions</th>
+        </tr>
+        @foreach (var availableDay in Model)
+        {
+            <tr>
+                <td>@availableDay.AvailableDayId</td>
+                <td>
+                    @if (availableDay.HealthcarePersonnel != null)
+                    {
+                        @availableDay.HealthcarePersonnel.Name
+                    }
+                    else
+                    {
+                        <span class="text-muted">Unknown</span>
+                    }
+                </td>
+                <td>@availableDay.Date.ToString("yyyy-MM-dd")</td>
+                <td>@availableDay.StartTime.ToString(@"hh\:mm")</td>
+                <td>@availableDay.EndTime.ToString(@"hh\:mm")</td>
+                <td>@(availableDay.Appointments?.Count ?? 0) booked</td>
+                <td>
+                    <a asp-action="Update" asp-route-id="@availableDay.AvailableDayId" class="btn btn-sm btn-primary">Update</a>
+                    <a asp-action="Delete" asp-route-id="@availableDay.AvailableDayId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </table>
+</div>

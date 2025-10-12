@@ -1,5 +1,9 @@
-@model IEnumerable<AvailableDay>
+@model AvailableDaysViewModel
 
 <h1>List of available days (@ViewBag.CurrentViewName View)</h1>
 
-<partial name="_AvailableDays" model="Model"/> 
+<partial name="_AvailableDaysTable" model="Model.AvailableDays"/> 
+
+<p>
+    <a class="btn btn-secondary" asp-action="Create">Create New Available day</a>
+</p>
