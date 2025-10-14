@@ -3,6 +3,7 @@
 <h2>Create Available Day</h2>
 
 <form asp-action="Create">
+    <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
         <label asp-for="HealthcarePersonnelId">Healthcare Personnel</label><span class="text-danger">*</span>
         <select asp-for="HealthcarePersonnelId" class="form-control">
