@@ -31,9 +31,9 @@
                             <span class="badge bg-secondary">Ukjent</span>
                         }
                     </td>
-                    <td>@availableDay.Date.ToString("yyyy-MM-dd")</td>
-                    <td>@availableDay.StartTime.ToString(@"hh\:mm")</td>
-                    <td>@availableDay.EndTime.ToString(@"hh\:mm")</td>
+                    <td>@availableDay.Date?.ToString("yyyy-MM-dd")</td>
+                    <td>@availableDay.StartTime?.ToString(@"hh\:mm")</td>
+                    <td>@availableDay.EndTime?.ToString(@"hh\:mm")</td>
                     <td>
                         @{
                             var appointmentCount = availableDay.Appointments?.Count ?? 0;

@@ -21,7 +21,8 @@ public class UserController : Controller
         return View(viewModel);
     }
 
-    public async Task<IActionResult> Create()
+    [HttpGet]
+    public IActionResult Create()
     {
         return View();
     }

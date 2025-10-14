@@ -6,14 +6,16 @@ public class User
 {
     public int UserId { get; set; }
     
-    [Required(ErrorMessage = "Navn er påkrevd.")]
-    [StringLength(100, ErrorMessage = "Navnet kan ikke overstige 100 tegn.")]
-    public string Name { get; set; }
+    [Required(ErrorMessage = "Name is required")]
+    [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
+    public string? Name { get; set; }
     
-    [Required(ErrorMessage = "E-post er påkrevd.")]
-    [EmailAddress(ErrorMessage = "Ugyldig e-postformat.")]
-    public string Email { get; set; }
+    [Required(ErrorMessage = "Email required")]
+    [EmailAddress(ErrorMessage = "Wrong email address.")]
+    [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", 
+    ErrorMessage = "Please enter a valid email address.")]
+    public string? Email { get; set; }
     
-    [Required(ErrorMessage = "Rolle er påkrevd.")]
-    public string Role { get; set; } 
+    [Required(ErrorMessage = "Role is required")]
+    public string? Role { get; set; } 
 }
