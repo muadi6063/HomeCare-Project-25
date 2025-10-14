@@ -1,9 +1,15 @@
 @model UsersViewModel
 
-<h1>List of users (@Model.CurrentViewName View)</h1>
+<div class="row mb-2">
+    <div class="col-md-12">
+        <h1>Brukeradministrasjon</h1>
+    </div>
+</div>
 
 <partial name="_UsersTable" model="Model.Users"/> 
 
-<p>
-    <a class="btn btn-secondary" asp-action="Create">Create New User</a>
-</p>
+<div class="mb-3 mt-4">
+    <a class="btn btn-primary" asp-action="Create">
+        Opprett Ny Bruker
+    </a>
+</div>

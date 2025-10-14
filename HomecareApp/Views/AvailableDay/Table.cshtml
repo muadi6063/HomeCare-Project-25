@@ -1,9 +1,12 @@
 @model AvailableDaysViewModel
 
-<h1>List of available days (@ViewBag.CurrentViewName View)</h1>
+<div class="row mb-2"> 
+    <div class="col-md-12">
+        <h1>Tilgjengelige Dager</h1> </div>
+</div>
 
 <partial name="_AvailableDaysTable" model="Model.AvailableDays"/> 
 
-<p>
-    <a class="btn btn-secondary" asp-action="Create">Create New Available day</a>
-</p>
+<div class="mb-3 mt-4">
+    <a class="btn btn-primary" asp-action="Create">Opprett Ny Tilgjengelig Dag</a>
+</div>

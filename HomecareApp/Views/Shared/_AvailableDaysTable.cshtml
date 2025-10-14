@@ -1,39 +1,52 @@
-@model IEnumerable<AvailableDay>
+@model IEnumerable<HomecareApp.Models.AvailableDay>
 
-<div class="container">
-    <table class="table table-striped">
-        <tr>
-            <th>Id</th>
-            <th>Healthcare Personnel</th>
-            <th>Date</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Appointments</th>
-            <th>Actions</th>
-        </tr>
-        @foreach (var availableDay in Model)
-        {
+<div class="container p-0">
+    
+    <table class="table table-striped table-hover border">
+        
+        <thead class="table-dark">
             <tr>
-                <td>@availableDay.AvailableDayId</td>
-                <td>
-                    @if (availableDay.HealthcarePersonnel != null)
-                    {
-                        @availableDay.HealthcarePersonnel.Name
-                    }
-                    else
-                    {
-                        <span class="text-muted">Unknown</span>
-                    }
-                </td>
-                <td>@availableDay.Date.ToString("yyyy-MM-dd")</td>
-                <td>@availableDay.StartTime.ToString(@"hh\:mm")</td>
-                <td>@availableDay.EndTime.ToString(@"hh\:mm")</td>
-                <td>@(availableDay.Appointments?.Count ?? 0) booked</td>
-                <td>
-                    <a asp-action="Update" asp-route-id="@availableDay.AvailableDayId" class="btn btn-sm btn-primary">Update</a>
-                    <a asp-action="Delete" asp-route-id="@availableDay.AvailableDayId" class="btn btn-sm btn-danger">Delete</a>
-                </td>
+                <th>ID</th>
+                <th>Helsepersonell</th>
+                <th>Dato</th>
+                <th>Start Tid</th>
+                <th>Slutt Tid</th>
+                <th>Avtaler</th>
+                <th>Handlinger</th>
             </tr>
-        }
+        </thead>
+        
+        <tbody>
+            @foreach (var availableDay in Model)
+            {
+                <tr>
+                    <td>@availableDay.AvailableDayId</td>
+                    <td>
+                        @if (availableDay.HealthcarePersonnel != null)
+                        {
+                            <span class="badge bg-success">@availableDay.HealthcarePersonnel.Name</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Ukjent</span>
+                        }
+                    </td>
+                    <td>@availableDay.Date.ToString("yyyy-MM-dd")</td>
+                    <td>@availableDay.StartTime.ToString(@"hh\:mm")</td>
+                    <td>@availableDay.EndTime.ToString(@"hh\:mm")</td>
+                    <td>
+                        @{
+                            var appointmentCount = availableDay.Appointments?.Count ?? 0;
+                            var badgeClass = appointmentCount > 0 ? "bg-warning text-dark" : "bg-info";
+                        }
+                        <span class="badge @badgeClass">@appointmentCount bestilt</span>
+                    </td>
+                    <td>
+                        <a asp-action="Update" asp-route-id="@availableDay.AvailableDayId" class="btn btn-sm btn-success">Oppdater</a>
+                        <a asp-action="Delete" asp-route-id="@availableDay.AvailableDayId" class="btn btn-sm btn-danger">Slett</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
     </table>
 </div>
