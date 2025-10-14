@@ -7,10 +7,10 @@
         <thead class="table-dark">
             <tr>
                 <th>ID</th>
-                <th>Navn</th>
-                <th>E-post</th>
-                <th>Rolle</th>
-                <th>Handlinger</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
             </tr>
         </thead>
         
@@ -38,8 +38,8 @@
                         }
                     </td>
                     <td>
-                        <a asp-action="Update" asp-route-id="@user.UserId" class="btn btn-sm btn-success">Oppdater</a>
-                        <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-sm btn-danger">Slett</a>
+                        <a asp-action="Update" asp-route-id="@user.UserId" class="btn btn-sm btn-success">Update</a>
+                        <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-sm btn-danger">Delete</a>
                     </td>
                 </tr>
             }

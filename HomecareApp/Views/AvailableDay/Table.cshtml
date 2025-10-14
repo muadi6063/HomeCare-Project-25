@@ -1,12 +1,13 @@
-@model AvailableDaysViewModel
+@model HomecareApp.ViewModels.AvailableDaysViewModel
 
 <div class="row mb-2"> 
     <div class="col-md-12">
-        <h1>Tilgjengelige Dager</h1> </div>
+        <h1>Available Days</h1> 
+    </div>
 </div>
 
 <partial name="_AvailableDaysTable" model="Model.AvailableDays"/> 
 
 <div class="mb-3 mt-4">
-    <a class="btn btn-primary" asp-action="Create">Opprett Ny Tilgjengelig Dag</a>
+    <a class="btn btn-primary" asp-action="Create">Create New Available Day</a>
 </div>

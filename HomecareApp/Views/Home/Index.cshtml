@@ -1,8 +1,64 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Welcome to Homecare App";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row text-center mt-5">
+    <div class="col-12">
+        <h1 class="display-4 mb-4">Homecare Booking Portal</h1>
+        <p class="lead">
+            Your gateway to scheduling essential homecare appointments.
+        </p>
+    </div>
+</div>
+
+<div class="row mt-5 justify-content-center">
+    
+    <div class="col-md-4 mb-4">
+        <div class="card shadow border-primary h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title text-primary">Book Your Care Appointment</h5>
+                <p class="card-text">
+                    Find and schedule appointments with available healthcare professionals based on your needs.
+                </p>
+                <a asp-controller="Appointments" asp-action="Index" class="btn btn-primary btn-lg mt-3">
+                    Start Booking
+                </a>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<hr class="my-5" />
+
+<div class="row mt-4">
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-info">Manage Personnel Availability</h5>
+                <p class="card-text">
+                    (Må fjernes etterhvert, evt om vi gjør at det kommer opp når man logger inn):(For Staff/Admin) Oversee and update the working hours of healthcare personnel.
+                </p>
+                <a asp-controller="AvailableDay" asp-action="Table" class="btn btn-outline-info">
+                    View Available Days
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-secondary">System User Management</h5>
+                <p class="card-text">
+                    (Må fjernes etterhvert, evt om vi gjør at det kommer opp når man logger inn):(For Admin) Create, edit, and manage all user accounts (Admin, Personnel, Client).
+                </p>
+                <a asp-controller="User" asp-action="Table" class="btn btn-outline-secondary">
+                    Go to User Management
+                </a>
+            </div>
+        </div>
+    </div>
+    
 </div>
