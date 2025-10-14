@@ -1,52 +1,53 @@
 @model IEnumerable<HomecareApp.Models.AvailableDay>
 
-<div class="container p-0">
-    
-    <table class="table table-striped table-hover border">
-        
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Healthcare Personnel</th>
-                <th>Date</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Appointments</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        
-        <tbody>
-            @foreach (var availableDay in Model)
-            {
-                <tr>
-                    <td>@availableDay.AvailableDayId</td>
-                    <td>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var availableDay in Model)
+    {
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
                         @if (availableDay.HealthcarePersonnel != null)
                         {
-                            <span class="badge bg-success">@availableDay.HealthcarePersonnel.Name</span>
+                            @availableDay.HealthcarePersonnel.Name
                         }
                         else
                         {
-                            <span class="badge bg-secondary">Unknown</span>
+                            <text>Unknown Personnel</text>
                         }
-                    </td>
-                    <td>@availableDay.Date?.ToString("yyyy-MM-dd")</td>
-                    <td>@availableDay.StartTime?.ToString(@"hh\:mm")</td>
-                    <td>@availableDay.EndTime?.ToString(@"hh\:mm")</td>
-                    <td>
-                        @{
-                            var appointmentCount = availableDay.Appointments?.Count ?? 0;
-                            var badgeClass = appointmentCount > 0 ? "bg-warning text-dark" : "bg-info";
-                        }
-                        <span class="badge @badgeClass">@appointmentCount booked</span>
-                    </td>
-                    <td>
-                        <a asp-action="Update" asp-route-id="@availableDay.AvailableDayId" class="btn btn-sm btn-success">Update</a>
-                        <a asp-action="Delete" asp-route-id="@availableDay.AvailableDayId" class="btn btn-sm btn-danger">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </h5>
+                    <small>ID: @availableDay.AvailableDayId</small>
+                </div>
+
+
+                @* Note: Explicit typecasting is required here (e.g., (DateTime) or (TimeSpan)) to correctly apply the ToString() format in the Razor view. *@
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Date: @(((DateTime)availableDay.Date).ToString("yyyy-MM-dd"))</h6>
+                    
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Start Time: <strong>@(((TimeSpan)availableDay.StartTime).ToString(@"hh\:mm"))</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            End Time: <strong>@(((TimeSpan)availableDay.EndTime).ToString(@"hh\:mm"))</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Appointments:
+                            @{
+                                var appointmentCount = availableDay.Appointments?.Count ?? 0;
+                                var badgeClass = appointmentCount > 0 ? "bg-warning text-dark" : "bg-success";
+                            }
+                            <span class="badge @badgeClass rounded-pill">@appointmentCount booked</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="card-footer d-flex justify-content-between">
+                    <a asp-action="Update" asp-route-id="@availableDay.AvailableDayId" class="btn btn-sm btn-success">Update</a>
+                    <a asp-action="Delete" asp-route-id="@availableDay.AvailableDayId" class="btn btn-sm btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    }
 </div>
