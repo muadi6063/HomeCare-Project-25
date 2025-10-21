@@ -5,7 +5,7 @@ public class AvailableDay
 {
     public int AvailableDayId { get; set; }
     
-    [Required(ErrorMessage = "Healthcare personell is required")]
+    [Required(ErrorMessage = "Healthcare personnel is required")]
     public int HealthcarePersonnelId { get; set; } 
 
     [Required(ErrorMessage = "Date is required")]
@@ -20,6 +20,6 @@ public class AvailableDay
     [DataType(DataType.Time)]
     public TimeSpan EndTime { get; set; }
 
-    public User HealthcarePersonnel { get; set; } = default!;
+    public User? HealthcarePersonnel { get; set; } = default!;
     public List<Appointment>? Appointments { get; set; } 
 }
