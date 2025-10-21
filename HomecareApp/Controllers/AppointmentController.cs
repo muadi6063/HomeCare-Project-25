@@ -89,18 +89,25 @@ public class AppointmentController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var appointment = await _context.Appointments.FindAsync(id);
+        var appointment = await _context.Appointments
+        .Include(a => a.Client)
+        .Include(a => a.AvailableDay)
+            .ThenInclude(d => d.HealthcarePersonnel)
+        .FirstOrDefaultAsync(a => a.AppointmentId == id);
+        
         if (appointment == null) return NotFound();
-        return View();
+        return View(appointment);
     }
 
 
-    [HttpPost]
-    public async Task<IActionResult> DeleConfirmed(int id)
+    [HttpPost, ActionName("Delete")]
+    public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var appointment = await _context.Appointments.FindAsync(id);
-        if (appointment ==null) return NotFound();
-
+        if (appointment ==null) 
+        {
+            return NotFound();
+        }
         _context.Appointments.Remove(appointment);
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Table));
