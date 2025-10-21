@@ -20,7 +20,7 @@
             <tr>
                 <td>@appt.Client?.Name</td>
                 <td>@appt.AvailableDay?.HealthcarePersonnel?.Name</td>
-                <td>@(appt.AvailableDay?.Date?.ToString("yyyy-MM-dd") ?? "N/A")</td>
+                <td>@(appt.AvailableDay?.Date.ToString("yyyy-MM-dd") ?? "N/A")</td>
                 <td>@appt.StartTime</td>
                 <td>@appt.EndTime</td>
                 <td>@appt.TaskDescription</td>

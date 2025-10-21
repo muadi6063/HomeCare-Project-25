@@ -29,7 +29,7 @@
             {
                 <option value="@day.AvailableDayId">
                     @day.HealthcarePersonnel?.Name - 
-                    @day.Date?.ToString("yyyy-MM-dd") (@day.StartTime - @day.EndTime)
+                    @day.Date.ToString("yyyy-MM-dd") (@day.StartTime - @day.EndTime)
                 </option>
             }
         </select>
@@ -45,7 +45,3 @@
     <button type="submit" class="btn btn-primary">Create Appointment</button>
     <a asp-action="Table" class="btn btn-secondary">Back to List</a>
 </form>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
