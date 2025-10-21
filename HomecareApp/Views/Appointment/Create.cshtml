@@ -1,0 +1,51 @@
+@model Appointment
+
+@{
+    ViewData["Title"] = "Create Appointment";
+}
+
+<h2>Create Appointment</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="ClientId">Client</label>
+        <select asp-for="ClientId" class="form-control" required>
+            <option value="">Select a client</option>
+            @foreach (var client in ViewBag.Clients as List<User>)
+            {
+                <option value="@client.UserId">@client.Name</option>
+            }
+        </select>
+        <span asp-validation-for="ClientId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AvailableDayId">Available Day</label>
+        <select asp-for="AvailableDayId" class="form-control" required>
+            <option value="">Select available day</option>
+            @foreach (var day in ViewBag.AvailableDays as List<AvailableDay>)
+            {
+                <option value="@day.AvailableDayId">
+                    @day.HealthcarePersonnel?.Name - 
+                    @day.Date?.ToString("yyyy-MM-dd") (@day.StartTime - @day.EndTime)
+                </option>
+            }
+        </select>
+        <span asp-validation-for="AvailableDayId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="TaskDescription">Task Description</label>
+        <textarea asp-for="TaskDescription" class="form-control" rows="3" required
+                  placeholder="Describe the care task (medication reminder, shopping assistance, etc.)"></textarea>
+        <span asp-validation-for="TaskDescription" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Appointment</button>
+    <a asp-action="Table" class="btn btn-secondary">Back to List</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

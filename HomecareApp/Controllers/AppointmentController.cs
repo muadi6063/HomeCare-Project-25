@@ -23,7 +23,8 @@ public class AppointmentController : Controller
         }
     
     [HttpGet]
-    public async Task<IActionResult> Create(){
+    public async Task<IActionResult> Create()
+    {
         ViewBag.Clients = await _context.Users
         .Where(u => u.Role == "Client")
         .ToListAsync();
@@ -34,11 +35,21 @@ public class AppointmentController : Controller
 
             return View();
     }
-    public async Task<IActionResult> Create(Appointment appointment){
+    public async Task<IActionResult> Create(Appointment appointment)
+    {
+        if (appointment.AvailableDayId > 0)
+    {
+        var availableDay = await _context.AvailableDays.FindAsync(appointment.AvailableDayId);
+        if (availableDay != null)
+        {
+            appointment.StartTime = availableDay.StartTime;
+            appointment.EndTime = availableDay.EndTime;
+        }
+    }
         if(ModelState.IsValid){
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
-            _logger.LogInformation("New  appointment created at {Time} ", DateTime.Now);
+            _logger.LogInformation("New appointment created at {Time} ", DateTime.Now);
             return RedirectToAction(nameof(Table));
         }
         ViewBag.Clients = await _context.Users
@@ -54,7 +65,7 @@ public class AppointmentController : Controller
     public async  Task<IActionResult> Update (int id){
         var appointment  = await _context.Appointments.FindAsync(id);
         if (appointment==null){
-            _logger.LogWarning ("Appointment with id", id);
+            _logger.LogWarning ("Appointment with id {id} not found", id);
         }
         ViewBag.AvailableDays = await _context.AvailableDays.ToListAsync();
         ViewBag.Clients = await _context.Users
@@ -76,7 +87,8 @@ public class AppointmentController : Controller
     
     
     [HttpGet]
-    public async Task<IActionResult> Delete(int id){
+    public async Task<IActionResult> Delete(int id)
+    {
         var appointment = await _context.Appointments.FindAsync(id);
         if (appointment == null) return NotFound();
         return View();
@@ -84,7 +96,8 @@ public class AppointmentController : Controller
 
 
     [HttpPost]
-    public async Task<IActionResult> DeleConfirmed(int id){
+    public async Task<IActionResult> DeleConfirmed(int id)
+    {
         var appointment = await _context.Appointments.FindAsync(id);
         if (appointment ==null) return NotFound();
 

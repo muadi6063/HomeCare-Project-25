@@ -14,11 +14,11 @@ public class AvailableDay
 
     [Required(ErrorMessage = "Start time is required")]
     [DataType(DataType.Time)]
-    public TimeSpan? StartTime { get; set; }
+    public TimeSpan StartTime { get; set; }
 
     [Required(ErrorMessage = "End time is required")]
     [DataType(DataType.Time)]
-    public TimeSpan? EndTime { get; set; }
+    public TimeSpan EndTime { get; set; }
     
     public User? HealthcarePersonnel { get; set; }
     public List<Appointment>? Appointments { get; set; } 
