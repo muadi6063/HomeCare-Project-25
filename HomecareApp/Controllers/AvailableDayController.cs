@@ -18,8 +18,14 @@ public class AvailableDayController : Controller
 {
     var availableDays = await _homeCareDbContext.AvailableDays
         .Include(ad => ad.HealthcarePersonnel)
+        .Include(ad => ad.Appointments)
+        .OrderBy(ad => ad.HealthcarePersonnel.Name)
+        .ThenBy(ad => ad.Date)
         .ToListAsync();
-    var viewModel = new AvailableDaysViewModel(availableDays, "Table");
+        
+    
+    var groupedData = availableDays.GroupBy(ad => ad.HealthcarePersonnel);    
+    var viewModel = new AvailableDaysViewModel(groupedData, "Table");
     return View(viewModel);
 }
 
@@ -38,6 +44,8 @@ public async Task<IActionResult> Create(AvailableDay availableDay)
 {
     Console.WriteLine("=== CREATE POST CALLED ===");
         Console.WriteLine($"ModelState.IsValid: {ModelState.IsValid}");
+
+    ModelState.Remove(nameof(availableDay.HealthcarePersonnel));    
     
     if (!ModelState.IsValid)
     {
