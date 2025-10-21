@@ -34,14 +34,6 @@
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 End Time: <strong>@(((TimeSpan)availableDay.EndTime).ToString(@"hh\:mm"))</strong>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Appointments:
-                                @{
-                                    var appointmentCount = availableDay.Appointments?.Count ?? 0;
-                                    var badgeClass = appointmentCount > 0 ? "bg-warning text-dark" : "bg-success";
-                                }
-                                <span class="badge @badgeClass rounded-pill">@appointmentCount booked</span>
-                            </li>
                         </ul>
                     </div>
                     
