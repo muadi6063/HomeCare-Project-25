@@ -14,9 +14,9 @@ public class AppointmentController : Controller
     public async Task<IActionResult> Table()
         {
             var appointments = await _context.Appointments
-            .Include(a => a.Client)
-            .Include(a => a.AvailableDay)
-                .ThenInclude (d => d.HealthcarePersonnel)
+            .Include(appointment => appointment.Client)
+            .Include(appointment => appointment.AvailableDay)
+                .ThenInclude (availableDay => availableDay!.HealthcarePersonnel)
                 .ToListAsync();
                 _logger.LogInformation("Appointments list  accessed  at {Time}", DateTime.Now);
                 return View(appointments);
@@ -26,11 +26,11 @@ public class AppointmentController : Controller
     public async Task<IActionResult> Create()
     {
         ViewBag.Clients = await _context.Users
-        .Where(u => u.Role == "Client")
+        .Where(user => user.Role == "Client")
         .ToListAsync();
         
         ViewBag.AvailableDays = await _context.AvailableDays
-            .Include(d => d.HealthcarePersonnel)
+            .Include(availableDay => availableDay.HealthcarePersonnel)
             .ToListAsync();
 
             return View();
@@ -53,11 +53,11 @@ public class AppointmentController : Controller
             return RedirectToAction(nameof(Table));
         }
         ViewBag.Clients = await _context.Users
-            .Where (u => u.Role == "Client")
+            .Where (user => user.Role == "Client")
             .ToListAsync();
 
         ViewBag.AvailableDays = await _context.AvailableDays
-            .Include (d=> d.HealthcarePersonnel)
+            .Include (availableDay=> availableDay.HealthcarePersonnel)
             .ToListAsync();
             return View(appointment);
     }
@@ -69,7 +69,7 @@ public class AppointmentController : Controller
         }
         ViewBag.AvailableDays = await _context.AvailableDays.ToListAsync();
         ViewBag.Clients = await _context.Users
-        .Where(u=> u.Role ==  "Client")
+        .Where(user=> user.Role ==  "Client")
         .ToListAsync();
         return View(appointment);
     }
@@ -81,7 +81,7 @@ public class AppointmentController : Controller
             return RedirectToAction(nameof(Table));
         }
         ViewBag.AvailableDays = await _context.AvailableDays.ToListAsync();
-        ViewBag.Clients = await _context.Users.Where(u=> u.Role == "Client").ToListAsync();
+        ViewBag.Clients = await _context.Users.Where(user=> user.Role == "Client").ToListAsync();
         return View(appointment);
     }
     
@@ -90,17 +90,17 @@ public class AppointmentController : Controller
     public async Task<IActionResult> Delete(int id)
     {
         var appointment = await _context.Appointments
-        .Include(a => a.Client)
-        .Include(a => a.AvailableDay)
-            .ThenInclude(d => d.HealthcarePersonnel)
-        .FirstOrDefaultAsync(a => a.AppointmentId == id);
+        .Include(appointment => appointment.Client)
+        .Include(appointment => appointment.AvailableDay)
+            .ThenInclude(availableDay => availableDay!.HealthcarePersonnel)
+        .FirstOrDefaultAsync(appointment => appointment.AppointmentId == id);
         
         if (appointment == null) return NotFound();
         return View(appointment);
     }
 
 
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var appointment = await _context.Appointments.FindAsync(id);

@@ -1,4 +1,4 @@
-@model HomecareApp.Models.Appointment
+@model Appointment
 
 @{
     ViewData["Title"] = "Delete Appointment";
@@ -15,20 +15,17 @@
         <dd>@Model.Client?.Name</dd>
 
         <dt class = "col-sm-3">HealthcarePersonnel</dt>
-        <dd>@Model.AvailableDay?.HealthcarePersonnel</dd>
+        <dd>@Model.AvailableDay?.HealthcarePersonnel.Name</dd>
 
         <dt class = "col-sm-3">Date</dt>
-        <dd>@Model.AvailableDay?.Date.ToShortDateString()</dd>
+        <dd>@Model.AvailableDay?.Date.ToString("yyyy-MM-dd")</dd>
 
         <dt class = "col-sm-3">Task Description</dt>
         <dd>@Model.TaskDescription</dd>
     </dl>
 </div>
 
-<form asp-action="Delete" asp-route-id="@Model.AppointmentId" method="post">
-        <input type="hidden" asp-for="AppointmentId" />
-
-        <button  type="submit" class="btn btn-danger">Delete</button>
+<form asp-action="DeleteConfirmed" asp-route-id="@Model.AppointmentId" method="post">
+        <button type="submit" class="btn btn-danger">Delete</button>
         <a asp-action="Table" class="btn btn-secondary">Cancel</a>
-
 </form>

@@ -12,10 +12,12 @@
     <div class="form-group">
         <label asp-for="ClientId">Client</label>
         <select asp-for="ClientId" class="form-control" required>
-            <option value="">Select a client</option>
-            @foreach (var client in ViewBag.Clients as List<User>)
+            @if (ViewBag.Clients is List<User> clients)
             {
-                <option value="@client.UserId">@client.Name</option>
+                @foreach (var client in clients)
+                {
+                    <option value="@client.UserId">@client.Name</option>
+                }
             }
         </select>
         <span asp-validation-for="ClientId" class="text-danger"></span>
@@ -25,12 +27,15 @@
         <label asp-for="AvailableDayId">Available Day</label>
         <select asp-for="AvailableDayId" class="form-control" required>
             <option value="">Select available day</option>
-            @foreach (var day in ViewBag.AvailableDays as List<AvailableDay>)
+            @if (ViewBag.AvailableDays is List<AvailableDay> availableDays)
             {
-                <option value="@day.AvailableDayId">
-                    @day.HealthcarePersonnel?.Name - 
-                    @day.Date.ToString("yyyy-MM-dd") (@day.StartTime - @day.EndTime)
-                </option>
+                @foreach (var day in availableDays)
+                {
+                    <option value="@day.AvailableDayId">
+                        @day.HealthcarePersonnel?.Name - 
+                        @day.Date.ToString("yyyy-MM-dd") (@day.StartTime - @day.EndTime)
+                    </option>
+                }
             }
         </select>
         <span asp-validation-for="AvailableDayId" class="text-danger"></span>
