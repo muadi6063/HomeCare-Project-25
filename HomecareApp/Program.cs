@@ -1,6 +1,7 @@
 using Serilog;
 using Microsoft.EntityFrameworkCore;
 using HomecareApp.Models;
+using HomecareApp.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -20,12 +21,20 @@ var loggerConfiguration = new LoggerConfiguration()
 var logger = loggerConfiguration.CreateLogger();
 builder.Logging.AddSerilog(logger);
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IAvailableDayRepository, AvailableDayRepository>();
+
 var app = builder.Build();
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    DBInit.Seed(app); 
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -39,34 +48,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-// This is temporary database seeding for testing
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<HomeCareDbContext>();
-
-    // Ensure database is created
-    context.Database.EnsureCreated();
-
-    // Seed users if none exist
-    if (!context.Users.Any())
-    {
-        context.Users.AddRange(
-            // Healthcare Personnel
-            new User { Name = "Dr. Sarah Smith", Email = "sarah.smith@homecare.com", Role = "HealthcarePersonnel" },
-            new User { Name = "Nurse Michael Johnson", Email = "michael.johnson@homecare.com", Role = "HealthcarePersonnel" },
-            new User { Name = "Therapist Lisa Wong", Email = "lisa.wong@homecare.com", Role = "HealthcarePersonnel" },
-
-            // Clients
-            new User { Name = "John Anderson", Email = "john.anderson@gmail.com", Role = "Client" },
-            new User { Name = "Mary Thompson", Email = "mary.thompson@gmail.com", Role = "Client" },
-
-            // Admin
-            new User { Name = "System Administrator", Email = "admin@homecare.com", Role = "Admin" }
-        );
-
-        context.SaveChanges();
-    }
-}
 
 app.Run();

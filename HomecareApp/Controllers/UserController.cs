@@ -1,22 +1,21 @@
-
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using HomecareApp.Models;
 using HomecareApp.ViewModels;
+using HomecareApp.DAL;
 
 namespace HomecareApp.Controllers;
 public class UserController : Controller
 {
-    private readonly HomeCareDbContext _homeCareDbContext;
+    private readonly IUserRepository _userRepository;
 
-    public UserController(HomeCareDbContext context)
+    public UserController(IUserRepository userRepository)
     {
-        _homeCareDbContext = context;
+        _userRepository = userRepository;
     }
 
     public async Task<IActionResult> Table()
     {
-        var users = await _homeCareDbContext.Users.ToListAsync();
+        var users = await _userRepository.GetAll();
         var viewModel = new UsersViewModel(users, "Table");
         return View(viewModel);
     }
@@ -32,8 +31,7 @@ public class UserController : Controller
     {
         if (ModelState.IsValid)
         {
-            _homeCareDbContext.Users.Add(user);
-            await _homeCareDbContext.SaveChangesAsync();
+            await _userRepository.Create(user);
             return RedirectToAction(nameof(Table));
         }
         return View(user);
@@ -42,7 +40,7 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> Update(int id)
     {
-        var user = await _homeCareDbContext.Users.FindAsync(id);
+        var user = await _userRepository.GetUserById(id);
         if (user == null)
         {
             return NotFound();
@@ -55,8 +53,7 @@ public class UserController : Controller
     {
         if (ModelState.IsValid)
         {
-            _homeCareDbContext.Users.Update(user);
-            await _homeCareDbContext.SaveChangesAsync();
+            await _userRepository.Update(user);
             return RedirectToAction(nameof(Table));
         }
         return View(user);
@@ -65,7 +62,7 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var user = await _homeCareDbContext.Users.FindAsync(id);
+        var user = await _userRepository.GetUserById(id);
         if (user == null)
         {
             return NotFound();
@@ -76,13 +73,11 @@ public class UserController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var user = await _homeCareDbContext.Users.FindAsync(id);
-        if (user == null)
+        var result = await _userRepository.Delete(id);
+        if (!result)
         {
             return NotFound();
         }
-        _homeCareDbContext.Users.Remove(user);
-        await _homeCareDbContext.SaveChangesAsync();
         return RedirectToAction(nameof(Table));
     }
 }
