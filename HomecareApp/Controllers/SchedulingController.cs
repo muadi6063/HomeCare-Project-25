@@ -1,10 +1,15 @@
+// Fix this page later if we are going for a merged controller!!!!! This is not needed now
+
+
+
+
+
 // using Microsoft.AspNetCore.Mvc;
 // using Microsoft.EntityFrameworkCore;
 // using HomecareApp.Models;
 
 // namespace HomecareApp.Controllers
 // {
-// Fix this page later if we are going for a merged controller!!!!!
 //     public class SchedulingController : Controller
 //     {
 //         private readonly HomeCareDbContext _context;

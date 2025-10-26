@@ -1,7 +1,7 @@
 using HomecareApp.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HomecareApp.Models;
+namespace HomecareApp.DAL;
 
 public class HomeCareDbContext : DbContext
 {

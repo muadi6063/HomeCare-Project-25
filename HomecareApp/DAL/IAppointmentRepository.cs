@@ -3,7 +3,7 @@ using HomecareApp.Models;
 namespace HomecareApp.DAL;
     public interface IAppointmentRepository
     {
-        Task<IEnumerable<Appointment>> GetAll();
+        Task<IEnumerable<Appointment>?> GetAll();
         Task<Appointment?> GetAppointmentById(int id);
         Task Create(Appointment appointment);
         Task Update(Appointment appointment);
