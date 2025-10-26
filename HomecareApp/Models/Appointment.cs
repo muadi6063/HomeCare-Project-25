@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 
-
 namespace HomecareApp.Models;
 
 public class Appointment
@@ -11,6 +10,8 @@ public class Appointment
     // Required form fields - non-nullable with [Required]
     [Required(ErrorMessage = "Client is required")]
     public int ClientId { get; set; }
+    
+    [Required(ErrorMessage = "Available day is required")]
     public int AvailableDayId { get; set; }
 
     // If you want times to be auto-populated from AvailableDay, remove [Required]
@@ -26,9 +27,5 @@ public class Appointment
     [StringLength(500, MinimumLength = 5, ErrorMessage = "Task description must be between 5 and 500 characters")]
     public string TaskDescription { get; set; } = string.Empty;
     public User? Client { get; set; }
-
-    [Required(ErrorMessage = "Available day is required")]
     public AvailableDay? AvailableDay { get; set; }
 }
-
-// Fiks warnings??

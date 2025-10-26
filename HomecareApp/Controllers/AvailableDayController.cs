@@ -75,11 +75,18 @@ public async Task<IActionResult> Create(AvailableDay availableDay)
     [HttpGet]
     public async Task<IActionResult> Update(int id)
     {
-        var availableDay = await _homeCareDbContext.AvailableDays.FindAsync(id);
+        var availableDay = await _homeCareDbContext.AvailableDays
+            .Include(ad => ad.HealthcarePersonnel)
+            .FirstOrDefaultAsync(ad => ad.AvailableDayId == id);
         if (availableDay == null)
         {
             return NotFound();
         }
+
+        ViewBag.HealthcarePersonnel = await _homeCareDbContext.Users
+        .Where(u => u.Role == "HealthcarePersonnel")
+        .ToListAsync();
+
         return View(availableDay);
     }
 
@@ -92,13 +99,20 @@ public async Task<IActionResult> Create(AvailableDay availableDay)
             await _homeCareDbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Table));
         }
+
+        ViewBag.HealthcarePersonnel = await _homeCareDbContext.Users
+        .Where(u => u.Role == "HealthcarePersonnel")
+        .ToListAsync();
+
         return View(availableDay);
     }
 
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var availableDay = await _homeCareDbContext.AvailableDays.FindAsync(id);
+        var availableDay = await _homeCareDbContext.AvailableDays
+            .Include(ad => ad.HealthcarePersonnel)
+            .FirstOrDefaultAsync(ad => ad.AvailableDayId == id);
         if (availableDay == null)
         {
             return NotFound();

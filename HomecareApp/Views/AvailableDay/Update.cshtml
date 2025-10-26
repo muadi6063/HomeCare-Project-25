@@ -1,0 +1,44 @@
+@model AvailableDay
+
+<h2>Update Available Day</h2>
+
+<form asp-action="Update">
+    <input type="hidden" asp-for="AvailableDayId" />  <!-- Move inside form -->
+    
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="HealthcarePersonnelId">Healthcare Personnel</label><span class="text-danger">*</span>
+        <select asp-for="HealthcarePersonnelId" class="form-control">
+            <option value="">Select Healthcare Personnel</option>
+            @if (ViewBag.HealthcarePersonnel is List<User> personnel)
+            {
+                @foreach (var person in personnel)
+                {
+                    <option value="@person.UserId">@person.Name</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="HealthcarePersonnelId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Date"></label><span class="text-danger">*</span>
+        <input asp-for="Date" type="date" class="form-control" />
+        <span asp-validation-for="Date" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StartTime">Start Time</label><span class="text-danger">*</span>
+        <input asp-for="StartTime" type="time" class="form-control" />
+        <span asp-validation-for="StartTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EndTime">End Time</label><span class="text-danger">*</span>
+        <input asp-for="EndTime" type="time" class="form-control" />
+        <span asp-validation-for="EndTime" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Available Day</button>
+    <a asp-action="Table" class="btn btn-secondary">Cancel</a>
+</form>
