@@ -29,6 +29,8 @@ public class AvailableDayController : Controller
                 _logger.LogError("[AvailableDayController] Available day list not found while executing _availableDayRepository.GetAll()");
                 return NotFound("Available day list not found");
             }
+            // Group available days by healthcare personnel to organize the display
+        // This makes it easier to see all time slots for each healthcare worker
             var groupedData = availableDays.GroupBy(ad => ad.HealthcarePersonnel);    
             var viewModel = new AvailableDaysViewModel(groupedData, "Table");
             return View(viewModel);
