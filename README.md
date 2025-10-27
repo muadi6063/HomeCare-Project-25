@@ -14,6 +14,7 @@
 
 3. dotnet build
 4. dotnet run
+5. 
 Open your browser and go to: https://localhost:5001 or http://localhost:5000
 
 ## Features
