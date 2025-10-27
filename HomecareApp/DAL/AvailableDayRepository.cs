@@ -32,6 +32,25 @@ public class AvailableDayRepository : IAvailableDayRepository
         }
     }
 
+    public async Task<IEnumerable<AvailableDay>> GetUnbookedAvailableDays()
+    {
+        try
+        {
+            return await _db.AvailableDays
+                .Include(ad => ad.HealthcarePersonnel)
+                .Include(ad => ad.Appointments)
+                .Where(ad => ad.Appointments == null || ad.Appointments.Count == 0)
+                .OrderBy(ad => ad.HealthcarePersonnel!.Name)
+                .ThenBy(ad => ad.Date)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("[AvailableDayRepository] unbookedAvailableDays ToListAsync() failed when GetUnbookedAvailableDays(), error message: {e}", e.Message);
+            return new List<AvailableDay>();
+        }
+    }
+
     public async Task<AvailableDay?> GetAvailableDayById(int id)
     {
         try

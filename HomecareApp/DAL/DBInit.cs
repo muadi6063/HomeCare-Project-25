@@ -61,7 +61,7 @@ public static class DBInit
                     ClientId = 1, // John Doe
                     AvailableDayId = 1,
                     StartTime = new TimeSpan(9, 0, 0),
-                    EndTime = new TimeSpan(10, 0, 0),
+                    EndTime = new TimeSpan(12, 0, 0),
                     TaskDescription = "Medication reminder and blood pressure check"
                 }
             };

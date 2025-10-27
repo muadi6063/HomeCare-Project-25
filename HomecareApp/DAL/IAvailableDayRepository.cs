@@ -4,6 +4,7 @@ namespace HomecareApp.DAL;
     public interface IAvailableDayRepository
     {
         Task<IEnumerable<AvailableDay>> GetAll();
+        Task<IEnumerable<AvailableDay>> GetUnbookedAvailableDays();
         Task<AvailableDay?> GetAvailableDayById(int id);
         Task Create(AvailableDay availableDay);
         Task Update(AvailableDay availableDay);

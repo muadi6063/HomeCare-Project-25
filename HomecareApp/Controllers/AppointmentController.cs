@@ -49,7 +49,7 @@ public class AppointmentController : Controller
         try
         {
             ViewBag.Clients = await _userRepository.GetUsersByRole("Client");
-            ViewBag.AvailableDays = await _availableDayRepository.GetAll();
+            ViewBag.AvailableDays = await _availableDayRepository.GetUnbookedAvailableDays();
             return View();
         }
         catch (Exception ex)
