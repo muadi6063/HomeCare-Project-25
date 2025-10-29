@@ -4,8 +4,18 @@ using HomecareApp.Models;
 using HomecareApp.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
 
 builder.Services.AddDbContext<HomeCareDbContext>(options =>
 {
@@ -30,7 +40,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    DBInit.Seed(app); 
+    DBInit.Seed(app);
+    // ADD: Swagger UI
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
@@ -43,10 +56,16 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// ADD: CORS
+app.UseCors();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// ADD: API controllers mapping
+app.MapControllers();
 
 app.Run();
