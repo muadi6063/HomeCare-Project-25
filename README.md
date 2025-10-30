@@ -19,7 +19,7 @@ The access level when running the app can be considered as admin.
 3. dotnet build
 4. dotnet run
 5. 
-Open your browser and go to: https://localhost:5001 or http://localhost:5000
+Open your browser and go to the url shown after running dotnet run
 
 ## Features
 Healthcare personnel can create/update/delete available days

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using HomecareApp.Models;
-using HomecareApp.DAL;
+using HomeCareApp.Models;
+using HomeCareApp.DAL;
 
 public class AppointmentController : Controller
 {

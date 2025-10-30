@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using HomecareApp.Models;
-using HomecareApp.ViewModels;
-using HomecareApp.DAL;
+using HomeCareApp.Models;
+using HomeCareApp.ViewModels;
+using HomeCareApp.DAL;
 
-namespace HomecareApp.Controllers;
+namespace HomeCareApp.Controllers;
 
 public class UserController : Controller
 {

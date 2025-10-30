@@ -1,6 +1,6 @@
-using HomecareApp.Models;
+using HomeCareApp.Models;
 
-namespace HomecareApp.ViewModels;
+namespace HomeCareApp.ViewModels;
 
 public class AvailableDaysViewModel
 {

@@ -1,12 +1,12 @@
-using HomecareApp.Models;
+using HomeCareApp.Models;
 
-namespace HomecareApp.DAL;
+namespace HomeCareApp.DAL;
     public interface IAvailableDayRepository
     {
         Task<IEnumerable<AvailableDay>> GetAll();
         Task<IEnumerable<AvailableDay>> GetUnbookedAvailableDays();
         Task<AvailableDay?> GetAvailableDayById(int id);
-        Task Create(AvailableDay availableDay);
+        Task<bool> Create(AvailableDay availableDay);
         Task Update(AvailableDay availableDay);
         Task<bool> Delete(int id);
     }

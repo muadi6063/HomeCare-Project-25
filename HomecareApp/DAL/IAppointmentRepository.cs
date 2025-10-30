@@ -1,6 +1,6 @@
-using HomecareApp.Models;
+using HomeCareApp.Models;
 
-namespace HomecareApp.DAL;
+namespace HomeCareApp.DAL;
     public interface IAppointmentRepository
     {
         Task<IEnumerable<Appointment>?> GetAll();

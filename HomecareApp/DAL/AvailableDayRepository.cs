@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using HomecareApp.Models;
+using HomeCareApp.Models;
 
-namespace HomecareApp.DAL;
+namespace HomeCareApp.DAL;
 
 public class AvailableDayRepository : IAvailableDayRepository
 {
@@ -66,17 +66,18 @@ public class AvailableDayRepository : IAvailableDayRepository
         }
     }
 
-    public async Task Create(AvailableDay availableDay)
+    public async Task<bool> Create(AvailableDay availableDay)
     {
         try
         {
             _db.AvailableDays.Add(availableDay);
             await _db.SaveChangesAsync();
+            return true;
         }
         catch (Exception e)
         {
             _logger.LogError("[AvailableDayRepository] availableDay creation failed for availableDay {@availableDay}, error message: {e}", availableDay, e.Message);
-            throw;
+            return false;
         }
     }
 

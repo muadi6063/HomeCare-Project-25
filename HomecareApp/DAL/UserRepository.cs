@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using HomecareApp.Models;
+using HomeCareApp.Models;
 
-namespace HomecareApp.DAL;
+namespace HomeCareApp.DAL;
 
 public class UserRepository : IUserRepository
 {
