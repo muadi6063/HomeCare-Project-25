@@ -5,6 +5,7 @@ using HomeCareApp.ViewModels;
 using HomeCareApp.DAL;
 using HomeCareApp.DTOs;
 using Microsoft.AspNetCore.Http.Connections;
+using System.Security.Cryptography.X509Certificates;
 
 
 namespace HomeCareApp.Controllers;
@@ -63,9 +64,9 @@ public class AvailableDayAPIController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Create([FromBody]AvailableDayDto availableDayDto)
+    public async Task<IActionResult> Create([FromBody] AvailableDayDto availableDayDto)
     {
-        
+
         if (availableDayDto == null)
         {
             return BadRequest("Item cannot be null");
@@ -85,9 +86,63 @@ public class AvailableDayAPIController : ControllerBase
             return CreatedAtAction(nameof(AvailableDaysList), new { id = newAvailableDay.AvailableDayId }, newAvailableDay);
         }
 
-        _logger.LogWarning("[AvailableDayAPIController] availableday creation failed {@availableday}", newAvailableDay);
+        _logger.LogWarning("[AvailableDayAPIController] availableday creation failed {@availableDay}", newAvailableDay);
         return StatusCode(500, "Internal server error");
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAvailableDay(int id)
+    {
+        var availableDay = await _availableDayRepository.GetAvailableDayById(id);
+        if (availableDay == null)
+        {
+            _logger.LogError("[AvailableDayAPIController] AvailableDay not found for the Id {AvailableDayId:0000}", id);
+            return NotFound("AvailableDay not found for the Id");
+        }
+        return Ok(availableDay);
+    }
+
+    [HttpPut("update/{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] AvailableDayDto availableDayDto)
+    {
+        if (availableDayDto == null)
+        {
+            return BadRequest("available day data cannot be null");
+        }
+
+        var existingAvailableDay = await _availableDayRepository.GetAvailableDayById(id);
+
+        if (existingAvailableDay == null)
+        {
+            return NotFound("Available day not found");
+        }
+
+        existingAvailableDay.HealthcarePersonnelId = availableDayDto.HealthcarePersonnelId;
+        existingAvailableDay.Date = availableDayDto.Date;
+        existingAvailableDay.StartTime = availableDayDto.StartTime;
+        existingAvailableDay.EndTime = availableDayDto.EndTime;
+        
+        bool updateSuccessful = await _availableDayRepository.Update(existingAvailableDay);
+        if (updateSuccessful)
+        {
+            return Ok(existingAvailableDay);
+        }
+
+        _logger.LogWarning("[AvailableDayAPIController] available day update failed {@availableDay}", existingAvailableDay);
+        return StatusCode(500, "Internal server error");
+    }
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        bool returnOk = await _availableDayRepository.Delete(id);
+        if (!returnOk)
+        {
+            _logger.LogError("[AvailableDayAPIController] AvailableDay deletion failed for the Id {AvailableDayId:0000}", id);
+            return BadRequest("Item deletion failed");
+        }
+        return NoContent();
+    }
+
 
 }
 public class AvailableDayController : Controller

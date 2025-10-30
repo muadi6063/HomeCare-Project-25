@@ -81,18 +81,19 @@ public class AvailableDayRepository : IAvailableDayRepository
         }
     }
 
-    public async Task Update(AvailableDay availableDay)
+    public async Task<bool> Update(AvailableDay availableDay)
     {
         try
         {
             _db.AvailableDays.Update(availableDay);
             await _db.SaveChangesAsync();
+            return true;
         }
         catch (Exception e)
         {
             _logger.LogError("[AvailableDayRepository] availableDay FindAsync(id) failed when updating the AvailableDayId {AvailableDayId:0000}, error message: {e}", availableDay.AvailableDayId, e.Message);
-            throw;
-        }
+            return false;
+            }
     }
 
     public async Task<bool> Delete(int id)

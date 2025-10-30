@@ -7,6 +7,6 @@ namespace HomeCareApp.DAL;
         Task<IEnumerable<AvailableDay>> GetUnbookedAvailableDays();
         Task<AvailableDay?> GetAvailableDayById(int id);
         Task<bool> Create(AvailableDay availableDay);
-        Task Update(AvailableDay availableDay);
+        Task<bool> Update(AvailableDay availableDay);
         Task<bool> Delete(int id);
     }
