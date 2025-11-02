@@ -110,36 +110,3 @@ public class UserAPIController : ControllerBase
     }
 
 }
-
-
-
-public class UserController : Controller
-{
-    private readonly IUserRepository _userRepository;
-    private readonly ILogger<UserController> _logger;
-
-    public UserController(IUserRepository userRepository, ILogger<UserController> logger)
-    {
-        _userRepository = userRepository;
-        _logger = logger;
-    }
-
-    public async Task<IActionResult> Table()
-    {
-        try
-        {
-            var users = await _userRepository.GetAll();
-            if (users == null)
-            {
-                _logger.LogError("[UserController] User list not found while executing _userRepository.GetAll()");
-                return NotFound("User list not found");
-            }
-            var viewModel = new UsersViewModel(users, "Table");
-            return View(viewModel);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError("[UserController] Error loading users for table, error message: {e}", e.Message);
-            var emptyUsers = new List<User>();
-            var emptyViewModel = new UsersViewModel(emptyUsers, "Table");
-            return Vi

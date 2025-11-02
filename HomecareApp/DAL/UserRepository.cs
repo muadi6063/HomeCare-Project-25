@@ -95,11 +95,15 @@ public class UserRepository : IUserRepository
                 _logger.LogError("[UserRepository] user not found for the UserId {UserId:0000}", id);
                 return false;
             }
-            
+
             _db.Users.Remove(user);
             await _db.SaveChangesAsync();
             return true;
         }
         catch (Exception e)
         {
-            _logger.LogError("[UserRepository] user deletion failed for the UserId {UserId:0000}, erro
+            _logger.LogError("[UserRepository] user deletion failed for the UserId {UserId:0000}, error message: {e}", id, e.Message);
+            return false;
+        }
+    }
+}
