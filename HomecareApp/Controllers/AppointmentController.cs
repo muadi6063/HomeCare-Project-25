@@ -1,17 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
 using HomeCareApp.Models;
 using HomeCareApp.DAL;
+using HomeCareApp.DTOs; 
 
 [ApiController]
 [Route("api/[controller]")]
-public class AppointmentController : Controller
+public class AppointmentAPIController : Controller
 {
     private readonly ILogger<AppointmentController> _logger;
     private readonly IAppointmentRepository _appointmentRepository;
     private readonly IUserRepository _userRepository;
     private readonly IAvailableDayRepository _availableDayRepository;
     
-    public AppointmentController(
+    public AppointmentAPIController(
         IAppointmentRepository appointmentRepository, 
         IUserRepository userRepository,
         IAvailableDayRepository availableDayRepository,
@@ -27,7 +28,7 @@ public class AppointmentController : Controller
         var appointments = await _appointmentRepository.GetAll();
         if (appointments == null){
             _logger.LogError("[AppointmentAPI] Appointment list not found while executing _appointmentRepository.GetAll()");
-            return NotFound("Appointment list not found")
+            return NotFound("Appointment list not found");
         }
 
         var dtos = appointments.Select(a =>  new AppointmentDto{
@@ -37,33 +38,39 @@ public class AppointmentController : Controller
             ClientEmail = a.Client?.Email,
             AvailableDayId = a.AvailableDayId,
             AvailableDayDate = a.AvailableDay?.Date,
-            HealthcarePersonneLName = a.AvailableDay?.HealthcarePersonnel?.Name,
+            HealthcarePersonnelName = a.AvailableDay?.HealthcarePersonnel?.Name,
             StartTime = a.StartTime,
             EndTime = a.EndTime,
             TaskDescription = a.TaskDescription
         });
 
-        return  Ok(dtos)
+        return  Ok(dtos);
     }
     [HttpPost("create")]
     public async  Task<IActionResult> Create([FromBody] AppointmentDto dto){
         if (dto == null)
-        return BadRequest("Appointment cannot be null")
+        return BadRequest("Appointment cannot be null");
 
         var newAppointment = new Appointment
         {
-            ClientId  = dto.ClientId,
+            ClientId = dto.ClientId,
             AvailableDayId = dto.AvailableDayId,
             StartTime = dto.StartTime,
             EndTime = dto.EndTime,
             TaskDescription = dto.TaskDescription
         };
-        var success = await _appointmentRepository.Create(newAppointment);
-        if (success)
-        return CreatedAtAction(nameof(GetAppointment), new { id = newAppointment.AppointmentId }, newAppointment);
+        try
+        {
+            await _appointmentRepository.Create(newAppointment);
+            _logger.LogInformation("[AppointmentAPIController] Appointment  created successfully  {@appointment}", newAppointment);
+            return CreatedAtAction(nameof(GetAppointment), new { id = newAppointment.AppointmentId }, newAppointment);
 
-        _logger.LogWarning("[AppointmentAPIController] Appointment  creation failed  {@appointment}", newAppointment);
-        return StatusCode(500, "Internal server error");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[AppointmentAPIController] Appointment controller failed {@appointment}", newAppointment);
+            return StatusCode(500, "Internal server error during appointment creation");
+        }
     }
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAppointment(int id)
@@ -83,7 +90,7 @@ public class AppointmentController : Controller
             ClientEmail = appointment.Client?.Email,
             AvailableDayId = appointment.AvailableDayId,
             AvailableDayDate = appointment.AvailableDay?.Date,
-            HealthcarePersonneLName = appointment.AvailableDay?.HealthcarePersonnel?.Name,
+            HealthcarePersonnelName = appointment.AvailableDay?.HealthcarePersonnel?.Name,
             StartTime = appointment.StartTime,
             EndTime = appointment.EndTime,
             TaskDescription = appointment.TaskDescription
@@ -107,12 +114,18 @@ public class AppointmentController : Controller
         existing.EndTime = dto.EndTime;
         existing.TaskDescription = dto.TaskDescription;
 
-        var success = await _appointmentRepository.Update(existing);
-        if (success)
-            return Ok(existing);
+        try
+        {
+            await _appointmentRepository.Update(existing);
+            _logger.LogInformation("[AppointmentAPIController] Appointment updated successfully  {@appointment}", existing);
+            return CreatedAtAction(nameof(GetAppointment), new { id = existing.AppointmentId }, existing);
 
-        _logger.LogWarning("[AppointmentAPIController] Appointment update failed {@appointment}", existing);
-        return StatusCode(500, "Internal server error");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[AppointmentAPIController] Appointment update failed {@appointment}", existing);
+            return StatusCode(500, "Internal server error during update");
+        }
     }
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteConfirmed(int id)
