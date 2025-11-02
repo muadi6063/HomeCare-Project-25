@@ -55,31 +55,33 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public async Task Create(User user)
+    public async Task<bool> Create(User user)
     {
         try
         {
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
+            return true;
         }
         catch (Exception e)
         {
             _logger.LogError("[UserRepository] user creation failed for user {@user}, error message: {e}", user, e.Message);
-            throw;
+            return false;
         }
     }
 
-    public async Task Update(User user)
+    public async Task<bool> Update(User user)
     {
         try
         {
             _db.Users.Update(user);
             await _db.SaveChangesAsync();
+            return true;
         }
         catch (Exception e)
         {
             _logger.LogError("[UserRepository] user FindAsync(id) failed when updating the UserId {UserId:0000}, error message: {e}", user.UserId, e.Message);
-            throw;
+            return false;
         }
     }
 
@@ -100,8 +102,4 @@ public class UserRepository : IUserRepository
         }
         catch (Exception e)
         {
-            _logger.LogError("[UserRepository] user deletion failed for the UserId {UserId:0000}, error message: {e}", id, e.Message);
-            return false;
-        }
-    }
-}
+            _logger.LogError("[UserRepository] user deletion failed for the UserId {UserId:0000}, erro

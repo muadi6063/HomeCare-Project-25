@@ -6,7 +6,6 @@ namespace HomeCareApp.DAL;
         Task<IEnumerable<User>> GetAll();
         Task<User?> GetUserById(int id);
         Task<IEnumerable<User>> GetUsersByRole(string role);
-        Task Create(User user);
-        Task Update(User user);
-        Task<bool> Delete(int id);
-    }
+        Task <bool>Create(User user);
+        Task <bool> Update(User user);
+        Task<bool> Delete(i
