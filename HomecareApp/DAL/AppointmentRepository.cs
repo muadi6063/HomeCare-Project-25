@@ -52,31 +52,33 @@ public class AppointmentRepository : IAppointmentRepository
         }
     }
 
-    public async Task Create(Appointment appointment)
+    public async Task<bool> Create(Appointment appointment)
     {
         try
         {
             _db.Appointments.Add(appointment);
             await _db.SaveChangesAsync();
+            return true;
         }
         catch (Exception e)
         {
             _logger.LogError("[AppointmentRepository] appointment creation failed for appointment {@appointment}, error message: {e}", appointment, e.Message);
-            throw;
+            return false;
         }
     }
 
-    public async Task Update(Appointment appointment)
+    public async Task<bool> Update(Appointment appointment)
     {
         try
         {
             _db.Appointments.Update(appointment);
             await _db.SaveChangesAsync();
+            return true;
         }
         catch (Exception e)
         {
             _logger.LogError("[AppointmentRepository] appointment FindAsync(id) failed when updating the AppointmentId {AppointmentId:0000}, error message: {e}", appointment.AppointmentId, e.Message);
-            throw;
+            return false;
         }
     }
 

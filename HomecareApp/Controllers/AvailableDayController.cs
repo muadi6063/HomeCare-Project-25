@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using HomeCareApp.Models;
 using HomeCareApp.ViewModels;
 using HomeCareApp.DAL;
 using HomeCareApp.DTOs;
-using Microsoft.AspNetCore.Http.Connections;
-using System.Security.Cryptography.X509Certificates;
 
 
 namespace HomeCareApp.Controllers;
@@ -83,7 +80,7 @@ public class AvailableDayAPIController : ControllerBase
         bool returnOk = await _availableDayRepository.Create(newAvailableDay);
         if (returnOk)
         {
-            return CreatedAtAction(nameof(AvailableDaysList), new { id = newAvailableDay.AvailableDayId }, newAvailableDay);
+            return CreatedAtAction(nameof(GetAvailableDay), new { id = newAvailableDay.AvailableDayId }, newAvailableDay);
         }
 
         _logger.LogWarning("[AvailableDayAPIController] availableday creation failed {@availableDay}", newAvailableDay);

@@ -5,7 +5,7 @@ namespace HomeCareApp.DAL;
     {
         Task<IEnumerable<Appointment>?> GetAll();
         Task<Appointment?> GetAppointmentById(int id);
-        Task Create(Appointment appointment);
-        Task Update(Appointment appointment);
+        Task<bool> Create(Appointment appointment);
+        Task<bool> Update(Appointment appointment);
         Task<bool> Delete(int id);
     }
