@@ -27,3 +27,8 @@ export interface UserDto {
   email: string;
   role: string;
 }
+
+export interface AvailableDaysGrouped {
+  healthcarePersonnel: UserDto;
+  availableDays: AvailableDayDto[];
+}

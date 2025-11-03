@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 
 const AppNavbar: React.FC = () => {
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" className="sticky-top">
-      <Container>
+    <Navbar bg="dark" variant="dark" expand="lg" fixed="top" className="shadow-sm">
+      <Container fluid className="px-3">
         <Navbar.Brand as={Link} to="/">HomeCare SPA</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

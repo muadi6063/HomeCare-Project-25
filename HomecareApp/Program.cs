@@ -35,6 +35,7 @@ var loggerConfiguration = new LoggerConfiguration()
                             e.Level == LogEventLevel.Information &&
                             e.MessageTemplate.Text.Contains("Executed DbCommand"));
 
+Directory.CreateDirectory("APILogs");
 var logger = loggerConfiguration.CreateLogger();
 builder.Logging.AddSerilog(logger);
 
