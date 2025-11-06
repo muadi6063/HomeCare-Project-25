@@ -7,7 +7,7 @@ public class Appointment
     public int AppointmentId { get; set; }
 
     [Required(ErrorMessage = "Client is required")]
-    public int ClientId { get; set; }
+    public string ClientId { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Available day is required")]
     public int AvailableDayId { get; set; }

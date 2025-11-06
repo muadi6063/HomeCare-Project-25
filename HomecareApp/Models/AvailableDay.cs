@@ -7,7 +7,7 @@ public class AvailableDay
     public int AvailableDayId { get; set; }
 
     [Required(ErrorMessage = "Healthcare personell is required")]
-    public int HealthcarePersonnelId { get; set; }
+    public string HealthcarePersonnelId { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Date is required")]
     [DataType(DataType.Date)]

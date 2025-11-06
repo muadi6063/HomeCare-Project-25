@@ -7,7 +7,7 @@ public class AvailableDayDto
     public int AvailableDayId { get; set; }
 
     [Required(ErrorMessage = "Healthcare personell is required")]
-    public int HealthcarePersonnelId { get; set; }
+    public string HealthcarePersonnelId { get; set; } = string.Empty;
     public string? HealthcarePersonnelName { get; set; }
     public string? HealthcarePersonnelEmail { get; set; }
 

@@ -5,9 +5,9 @@ namespace HomeCareApp.DTOs;
 public class AppointmentDto
 {
     public int AppointmentId { get; set; }
-    
+
     [Required(ErrorMessage = "Client is required")]
-    public int ClientId { get; set; }
+    public string ClientId { get; set; } = string.Empty;
     public string? ClientName { get; set; }
     public string? ClientEmail { get; set; }
     

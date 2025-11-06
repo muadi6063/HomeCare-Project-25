@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;  
 using HomeCareApp.Models;
-using HomeCareApp.ViewModels;
 using HomeCareApp.DAL;
 using HomeCareApp.DTOs;
 
@@ -11,15 +11,21 @@ namespace HomeCareApp.Controllers;
 public class UserAPIController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
+    private readonly UserManager<User> _userManager;
     private readonly ILogger<UserAPIController> _logger;
 
-    public UserAPIController(IUserRepository userRepository, ILogger<UserAPIController> logger)
+    public UserAPIController(
+        IUserRepository userRepository, 
+        UserManager<User> userManager, 
+        ILogger<UserAPIController> logger)
     {
         _userRepository = userRepository;
+        _userManager = userManager;
         _logger = logger;
     }
+
     [HttpGet("userlist")]
-    public async Task<IActionResult> UserList()
+    public async Task<IActionResult> UsersList()
     {
         var users = await _userRepository.GetAll();
         if (users == null)
@@ -27,17 +33,25 @@ public class UserAPIController : ControllerBase
             _logger.LogError("[UserApiController] User list not found while executing _userRepository.GetAll()");
             return NotFound("User list not found");
         }
-        var dtos = users.Select(u => new UserDto
+
+        var dtos = new List<UserDto>();
+        foreach (var u in users)
         {
-            UserId = u.UserId,
-            Name = u.Name,
-            Email = u.Email,
-            Role = u.Role
-        });
+            var roles = await _userManager.GetRolesAsync(u);
+            dtos.Add(new UserDto
+            {
+                UserId = u.Id,
+                Name = u.Name,
+                Email = u.Email ?? "Unknown Email",  
+                Role = roles.FirstOrDefault() ?? "Unkown Role"
+            });
+        }
+
         return Ok(dtos);
     }
+
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUser(int id)
+    public async Task<IActionResult> GetUser(string id)
     {
         var user = await _userRepository.GetUserById(id);
         if (user == null)
@@ -46,36 +60,20 @@ public class UserAPIController : ControllerBase
             return NotFound("User not found");
         }
 
+        var roles = await _userManager.GetRolesAsync(user);
         var dto = new UserDto
         {
-            UserId = user.UserId,
+            UserId = user.Id, 
             Name = user.Name,
-            Email = user.Email,
-            Role = user.Role
+            Email = user.Email ?? "Unknown Email", 
+            Role = roles.FirstOrDefault() ?? "Unknown Role"
         };
 
         return Ok(dto);
     }
-    [HttpPost("create")]
-    public async Task<IActionResult> Create([FromBody] UserDto dto)
-    {
-        if (dto == null) return BadRequest("User cannot be null");
 
-        var entity = new User
-        {
-            Name = dto.Name,
-            Email = dto.Email,
-            Role = dto.Role
-        };
-        bool ok = await _userRepository.Create(entity);
-        if (ok)
-            return CreatedAtAction(nameof(GetUser), new { id = entity.UserId }, entity);
-
-        _logger.LogWarning("[UserAPIController] User creation failed {@user}", entity);
-        return StatusCode(500, "Internal Server error");
-    }
     [HttpPut("update/{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UserDto dto)
+    public async Task<IActionResult> Update(string id, [FromBody] UserDto dto)
     {
         if (dto == null)
             return BadRequest("User data cannot be null");
@@ -86,27 +84,43 @@ public class UserAPIController : ControllerBase
 
         existing.Name = dto.Name;
         existing.Email = dto.Email;
-        existing.Role = dto.Role;
+        existing.UserName = dto.Email; 
 
-        bool success = await _userRepository.Update(existing);
-        if (!success)
+        var result = await _userManager.UpdateAsync(existing);
+        if (!result.Succeeded)
         {
-            _logger.LogWarning("[UserAPIController] Failed to update user {@user}", existing);
+            _logger.LogWarning("[UserAPIController] Failed to update user {@errors}", result.Errors);
             return StatusCode(500, "Internal server error");
         }
 
-        return Ok(existing);
+        if (!string.IsNullOrEmpty(dto.Role))
+        {
+            var currentRoles = await _userManager.GetRolesAsync(existing);
+            await _userManager.RemoveFromRolesAsync(existing, currentRoles);
+            await _userManager.AddToRoleAsync(existing, dto.Role);
+        }
+
+        return Ok(dto);
     }
+
     [HttpDelete("delete/{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(string id) 
     {
-        bool success = await _userRepository.Delete(id);
-        if (!success)
+        var user = await _userRepository.GetUserById(id);
+        if (user == null)
         {
             _logger.LogError("[UserAPIController] Failed to delete user with id {UserId}", id);
             return NotFound($"User {id} not found");
         }
+
+        // ← CHANGED: Use UserManager for delete
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+        {
+            _logger.LogError("[UserAPIController] Delete failed {@errors}", result.Errors);
+            return StatusCode(500, "Delete failed");
+        }
+
         return NoContent();
     }
-
 }
