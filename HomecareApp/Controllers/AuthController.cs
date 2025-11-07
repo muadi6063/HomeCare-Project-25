@@ -38,7 +38,7 @@ public class AuthAPIController : ControllerBase
 
         var user = new User
         {
-            UserName = registerDto.Username,
+            UserName = registerDto.Email,
             Email = registerDto.Email
         };
 
@@ -46,6 +46,7 @@ public class AuthAPIController : ControllerBase
 
         if (result.Succeeded)
         {
+            await _userManager.AddToRoleAsync(user, "Client");
             _logger.LogInformation($"User registered: {user.UserName}");
             return Ok(new { message = "User registered successfully" });
         }
@@ -63,7 +64,15 @@ public class AuthAPIController : ControllerBase
         {
             _logger.LogInformation("[AuthAPIController] User logged in: {@username}", loginDto.Username);
             var token = GenerateJwtToken(user);
-            return Ok(new { token });
+            var roles = await _userManager.GetRolesAsync(user);
+
+
+            return Ok(new
+            {
+                token,
+                email = user.Email,
+                roles = roles
+            });
         }
         _logger.LogWarning("Invalid login for {username}", loginDto.Username);
         return Unauthorized(new { message = "Invalid username or password" });
@@ -79,7 +88,21 @@ public class AuthAPIController : ControllerBase
         return Ok(new { message = "Logout successful" });
     }
 
-    private string GenerateJwtToken(User user)
+    [HttpPost("ResetPassword")] // Dobbeltsjekk denne metoden
+    public async Task<IActionResult> ResetPassword(string userId, string token, string newPassword)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return NotFound("User not found");
+
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        if (result.Succeeded)
+            return Ok(new { message = "Password set successfully" });
+
+        return BadRequest(result.Errors);
+    }
+
+
+    private async Task<string> GenerateJwtToken(User user)
     {
         var secret = _configuration["JwtSettings:SecretKey"];
         if (string.IsNullOrEmpty(secret))
@@ -90,14 +113,22 @@ public class AuthAPIController : ControllerBase
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var roles = await _userManager.GetRolesAsync(user);
 
-        var claims = new[]
+
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName ??""),
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim("uid", user.Id)
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
         var token = new JwtSecurityToken(
             issuer: _configuration["JwtSettings:Issuer"],
             audience: _configuration["JwtSettings:Audience"],

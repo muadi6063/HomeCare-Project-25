@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using HomeCareApp.Models;
 using HomeCareApp.DAL;
-using HomeCareApp.DTOs; 
+using HomeCareApp.DTOs;
+
+namespace HomeCareApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -9,18 +11,12 @@ public class AppointmentAPIController : Controller
 {
     private readonly ILogger<AppointmentAPIController> _logger;
     private readonly IAppointmentRepository _appointmentRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly IAvailableDayRepository _availableDayRepository;
     
     public AppointmentAPIController(
         IAppointmentRepository appointmentRepository, 
-        IUserRepository userRepository,
-        IAvailableDayRepository availableDayRepository,
         ILogger<AppointmentAPIController> logger)
     {
         _appointmentRepository = appointmentRepository;
-        _userRepository = userRepository;
-        _availableDayRepository = availableDayRepository;
         _logger = logger;
     }
     [HttpGet("appointmentlist")]

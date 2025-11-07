@@ -1,1 +1,0 @@
-// For authentication senere. Se uke 11 og uke 7

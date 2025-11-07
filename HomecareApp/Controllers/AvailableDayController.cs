@@ -14,14 +14,12 @@ public class AvailableDayAPIController : ControllerBase
 {
     
     private readonly IAvailableDayRepository _availableDayRepository;
-    private readonly IUserRepository _userRepository;
     private readonly ILogger<AvailableDayAPIController> _logger;
     private readonly UserManager<User> _userManager;
 
-    public AvailableDayAPIController(IAvailableDayRepository availableDayRepository, IUserRepository userRepository, ILogger<AvailableDayAPIController> logger, UserManager<User> userManager)
+    public AvailableDayAPIController(IAvailableDayRepository availableDayRepository, ILogger<AvailableDayAPIController> logger, UserManager<User> userManager)
     {
         _availableDayRepository = availableDayRepository;
-        _userRepository = userRepository;
         _logger = logger;
         _userManager = userManager;
     }

@@ -96,7 +96,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAvailableDayRepository, AvailableDayRepository>();
 

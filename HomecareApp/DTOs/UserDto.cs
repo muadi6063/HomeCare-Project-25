@@ -4,7 +4,7 @@ namespace HomeCareApp.DTOs;
 
 public class UserDto
 {
-    public string UserId { get; set; } = string.Empty;
+    public string? UserId { get; set; }
 
     [Required(ErrorMessage = "Name is required")]
     [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
