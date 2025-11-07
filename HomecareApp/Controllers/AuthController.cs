@@ -63,7 +63,7 @@ public class AuthAPIController : ControllerBase
         if (user != null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
         {
             _logger.LogInformation("[AuthAPIController] User logged in: {@username}", loginDto.Username);
-            var token = GenerateJwtToken(user);
+            var token = await GenerateJwtToken(user);
             var roles = await _userManager.GetRolesAsync(user);
 
 

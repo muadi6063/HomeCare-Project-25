@@ -9,27 +9,53 @@ import AppointmentsPage from './pages/AppointmentsPage.tsx';
 import AppointmentCreatePage from "./pages/AppointmentCreatePage";
 import AppointmentDeletePage from "./pages/AppointmentDeletePage";
 
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+
 const App: React.FC = () => {
-  // AuthProvider (for Context) kommer i Steg F5
   return (
     <Router>
-      <div className="d-flex flex-column min-vh-100">
-        <AppNavbar /> 
-        <main className="flex-grow-1 container-lg">
-          <Routes>
-            {/* Offentlige Ruter */}
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/availabledays" element={<AvailableDaysPage />} />
-            <Route path="/appointments" element={<AppointmentsPage />} />
-            <Route path="/appointments/create" element={<AppointmentCreatePage />} />
-            <Route path="/appointments/delete/:id" element={<AppointmentDeletePage />} />
+      <AuthProvider>
+        <div className="d-flex flex-column min-vh-100">
+          <AppNavbar /> 
+          <main className="flex-grow-1 container-lg">
+            <Routes>
+              {/* Public pages */}
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/availabledays" element={<AvailableDaysPage />} />
 
-            {/* Beskyttede Ruter (ProtectedRoute) kommer i Steg F5/F8 */}
+              {/* Protected routes */}
+              <Route
+                path="/appointments"
+                element={
+                  <ProtectedRoute roles={['Admin', 'HealthcarePersonnel']}>
+                    <AppointmentsPage />
+                  </ProtectedRoute>
+                }
+              />
 
-          </Routes>
-        </main>
-      </div>
+              <Route
+                path="/appointments/create"
+                element={
+                  <ProtectedRoute roles={['HealthcarePersonnel', 'Admin']}>
+                    <AppointmentCreatePage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/appointments/delete/:id"
+                element={
+                  <ProtectedRoute roles={['Admin']}>
+                    <AppointmentDeletePage />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </main>
+        </div>
+      </AuthProvider>
     </Router>
   );
 };

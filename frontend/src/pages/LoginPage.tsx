@@ -1,12 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Alert, Button, Card, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-const Home: React.FC = () => {
+const LoginPage: React.FC = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setBusy(true);
+    try {
+      await login({ email, password });
+      navigate('/');
+    } catch (err: any) {
+      setError(err?.message ?? 'Login failed');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <div className="mt-5">
-      <h1>Velkommen til Login page</h1>
-      <p>Hei</p>
+    <div className="d-flex justify-content-center mt-5">
+      <Card style={{ maxWidth: 420, width: '100%' }}>
+        <Card.Body>
+          <Card.Title className="mb-3">Login</Card.Title>
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Form onSubmit={onSubmit}>
+            <Form.Group className="mb-3" controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                autoComplete="username"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </Form.Group>
+            <div className="d-grid">
+              <Button type="submit" disabled={busy}>
+                {busy ? 'Logging in…' : 'Login'}
+              </Button>
+            </div>
+          </Form>
+        </Card.Body>
+      </Card>
     </div>
   );
 };
 
-export default Home;
+export default LoginPage;
