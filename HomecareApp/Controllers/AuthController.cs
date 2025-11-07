@@ -47,10 +47,10 @@ public class AuthAPIController : ControllerBase
         if (result.Succeeded)
         {
             await _userManager.AddToRoleAsync(user, "Client");
-            _logger.LogInformation($"User registered: {user.UserName}");
+            _logger.LogInformation("User registered:", registerDto.Username);
             return Ok(new { message = "User registered successfully" });
         }
-
+        _logger.LogWarning("Invalid registration for {username}", registerDto.Username);
         return BadRequest(result.Errors);
     }
 
@@ -84,7 +84,7 @@ public class AuthAPIController : ControllerBase
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        _logger.LogInformation($"User logged out: {User.Identity?.Name}");
+        _logger.LogInformation("User logged out: ", User.Identity?.Name);
         return Ok(new { message = "Logout successful" });
     }
 
@@ -97,7 +97,8 @@ public class AuthAPIController : ControllerBase
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
         if (result.Succeeded)
             return Ok(new { message = "Password set successfully" });
-
+        
+        _logger.LogWarning("Failed setting password for {Username}", user.UserName);
         return BadRequest(result.Errors);
     }
 
@@ -136,6 +137,7 @@ public class AuthAPIController : ControllerBase
             expires: DateTime.UtcNow.AddHours(3),
             signingCredentials: creds
         );
+        _logger.LogInformation("[AuthAPIController] JWT token created for {@username}", user.UserName);
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
