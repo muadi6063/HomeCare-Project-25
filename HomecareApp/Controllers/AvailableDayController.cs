@@ -3,6 +3,7 @@ using HomeCareApp.Models;
 using HomeCareApp.DAL;
 using HomeCareApp.DTOs;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace HomeCareApp.Controllers;
@@ -25,6 +26,7 @@ public class AvailableDayAPIController : ControllerBase
     }
 
     [HttpGet("availableDaysList")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel")]
     public async Task<IActionResult> AvailableDaysList()
     {
         var availableDays = await _availableDayRepository.GetAll();
@@ -69,6 +71,7 @@ public class AvailableDayAPIController : ControllerBase
     }
 
     [HttpPost("create")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel")]
     public async Task<IActionResult> Create([FromBody] AvailableDayDto availableDayDto)
     {
 
@@ -96,6 +99,7 @@ public class AvailableDayAPIController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel")]
     public async Task<IActionResult> GetAvailableDay(int id)
     {
         var availableDay = await _availableDayRepository.GetAvailableDayById(id);
@@ -108,6 +112,7 @@ public class AvailableDayAPIController : ControllerBase
     }
 
     [HttpPut("update/{id}")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel")]
     public async Task<IActionResult> Update(int id, [FromBody] AvailableDayDto availableDayDto)
     {
         if (availableDayDto == null)
@@ -137,6 +142,7 @@ public class AvailableDayAPIController : ControllerBase
         return StatusCode(500, "Internal server error");
     }
     [HttpDelete("delete/{id}")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         bool returnOk = await _availableDayRepository.Delete(id);

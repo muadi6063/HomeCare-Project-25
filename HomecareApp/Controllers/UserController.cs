@@ -5,6 +5,7 @@ using HomeCareApp.DAL;
 using HomeCareApp.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace HomeCareApp.Controllers;
@@ -28,6 +29,7 @@ public class UserAPIController : ControllerBase
     }
 
     [HttpGet("userlist")]
+    [Authorize(Roles = "Admin, HealthcarePersonnel")]
     public async Task<IActionResult> UsersList()
     {
         var users = await _userManager.Users.ToListAsync();
@@ -54,6 +56,7 @@ public class UserAPIController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin, HealthcarePersonnel")]
     public async Task<IActionResult> GetUser(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
@@ -74,8 +77,9 @@ public class UserAPIController : ControllerBase
 
         return Ok(dto);
     }
-    
+
     [HttpPost("create")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] UserDto dto)
     {
         if (!ModelState.IsValid)
@@ -136,6 +140,7 @@ public class UserAPIController : ControllerBase
     }
 
     [HttpPut("update/{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(string id, [FromBody] UserDto dto)
     {
         if (dto == null)
@@ -172,6 +177,7 @@ public class UserAPIController : ControllerBase
     }
 
     [HttpDelete("delete/{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
