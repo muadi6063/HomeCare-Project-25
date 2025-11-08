@@ -28,6 +28,8 @@ class ApiService {
         
         if (res.status === 401) {
           // her kan vi lage outo logout
+          // localStorage.removeItem("token");
+          // window.location.href = "/login";
         }
         throw err;
       }

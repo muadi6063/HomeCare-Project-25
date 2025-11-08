@@ -1,38 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import ApiService from "../services/ApiService";
+import type { AppointmentDto } from "../types/homecare";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
-const handleResponse = async (r: Response) => {
-  if (!r.ok) throw new Error((await r.text()) || "Network error");
-  if (r.status === 204) return null;
-  return r.json();
-};
-
-const getAppointment = async (id: number) => {
-  const res = await fetch(`${API_URL}/api/appointmentapi/${id}`);
-  return handleResponse(res);
-};
-
-const deleteAppointment = async (id: number) => {
-  const res = await fetch(`${API_URL}/api/appointmentapi/delete/${id}`, {
-    method: "DELETE",
-  });
-  return handleResponse(res);
-};
-
-type Appointment = {
-  appointmentId: number;
-  clientId: number;
-  availableDayId: number;
-  notes?: string | null;
-};
+const hhmm = (s?: string | null) => (s ?? "").split(":").slice(0, 2).join(":");
 
 const AppointmentDeletePage: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const nav = useNavigate();
 
-  const [item, setItem] = useState<Appointment | null>(null);
+  const [item, setItem] = useState<AppointmentDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -40,7 +17,7 @@ const AppointmentDeletePage: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const appt = await getAppointment(Number(id));
+        const appt = await ApiService.get<AppointmentDto>(`/AppointmentAPI/${id}`);
         setItem(appt);
       } catch (e: any) {
         setErr(e?.message ?? "Kunne ikke hente avtale");
@@ -50,33 +27,36 @@ const AppointmentDeletePage: React.FC = () => {
     })();
   }, [id]);
 
-  const onDelete = async () => {
-    setDeleting(true);
+  async function onDelete() {
     setErr(null);
     try {
-      await deleteAppointment(Number(id));
+      setDeleting(true);
+      await ApiService.delete(`/AppointmentAPI/delete/${id}`);
       nav("/appointments");
     } catch (e: any) {
       setErr(e?.message ?? "Sletting feilet");
     } finally {
       setDeleting(false);
     }
-  };
+  }
 
-  if (loading) return <div className="mt-5">Laster…</div>;
-  if (err) return <div className="mt-5" style={{ color: "red" }}>{err}</div>;
-  if (!item) return <div className="mt-5">Fant ikke avtale.</div>;
+  if (loading) return <div className="container-lg mt-5">Laster…</div>;
+  if (err) return <div className="container-lg mt-5 text-danger">{err}</div>;
+  if (!item) return <div className="container-lg mt-5">Fant ikke avtale.</div>;
 
   return (
-    <div className="mt-4">
+    <div className="container-lg mt-4" style={{ maxWidth: 640 }}>
       <h2>Slett avtale</h2>
       <p>Er du sikker på at du vil slette denne?</p>
 
       <ul>
         <li><b>ID:</b> {item.appointmentId}</li>
-        <li><b>ClientId:</b> {item.clientId}</li>
-        <li><b>AvailableDayId:</b> {item.availableDayId}</li>
-        {item.notes && <li><b>Notater:</b> {item.notes}</li>}
+        <li><b>Klient:</b> {item.clientName ?? "ukjent"} ({item.clientEmail ?? "–"})</li>
+        <li>
+          <b>Tid:</b> {item.availableDayDate ? new Date(item.availableDayDate).toLocaleDateString("no-NO") : "—"}{" "}
+          {hhmm(item.startTime)}–{hhmm(item.endTime)}
+        </li>
+        <li><b>Oppgave:</b> {item.taskDescription || "—"}</li>
       </ul>
 
       <button className="btn btn-danger" onClick={onDelete} disabled={deleting}>

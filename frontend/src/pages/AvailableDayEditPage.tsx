@@ -1,0 +1,134 @@
+import React, { useEffect, useState } from "react";
+import { Form, Button, Alert } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
+import ApiService from "../services/ApiService";
+import { useAuth } from "../context/AuthContext";
+
+type AvailableDayDto = {
+  availableDayId: number;
+  healthcarePersonnelId: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+};
+
+const hhmm = (s: string) => (s ?? "").split(":").slice(0, 2).join(":");
+const hhmmss = (s: string) => (s.includes(":") ? `${s}:00` : s);
+
+const AvailableDayEditPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { role } = useAuth() as { role?: string };
+
+  const [model, setModel] = useState<AvailableDayDto | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  const canEdit = role === "Admin" || role === "HealthcarePersonnel";
+
+  useEffect(() => {
+    async function load() {
+      try {
+        setError("");
+        const data = await ApiService.get<AvailableDayDto>(`/AvailableDayAPI/${id}`);
+        setModel({
+          ...data,
+          date: data.date.split("T")[0],
+          startTime: hhmm(data.startTime),
+          endTime: hhmm(data.endTime),
+        });
+      } catch {
+        setError("Kunne ikke laste tilgjengelig dag.");
+      }
+    }
+
+    load();
+  }, [id]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!model) return;
+
+    if (!model.date || !model.startTime || !model.endTime) {
+      setError("Alle felt må fylles ut.");
+      return;
+    }
+    if (hhmmss(model.endTime) <= hhmmss(model.startTime)) {
+      setError("Sluttid må være etter starttid.");
+      return;
+    }
+
+    try {
+      setBusy(true);
+      await ApiService.put(`/AvailableDayAPI/update/${id}`, {
+        healthcarePersonnelId: model.healthcarePersonnelId, // unchanged
+        date: model.date,
+        startTime: hhmmss(model.startTime),
+        endTime: hhmmss(model.endTime),
+      });
+      navigate("/availabledays");
+    } catch {
+      setError("Oppdatering feilet.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!canEdit) return <Alert variant="warning" className="mt-4">Ingen tilgang</Alert>;
+  if (!model) return <div className="container mt-4">Laster…</div>;
+
+  return (
+    <div className="container mt-4">
+      <h2>Rediger tilgjengelig dag</h2>
+
+      {error && <Alert variant="danger">{error}</Alert>}
+
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label>HealthcarePersonnelId</Form.Label>
+          <Form.Control value={model.healthcarePersonnelId} disabled />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Dato</Form.Label>
+          <Form.Control
+            type="date"
+            value={model.date}
+            onChange={(e) => setModel({ ...model, date: e.target.value })}
+            required
+            disabled={busy}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Starttid</Form.Label>
+          <Form.Control
+            type="time"
+            value={model.startTime}
+            onChange={(e) => setModel({ ...model, startTime: e.target.value })}
+            required
+            disabled={busy}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Sluttid</Form.Label>
+          <Form.Control
+            type="time"
+            value={model.endTime}
+            onChange={(e) => setModel({ ...model, endTime: e.target.value })}
+            required
+            disabled={busy}
+          />
+        </Form.Group>
+
+        <Button type="submit" disabled={busy}>Lagre</Button>{" "}
+        <Button variant="secondary" onClick={() => navigate("/availabledays")} disabled={busy}>
+          Avbryt
+        </Button>
+      </Form>
+    </div>
+  );
+};
+
+export default AvailableDayEditPage;

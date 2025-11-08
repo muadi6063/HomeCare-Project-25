@@ -5,14 +5,20 @@ export interface LoginRequest {
   password: string;
 }
 
+function pickUserId(d: any) {
+  return (
+    d?.nameid ??
+    d?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] ??
+    d?.uid ??
+    null
+  );
+}
+
 export async function loginApi({ email, password }: LoginRequest) {
   const res = await fetch("/api/AuthAPI/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: email,
-      password: password
-    }),
+    body: JSON.stringify({ username: email, password }),
   });
 
   if (!res.ok) {
@@ -21,22 +27,26 @@ export async function loginApi({ email, password }: LoginRequest) {
   }
 
   const data = await res.json();
-  const token = data.token;
+  const token: string = data.token;
 
-  const decoded: any = jwtDecode(token);
-  const emailFromToken = decoded.email;
+  // Dekode for å hente e-post, rolle og userId
+  const d: any = jwtDecode(token);
+  const emailFromToken = d?.email ?? null;
   const roleFromToken =
-  decoded?.role ??
-  decoded?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ??
-  null;
+    d?.role ??
+    d?.roles ??
+    (Array.isArray(data.roles) ? data.roles[0] : data.roles) ??
+    null;
 
+  const userIdFromToken = pickUserId(d);
 
   localStorage.setItem("token", token);
 
   return {
     token,
     email: emailFromToken,
-    role: roleFromToken,
+    role: Array.isArray(roleFromToken) ? roleFromToken[0] : roleFromToken,
+    userId: userIdFromToken,
   };
 }
 

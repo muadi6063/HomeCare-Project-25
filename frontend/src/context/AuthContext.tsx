@@ -7,33 +7,47 @@ interface AuthContextValue {
   email: string | null;
   role: string | null;
   token: string | null;
+  userId: string | null;
   login: (req: LoginRequest) => Promise<void>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+function pickUserId(d: any) {
+  return (
+    d?.nameid ??
+    d?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] ??
+    d?.uid ??
+    null
+  );
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
   const [email, setEmail] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null); // ← NY
 
   useEffect(() => {
     if (!token) return;
 
     try {
-      const decoded: any = jwtDecode(token);
-      setEmail(decoded.email ?? null);
+      const d: any = jwtDecode(token);
+      setEmail(d?.email ?? null);
       setRole(
-        decoded.role ??
-        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ??
-        null
+        d?.role ??
+          d?.roles ??
+          d?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ??
+          null
       );
+      setUserId(pickUserId(d));
     } catch {
       logoutApi();
       setToken(null);
       setEmail(null);
       setRole(null);
+      setUserId(null);
     }
   }, [token]);
 
@@ -42,6 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(result.token);
     setEmail(result.email);
     setRole(result.role);
+    setUserId(result.userId);
   }
 
   function logout() {
@@ -49,6 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(null);
     setEmail(null);
     setRole(null);
+    setUserId(null);
   }
 
   const value = useMemo(
@@ -57,10 +73,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       token,
       email,
       role,
+      userId,
       login,
-      logout
+      logout,
     }),
-    [token, email, role]
+    [token, email, role, userId]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
