@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization; 
+using System.Security.Claims;
 using HomeCareApp.Models;
 using HomeCareApp.DAL;
 using HomeCareApp.DTOs;
@@ -11,6 +13,11 @@ public class AppointmentAPIController : Controller
 {
     private readonly ILogger<AppointmentAPIController> _logger;
     private readonly IAppointmentRepository _appointmentRepository;
+    private bool IsClientAccessingOthers(string ownerId)
+    {
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return User.IsInRole("Client") && currentUserId != ownerId;
+    }
     
     public AppointmentAPIController(
         IAppointmentRepository appointmentRepository, 
@@ -20,11 +27,19 @@ public class AppointmentAPIController : Controller
         _logger = logger;
     }
     [HttpGet("appointmentlist")]
+    [Authorize(Roles = "Admin,Healthcarepersonnel,Client")]
     public async Task<IActionResult> AppointmentList(){
         var appointments = await _appointmentRepository.GetAll();
-        if (appointments == null){
+        if (appointments == null)
+        {
             _logger.LogError("[AppointmentAPI] Appointment list not found while executing _appointmentRepository.GetAll()");
             return NotFound("Appointment list not found");
+        }
+        if (User.IsInRole("Client"))
+        {
+        appointments = appointments
+            .Where(a => !IsClientAccessingOthers(a.ClientId)) // ← her brukes metoden din
+            .ToList();
         }
 
         var dtos = appointments.Select(a =>  new AppointmentDto{
@@ -42,10 +57,27 @@ public class AppointmentAPIController : Controller
 
         return  Ok(dtos);
     }
+
     [HttpPost("create")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
     public async Task<IActionResult> Create([FromBody] AppointmentDto dto){
+        
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (dto == null)
-        return BadRequest("Appointment cannot be null");
+            return BadRequest("Appointment cannot be null");
+        
+         if (User.IsInRole("Client"))
+    {
+        if (IsClientAccessingOthers(dto.ClientId))
+        {
+            _logger.LogWarning("Client {UserId} attempted to create appointment for another user {TargetUserId}",
+                currentUserId, dto.ClientId);
+            return Forbid(); // ev. return NotFound() hvis du vil skjule at bruker/ressurs finnes
+        }
+
+        // Overstyr for sikkerhet – en Client kan ikke sette andres ID
+        dto.ClientId = currentUserId;
+    }
 
         var newAppointment = new Appointment
         {
@@ -69,6 +101,7 @@ public class AppointmentAPIController : Controller
 
     }
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
     public async Task<IActionResult> GetAppointment(int id)
     {
           var appointment = await _appointmentRepository.GetAppointmentById(id);
@@ -77,7 +110,12 @@ public class AppointmentAPIController : Controller
             _logger.LogError("[AppointmentAPIController] Appointment not found for the AppointmentId {AppointmentId:0000}", id);
             return NotFound("Appointment not found for the AppointmentId");
         }
-
+        if (IsClientAccessingOthers(appointment.ClientId))
+        {
+            _logger.LogWarning("Client {UserId} attempted to access appointment {AppointmentId} not theirs",
+                User.FindFirstValue(ClaimTypes.NameIdentifier), id);
+            return Forbid(); // evt. NotFound()
+        }
         var dto = new AppointmentDto
         {
             AppointmentId = appointment.AppointmentId,
@@ -92,9 +130,11 @@ public class AppointmentAPIController : Controller
             TaskDescription = appointment.TaskDescription
         };
 
-        return Ok(dto);
+        // ... map til DTO og returner ...
+        return Ok(appointment);
     }
     [HttpPut("update/{id}")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
     public async Task<IActionResult> Update(int id, [FromBody] AppointmentDto dto)
     {
          if (dto == null)
@@ -103,7 +143,22 @@ public class AppointmentAPIController : Controller
         var existing = await _appointmentRepository.GetAppointmentById(id);
         if (existing == null)
             return NotFound("Appointment not found");
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+    // Klient kan kun oppdatere egne avtaler
+    if (User.IsInRole("Client"))
+    {
+        if (IsClientAccessingOthers(existing.ClientId))
+        {
+            _logger.LogWarning("Client {UserId} attempted to update appointment {AppointmentId} not belonging to them",
+                currentUserId, id);
+            return Forbid(); // eller return NotFound() om du vil skjule eksistens
+        }
+
+        // Overstyr for sikkerhet – Client kan ikke flytte avtalen til en annen bruker
+        dto.ClientId = currentUserId;
+    }    
+        
         existing.ClientId = dto.ClientId;
         existing.AvailableDayId = dto.AvailableDayId;
         existing.StartTime = dto.StartTime;
@@ -120,8 +175,18 @@ public class AppointmentAPIController : Controller
 
     }
     [HttpDelete("delete/{id}")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
+        var appointment = await _appointmentRepository.GetAppointmentById(id);
+        if (appointment == null)
+            return NotFound("Appointment not found");
+        if (IsClientAccessingOthers(appointment.ClientId))
+        {
+            _logger.LogWarning("Client {UserId} attempted to delete appointment {AppointmentId} not theirs",
+                User.FindFirstValue(ClaimTypes.NameIdentifier), id);
+            return Forbid();
+        }
         bool success = await _appointmentRepository.Delete(id);
         if (!success)
         {

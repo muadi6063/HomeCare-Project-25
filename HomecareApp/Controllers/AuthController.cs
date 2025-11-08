@@ -69,9 +69,7 @@ public class AuthAPIController : ControllerBase
 
             return Ok(new
             {
-                token,
-                email = user.Email,
-                roles = roles
+                token
             });
         }
         _logger.LogWarning("Invalid login for {username}", loginDto.Username);

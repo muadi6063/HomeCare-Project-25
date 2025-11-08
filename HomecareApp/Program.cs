@@ -31,7 +31,8 @@ builder.Services.AddSwaggerGen(c =>
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
     });
     
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -91,8 +92,10 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(
-                builder.Configuration["JwtSettings:SecretKey"] ?? throw new InvalidOperationException("JWT key not found in configuration.")
-            ))
+                builder.Configuration["JwtSettings:SecretKey"] ?? throw new InvalidOperationException("JWT key not found in configuration."))
+            ),
+        RoleClaimType = System.Security.Claims.ClaimTypes.Role,
+        NameClaimType = System.Security.Claims.ClaimTypes.NameIdentifier
     };
 });
 
