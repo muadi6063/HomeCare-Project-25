@@ -1,69 +1,106 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { Alert, Button, Container, Card } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
 import ApiService from "../services/ApiService";
+import { useAuth } from "../context/AuthContext";
 import type { AppointmentDto } from "../types/homecare";
 
 const hhmm = (s?: string | null) => (s ?? "").split(":").slice(0, 2).join(":");
 
 const AppointmentDeletePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const nav = useNavigate();
+  const navigate = useNavigate();
+  const { role, userId } = useAuth() as { role?: string; userId?: string | null };
 
   const [item, setItem] = useState<AppointmentDto | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  // Admin kan slette alle, Client kan kun slette sine egne
+  const canDelete = role === "Admin" || 
+    (role === "Client" && item && (item.clientEmail === userId || item.clientId.toString() === userId));
 
   useEffect(() => {
-    (async () => {
+    let cancelled = false;
+
+    async function load() {
       try {
-        const appt = await ApiService.get<AppointmentDto>(`/AppointmentAPI/${id}`);
-        setItem(appt);
-      } catch (e: any) {
-        setErr(e?.message ?? "Kunne ikke hente avtale");
-      } finally {
-        setLoading(false);
+        setError("");
+        const data = await ApiService.get<AppointmentDto>(`/AppointmentAPI/${id}`);
+        if (!cancelled) setItem(data);
+      } catch {
+        if (!cancelled) setError("Kunne ikke laste avtalen.");
       }
-    })();
+    }
+
+    if (id) load();
+    return () => { cancelled = true; };
   }, [id]);
 
-  async function onDelete() {
-    setErr(null);
+  const handleDelete = async () => {
+    setError("");
     try {
-      setDeleting(true);
+      setBusy(true);
       await ApiService.delete(`/AppointmentAPI/delete/${id}`);
-      nav("/appointments");
-    } catch (e: any) {
-      setErr(e?.message ?? "Sletting feilet");
+      navigate("/appointments");
+    } catch {
+      setError("Sletting feilet.");
     } finally {
-      setDeleting(false);
+      setBusy(false);
     }
-  }
+  };
 
-  if (loading) return <div className="container-lg mt-5">Laster…</div>;
-  if (err) return <div className="container-lg mt-5 text-danger">{err}</div>;
-  if (!item) return <div className="container-lg mt-5">Fant ikke avtale.</div>;
+  if (!item) return <Container className="mt-4">Laster…</Container>;
 
   return (
-    <div className="container-lg mt-4" style={{ maxWidth: 640 }}>
+    <Container className="mt-4">
       <h2>Slett avtale</h2>
-      <p>Er du sikker på at du vil slette denne?</p>
 
-      <ul>
-        <li><b>ID:</b> {item.appointmentId}</li>
-        <li><b>Klient:</b> {item.clientName ?? "ukjent"} ({item.clientEmail ?? "–"})</li>
-        <li>
-          <b>Tid:</b> {item.availableDayDate ? new Date(item.availableDayDate).toLocaleDateString("no-NO") : "—"}{" "}
-          {hhmm(item.startTime)}–{hhmm(item.endTime)}
-        </li>
-        <li><b>Oppgave:</b> {item.taskDescription || "—"}</li>
-      </ul>
+      {!canDelete && (
+        <Alert variant="warning" className="mt-3">
+          Du har ikke tilgang til å slette denne avtalen.
+        </Alert>
+      )}
 
-      <button className="btn btn-danger" onClick={onDelete} disabled={deleting}>
-        {deleting ? "Sletter…" : "Slett"}
-      </button>
-      <Link to="/appointments" className="btn btn-secondary ms-2">Avbryt</Link>
-    </div>
+      {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+
+      <Card>
+        <Card.Body>
+          <p className="mb-3">
+            Er du sikker på at du vil slette avtale <strong>#{item.appointmentId}</strong>?
+          </p>
+
+          <div className="mb-3">
+            <strong>Klient:</strong> {item.clientName ?? "Ukjent"} ({item.clientEmail ?? "—"})
+          </div>
+          <div className="mb-3">
+            <strong>Tid:</strong> {item.availableDayDate ? new Date(item.availableDayDate).toLocaleDateString("no-NO") : "—"} {hhmm(item.startTime)}–{hhmm(item.endTime)}
+          </div>
+          <div className="mb-3">
+            <strong>Oppgave:</strong> {item.taskDescription || "—"}
+          </div>
+          <div className="mb-3">
+            <strong>Personell:</strong> {item.healthcarePersonnelName ?? "—"}
+          </div>
+
+          <Button
+            variant="danger"
+            className="me-2"
+            onClick={handleDelete}
+            disabled={!canDelete || busy}
+          >
+            {busy ? "Sletter..." : "Slett"}
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => navigate("/appointments")}
+            disabled={busy}
+          >
+            Avbryt
+          </Button>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };
 

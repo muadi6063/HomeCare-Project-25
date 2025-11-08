@@ -1,137 +1,151 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Form, Button, Alert, Container, Card, Spinner } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
 import ApiService from "../services/ApiService";
-
-type CreateAppointmentDto = {
-  clientId: string;
-  availableDayId: number;
-  startTime: string;
-  endTime: string;
-  taskDescription: string;
-};
-
-const toHHmmss = (v: string) => (v?.includes(":") ? `${v}:00` : v);
+import { useAuth } from "../context/AuthContext";
+import type { AvailableDayDto } from "../types/homecare";
 
 const AppointmentCreatePage: React.FC = () => {
-  const nav = useNavigate();
+  const { availableDayId } = useParams<{ availableDayId: string }>();
+  const navigate = useNavigate();
+  const { email } = useAuth() as { email?: string | null };
 
-  const [clientId, setClientId] = useState<string>("");
-  const [availableDayId, setAvailableDayId] = useState<number | "">("");
-  const [startTime, setStartTime] = useState<string>("");
-  const [endTime, setEndTime] = useState<string>("");
+  const [availableDay, setAvailableDay] = useState<AvailableDayDto | null>(null);
   const [taskDescription, setTaskDescription] = useState<string>("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  // Hent AvailableDay detaljer
+  useEffect(() => {
+    let cancelled = false;
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setErr(null);
-
-    if (!clientId || !availableDayId || !startTime || !endTime) {
-      setErr("Alle påkrevde felter må fylles ut.");
-      return;
+    async function loadAvailableDay() {
+      try {
+        setError("");
+        const data = await ApiService.get<AvailableDayDto>(`/AvailableDayAPI/${availableDayId}`);
+        if (!cancelled) setAvailableDay(data);
+      } catch {
+        if (!cancelled) setError("Kunne ikke laste tilgjengelig dag.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     }
-    if (toHHmmss(endTime) <= toHHmmss(startTime)) {
-      setErr("Sluttid må være etter starttid.");
-      return;
-    }
 
-    const dto: CreateAppointmentDto = {
-      clientId,
-      availableDayId: Number(availableDayId),
-      startTime: toHHmmss(startTime),
-      endTime: toHHmmss(endTime),
-      taskDescription,
+    if (availableDayId) {
+      loadAvailableDay();
+    }
+    return () => {
+      cancelled = true;
     };
+  }, [availableDayId]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    // Validering - som backend forventer
+    if (!taskDescription.trim() || taskDescription.trim().length < 5) {
+      setError("Oppgavebeskrivelse må være minst 5 tegn.");
+      return;
+    }
+    if (taskDescription.trim().length > 500) {
+      setError("Oppgavebeskrivelse kan være maks 500 tegn.");
+      return;
+    }
+
+    if (!availableDayId || !email) {
+      setError("Mangler nødvendig informasjon for booking.");
+      return;
+    }
 
     try {
-      setSaving(true);
+      setBusy(true);
+      // Fiks payload - bruk email som ClientId
+      const dto = {
+        ClientId: email, // Bruk email fra innlogget bruker
+        AvailableDayId: Number(availableDayId),
+        TaskDescription: taskDescription.trim()
+      };
       await ApiService.post("/AppointmentAPI/create", dto);
-      nav("/appointments");
+      navigate("/appointments");
     } catch (e: any) {
-      setErr(e?.message ?? "Kunne ikke opprette avtale");
+      setError(e?.message ?? "Klarte ikke å booke time.");
     } finally {
-      setSaving(false);
+      setBusy(false);
     }
+  };
+
+  if (loading) {
+    return (
+      <Container className="mt-4 text-center">
+        <Spinner animation="border" />
+      </Container>
+    );
   }
 
+  if (!availableDay) {
+    return (
+      <Container className="mt-4">
+        <Alert variant="danger">Kunne ikke finne tilgjengelig dag.</Alert>
+      </Container>
+    );
+  }
+
+  const hhmm = (s: string) => (s ?? "").split(":").slice(0, 2).join(":");
+
   return (
-    <div className="container-lg mt-4" style={{ maxWidth: 520 }}>
-      <h2>Ny avtale</h2>
-      {err && <p className="text-danger mt-2">{err}</p>}
+    <Container className="mt-4">
+      <h2>Book Time</h2>
 
-      <form onSubmit={onSubmit} className="mt-3">
-        <div className="mb-3">
-          <label className="form-label">ClientId (GUID)</label>
-          <input
-            type="text"
-            className="form-control"
-            value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
-            placeholder="f.eks. 84269a9d-5b5e-4169-9da4-fe038de55bd4"
-            required
-          />
-        </div>
+      {error && <Alert variant="danger">{error}</Alert>}
 
-        <div className="mb-3">
-          <label className="form-label">AvailableDayId</label>
-          <input
-            type="number"
-            className="form-control"
-            value={availableDayId}
-            onChange={(e) => setAvailableDayId(e.target.value ? Number(e.target.value) : "")}
-            required
-          />
-        </div>
-
-        <div className="row g-3">
-          <div className="col-md-6">
-            <label className="form-label">Starttid</label>
-            <input
-              type="time"
-              className="form-control"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              required
-            />
+      <Card>
+        <Card.Body>
+          {/* AvailableDay informasjon - readonly */}
+          <div className="mb-4 p-3 bg-light rounded">
+            <h5>Timeinformasjon</h5>
+            <p><strong>Dato:</strong> {new Date(availableDay.date).toLocaleDateString("no-NO")}</p>
+            <p><strong>Tid:</strong> {hhmm(availableDay.startTime)} – {hhmm(availableDay.endTime)}</p>
+            <p><strong>Available Day ID:</strong> {availableDay.availableDayId}</p>
+            <p><strong>Booket av:</strong> {email}</p>
           </div>
-          <div className="col-md-6">
-            <label className="form-label">Sluttid</label>
-            <input
-              type="time"
-              className="form-control"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              required
-            />
-          </div>
-        </div>
 
-        <div className="mb-3 mt-3">
-          <label className="form-label">Oppgave (taskDescription)</label>
-          <textarea
-            className="form-control"
-            rows={3}
-            value={taskDescription}
-            onChange={(e) => setTaskDescription(e.target.value)}
-            placeholder="F.eks. medication reminder …"
-          />
-        </div>
+          <Form onSubmit={handleSubmit}>
+            {/* Kun TaskDescription felt - som backend forventer */}
+            <Form.Group className="mb-3">
+              <Form.Label>Oppgavebeskrivelse *</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={4}
+                value={taskDescription}
+                onChange={(e) => setTaskDescription(e.target.value)}
+                placeholder="Beskriv hva du trenger hjelp med (minst 5 tegn, maks 500 tegn)..."
+                required
+                disabled={busy}
+                minLength={5}
+                maxLength={500}
+              />
+              <Form.Text className="text-muted">
+                {taskDescription.length}/500 tegn (minimum 5 tegn)
+              </Form.Text>
+            </Form.Group>
 
-        <button className="btn btn-primary" disabled={saving}>
-          {saving ? "Lagrer…" : "Opprett"}
-        </button>
-        <button
-          type="button"
-          className="btn btn-secondary ms-2"
-          onClick={() => nav("/appointments")}
-          disabled={saving}
-        >
-          Avbryt
-        </button>
-      </form>
-    </div>
+            <Button type="submit" disabled={busy} variant="success">
+              {busy ? "Booker..." : "Book Time"}
+            </Button>
+            <Button 
+              variant="secondary" 
+              onClick={() => navigate("/appointments")}
+              className="ms-2"
+              disabled={busy}
+            >
+              Avbryt
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };
 

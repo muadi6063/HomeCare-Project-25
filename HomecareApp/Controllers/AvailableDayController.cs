@@ -26,7 +26,7 @@ public class AvailableDayAPIController : ControllerBase
     }
 
     [HttpGet("availableDaysList")]
-    [Authorize(Roles = "Admin,HealthcarePersonnel")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
     public async Task<IActionResult> AvailableDaysList()
     {
         var availableDays = await _availableDayRepository.GetAll();
@@ -99,7 +99,7 @@ public class AvailableDayAPIController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "Admin,HealthcarePersonnel")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
     public async Task<IActionResult> GetAvailableDay(int id)
     {
         var availableDay = await _availableDayRepository.GetAvailableDayById(id);
