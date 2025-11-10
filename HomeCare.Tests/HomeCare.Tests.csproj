@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HomeCareApp\HomecareApp.csproj" />
+    <ProjectReference Include="..\HomeCareApp\HomeCareApp.csproj" />
   </ItemGroup>
 
 </Project>
