@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeCare-Project-25", "HomeCare-Project-25", "{66E2BEA9-2916-4F3E-81F4-F671649F674E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCareApp", "HomeCare-Project-25\HomeCareApp\HomeCareApp.csproj", "{592487E3-532C-4DFA-85E3-D144EFEE3791}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCare.Tests", "HomeCare-Project-25\HomeCare.Tests\HomeCare.Tests.csproj", "{DBA32118-20C5-436A-ABBA-B6AF91986024}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{592487E3-532C-4DFA-85E3-D144EFEE3791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{592487E3-532C-4DFA-85E3-D144EFEE3791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{592487E3-532C-4DFA-85E3-D144EFEE3791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{592487E3-532C-4DFA-85E3-D144EFEE3791}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBA32118-20C5-436A-ABBA-B6AF91986024}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBA32118-20C5-436A-ABBA-B6AF91986024}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBA32118-20C5-436A-ABBA-B6AF91986024}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBA32118-20C5-436A-ABBA-B6AF91986024}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{592487E3-532C-4DFA-85E3-D144EFEE3791} = {66E2BEA9-2916-4F3E-81F4-F671649F674E}
+		{DBA32118-20C5-436A-ABBA-B6AF91986024} = {66E2BEA9-2916-4F3E-81F4-F671649F674E}
+	EndGlobalSection
+EndGlobal
