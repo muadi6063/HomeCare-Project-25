@@ -134,5 +134,73 @@ public class AppointmentControllerTests
         var createdResult = Assert.IsType<CreatedAtActionResult>(result);
         Assert.Equal(nameof(appointmentController.GetAppointment), createdResult.ActionName);
     }
+
+    [Fact]
+    public async Task TestUpdateAppointment_positive()
+    {
+        // Arrange: create test appointment DTO
+        var exisitingAppointment = new Appointment
+        {
+            AppointmentId = 1,
+            ClientId = "client-id",
+            AvailableDayId = 1,
+            StartTime = TimeSpan.FromHours(10),
+            EndTime = TimeSpan.FromHours(11),
+            TaskDescription = "Shopping help"
+        };
+
+        var updatedAppointmentDto = new AppointmentDto
+        {
+            AppointmentId = 1,
+            ClientId = "client-id",
+            AvailableDayId = 2,
+            StartTime = TimeSpan.FromHours(14),
+            EndTime = TimeSpan.FromHours(16),
+            TaskDescription = "Updated shopping help"
+        };
+
+        // Arrange: Mock getAppointmentById
+        var mockAppointmentRepository = new Mock<IAppointmentRepository>();
+        mockAppointmentRepository.Setup(repo => repo.GetAppointmentById(1)).ReturnsAsync(exisitingAppointment);
+
+        // Mock Update
+        mockAppointmentRepository.Setup(repo => repo.Update(It.IsAny<Appointment>())).ReturnsAsync(true);
+
+        // Arrange: set up mock logger
+        var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
+
+        // Arrange: create controller with mocked user
+        var appointmentController = new AppointmentAPIController(
+            mockAppointmentRepository.Object,
+            mockLogger.Object
+        );
+
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, "client-id"),
+            new Claim(ClaimTypes.Role, "Client")
+        }, "mock"));
+
+        appointmentController.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext() { User = user }
+        };
+
+        // Act: call the create method
+        var result = await appointmentController.Update(1, updatedAppointmentDto);
+
+        // Assert: verify it returns HTTP 200 OK
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedAppointment = Assert.IsType<Appointment>(okResult.Value);
+        
+        // Assert: verify the appointment was updated with new data
+        Assert.Equal("Updated shopping help", returnedAppointment.TaskDescription);
+        Assert.Equal(2, returnedAppointment.AvailableDayId);
+        Assert.Equal(TimeSpan.FromHours(14), returnedAppointment.StartTime);
+        
+        // Assert: verify repository methods were called
+        mockAppointmentRepository.Verify(repo => repo.GetAppointmentById(1), Times.Once);
+        mockAppointmentRepository.Verify(repo => repo.Update(It.IsAny<Appointment>()), Times.Once);
+    }
 }
     

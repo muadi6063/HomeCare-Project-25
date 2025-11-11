@@ -38,7 +38,7 @@ public class AppointmentAPIController : Controller
         if (User.IsInRole("Client"))
         {
         appointments = appointments
-            .Where(a => !IsClientAccessingOthers(a.ClientId)) // ← her brukes metoden din
+            .Where(a => !IsClientAccessingOthers(a.ClientId))
             .ToList();
         }
 
@@ -72,16 +72,15 @@ public class AppointmentAPIController : Controller
         {
             _logger.LogWarning("Client {UserId} attempted to create appointment for another user {TargetUserId}",
                 currentUserId, dto.ClientId);
-            return Forbid(); // ev. return NotFound() hvis du vil skjule at bruker/ressurs finnes
+            return Forbid();
         }
 
-        // Overstyr for sikkerhet – en Client kan ikke sette andres ID
-        dto.ClientId = currentUserId;
+        dto.ClientId = currentUserId!;
     }
 
         var newAppointment = new Appointment
         {
-            ClientId = dto.ClientId,
+            ClientId = dto.ClientId!,
             AvailableDayId = dto.AvailableDayId,
             StartTime = dto.StartTime,
             EndTime = dto.EndTime,
@@ -114,7 +113,7 @@ public class AppointmentAPIController : Controller
         {
             _logger.LogWarning("Client {UserId} attempted to access appointment {AppointmentId} not theirs",
                 User.FindFirstValue(ClaimTypes.NameIdentifier), id);
-            return Forbid(); // evt. NotFound()
+            return Forbid();
         }
         var dto = new AppointmentDto
         {
@@ -130,7 +129,6 @@ public class AppointmentAPIController : Controller
             TaskDescription = appointment.TaskDescription
         };
 
-        // ... map til DTO og returner ...
         return Ok(appointment);
     }
     [HttpPut("update/{id}")]
@@ -145,21 +143,19 @@ public class AppointmentAPIController : Controller
             return NotFound("Appointment not found");
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-    // Klient kan kun oppdatere egne avtaler
     if (User.IsInRole("Client"))
     {
         if (IsClientAccessingOthers(existing.ClientId))
         {
             _logger.LogWarning("Client {UserId} attempted to update appointment {AppointmentId} not belonging to them",
                 currentUserId, id);
-            return Forbid(); // eller return NotFound() om du vil skjule eksistens
+            return Forbid();
         }
 
-        // Overstyr for sikkerhet – Client kan ikke flytte avtalen til en annen bruker
-        dto.ClientId = currentUserId;
+        dto.ClientId = currentUserId!;
     }    
         
-        existing.ClientId = dto.ClientId;
+        existing.ClientId = dto.ClientId!;
         existing.AvailableDayId = dto.AvailableDayId;
         existing.StartTime = dto.StartTime;
         existing.EndTime = dto.EndTime;

@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HomeCare-Project-25", "HomeCare-Project-25", "{66E2BEA9-2916-4F3E-81F4-F671649F674E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCareApp", "HomeCareApp\HomeCareApp.csproj", "{0E908AAB-FBB3-455E-915A-600C5D0A5E77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCareApp", "HomeCare-Project-25\HomeCareApp\HomeCareApp.csproj", "{592487E3-532C-4DFA-85E3-D144EFEE3791}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCare.Tests", "HomeCare-Project-25\HomeCare.Tests\HomeCare.Tests.csproj", "{DBA32118-20C5-436A-ABBA-B6AF91986024}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeCare.Tests", "HomeCare.Tests\HomeCare.Tests.csproj", "{C7AE69DD-2CA9-4F0F-99D3-15B6BCFFFC28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,17 +16,13 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{592487E3-532C-4DFA-85E3-D144EFEE3791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{592487E3-532C-4DFA-85E3-D144EFEE3791}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{592487E3-532C-4DFA-85E3-D144EFEE3791}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{592487E3-532C-4DFA-85E3-D144EFEE3791}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DBA32118-20C5-436A-ABBA-B6AF91986024}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DBA32118-20C5-436A-ABBA-B6AF91986024}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DBA32118-20C5-436A-ABBA-B6AF91986024}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DBA32118-20C5-436A-ABBA-B6AF91986024}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{592487E3-532C-4DFA-85E3-D144EFEE3791} = {66E2BEA9-2916-4F3E-81F4-F671649F674E}
-		{DBA32118-20C5-436A-ABBA-B6AF91986024} = {66E2BEA9-2916-4F3E-81F4-F671649F674E}
+		{0E908AAB-FBB3-455E-915A-600C5D0A5E77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E908AAB-FBB3-455E-915A-600C5D0A5E77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E908AAB-FBB3-455E-915A-600C5D0A5E77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E908AAB-FBB3-455E-915A-600C5D0A5E77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7AE69DD-2CA9-4F0F-99D3-15B6BCFFFC28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7AE69DD-2CA9-4F0F-99D3-15B6BCFFFC28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7AE69DD-2CA9-4F0F-99D3-15B6BCFFFC28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7AE69DD-2CA9-4F0F-99D3-15B6BCFFFC28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

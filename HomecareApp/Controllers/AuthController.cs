@@ -47,7 +47,7 @@ public class AuthAPIController : ControllerBase
         if (result.Succeeded)
         {
             await _userManager.AddToRoleAsync(user, "Client");
-            _logger.LogInformation("User registered:", registerDto.Username);
+            _logger.LogInformation("[AuthController] User registered: {Username}", registerDto.Username);
             return Ok(new { message = "User registered successfully" });
         }
         _logger.LogWarning("Invalid registration for {username}", registerDto.Username);
@@ -82,7 +82,7 @@ public class AuthAPIController : ControllerBase
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        _logger.LogInformation("User logged out: ", User.Identity?.Name);
+        _logger.LogInformation("[AuthController] User logged out: {Username}", User.Identity?.Name);
         return Ok(new { message = "Logout successful" });
     }
 

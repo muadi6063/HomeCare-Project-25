@@ -100,7 +100,7 @@ public static class DBInit
 
             if (!context.Appointments.Any())
             {
-                var firstAvailableDay = await context.AvailableDays.FirstAsync();
+                var firstAvailableDay = await context.AvailableDays.OrderBy(a => a.AvailableDayId).FirstAsync();
                 
                 var appointments = new List<Appointment>
                 {
