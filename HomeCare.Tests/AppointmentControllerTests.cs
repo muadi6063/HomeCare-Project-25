@@ -17,7 +17,7 @@ public class AppointmentControllerTests
     [Fact]
     public async Task TestAppointmentList_positive()
     {
-        // Arrange - Create test data with two appointments
+        // Arrange: create test data with two appointments
         var appointmentList = new List<Appointment>
         {
             new Appointment
@@ -52,14 +52,14 @@ public class AppointmentControllerTests
             }
         };
         
-        // Arrange - Set up mock repository
+        // Arrange: set up mock repository
         var mockAppointmentRepository = new Mock<IAppointmentRepository>();
         mockAppointmentRepository.Setup(repo => repo.GetAll()).ReturnsAsync(appointmentList);
 
-        // Arrange - Set up mock logger
+        // Arrange: set up mock logger
         var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
         
-        // Arrange - Create controller with mocked user (needed for [Authorize])
+        // Arrange: create controller with mocked user (needed for [Authorize])
         var appointmentController = new AppointmentAPIController(
             mockAppointmentRepository.Object, 
             mockLogger.Object
@@ -192,15 +192,72 @@ public class AppointmentControllerTests
         // Assert: verify it returns HTTP 200 OK
         var okResult = Assert.IsType<OkObjectResult>(result);
         var returnedAppointment = Assert.IsType<Appointment>(okResult.Value);
-        
+
         // Assert: verify the appointment was updated with new data
         Assert.Equal("Updated shopping help", returnedAppointment.TaskDescription);
         Assert.Equal(2, returnedAppointment.AvailableDayId);
         Assert.Equal(TimeSpan.FromHours(14), returnedAppointment.StartTime);
-        
+
         // Assert: verify repository methods were called
         mockAppointmentRepository.Verify(repo => repo.GetAppointmentById(1), Times.Once);
         mockAppointmentRepository.Verify(repo => repo.Update(It.IsAny<Appointment>()), Times.Once);
     }
+    
+    [Fact]
+    public async Task TestDeleteAppointment_positive()
+    {
+        // Arrange: create test appointment DTO
+        var appointmentToDelete = new Appointment
+        {
+            AppointmentId = 1,
+            ClientId = "client-id",
+            AvailableDayId = 1,
+            StartTime = TimeSpan.FromHours(10),
+            EndTime = TimeSpan.FromHours(11),
+            TaskDescription = "Appointment to be deleted"
+        };
+
+        // Arrange: set up mock repository
+        var mockAppointmentRepository = new Mock<IAppointmentRepository>();
+        
+        // Gets the appointment that is going to be deleted
+        mockAppointmentRepository.Setup(repo => repo.GetAppointmentById(1)).ReturnsAsync(appointmentToDelete);
+
+        // Deletes the appointment and returns true
+        mockAppointmentRepository.Setup(repo => repo.Delete(1)).ReturnsAsync(true);
+
+        // Arrange: set up mock logger
+        var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
+
+        // Arrange: create controller with mocked user
+        var appointmentController = new AppointmentAPIController(
+            mockAppointmentRepository.Object,
+            mockLogger.Object
+        );
+
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, "client-id"),
+            new Claim(ClaimTypes.Role, "Client")
+        }, "mock"));
+
+        appointmentController.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext() { User = user }
+        };
+
+        // Act: call the create method
+        var result = await appointmentController.DeleteConfirmed(1);
+
+        // Assert - Verify it returns HTTP 204 No Content
+        Assert.IsType<NoContentResult>(result);
+        
+        // Assert - Verify GetAppointmentById was called
+        mockAppointmentRepository.Verify(repo => repo.GetAppointmentById(1), Times.Once);
+        
+        // Assert - Verify Delete was called with correct ID
+        mockAppointmentRepository.Verify(repo => repo.Delete(1), Times.Once);
+    }
+
 }
     
