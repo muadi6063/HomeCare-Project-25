@@ -13,6 +13,7 @@ public class AppointmentAPIController : Controller
 {
     private readonly ILogger<AppointmentAPIController> _logger;
     private readonly IAppointmentRepository _appointmentRepository;
+    private readonly IAvailableDayRepository _availableDayRepository;
     private bool IsClientAccessingOthers(string ownerId)
     {
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -20,11 +21,13 @@ public class AppointmentAPIController : Controller
     }
     
     public AppointmentAPIController(
-        IAppointmentRepository appointmentRepository, 
-        ILogger<AppointmentAPIController> logger)
+        IAppointmentRepository appointmentRepository,
+        ILogger<AppointmentAPIController> logger,
+        IAvailableDayRepository availableDayRepository)
     {
         _appointmentRepository = appointmentRepository;
         _logger = logger;
+        _availableDayRepository = availableDayRepository;
     }
     [HttpGet("appointmentlist")]
     [Authorize(Roles = "Admin,Healthcarepersonnel,Client")]
@@ -66,24 +69,26 @@ public class AppointmentAPIController : Controller
         if (dto == null)
             return BadRequest("Appointment cannot be null");
         
-         if (User.IsInRole("Client"))
-    {
-        if (IsClientAccessingOthers(dto.ClientId))
+        var availableDay = await _availableDayRepository.GetAvailableDayById(dto.AvailableDayId);
+        if (availableDay == null)
         {
-            _logger.LogWarning("Client {UserId} attempted to create appointment for another user {TargetUserId}",
-                currentUserId, dto.ClientId);
-            return Forbid();
+            _logger.LogWarning("[AppointmentAPIController] AvailableDay {AvailableDayId} not found", dto.AvailableDayId);
+            return BadRequest("The selected available day does not exist");
         }
 
-        dto.ClientId = currentUserId!;
-    }
+        if (User.IsInRole("Client"))
+        {
+            
+
+            dto.ClientId = currentUserId!;
+        }
 
         var newAppointment = new Appointment
         {
             ClientId = dto.ClientId!,
             AvailableDayId = dto.AvailableDayId,
-            StartTime = dto.StartTime,
-            EndTime = dto.EndTime,
+            StartTime = availableDay.StartTime,
+            EndTime = availableDay.EndTime,
             TaskDescription = dto.TaskDescription
         };
         

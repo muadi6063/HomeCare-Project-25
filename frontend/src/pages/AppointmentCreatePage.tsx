@@ -8,8 +8,10 @@ import type { AvailableDayDto } from "../types/homecare";
 const AppointmentCreatePage: React.FC = () => {
   const { availableDayId } = useParams<{ availableDayId: string }>();
   const navigate = useNavigate();
-  const { email } = useAuth() as { email?: string | null };
-
+  const { email, userId } = useAuth() as { 
+  email?: string | null; 
+  userId?: string | null; 
+};
   const [availableDay, setAvailableDay] = useState<AvailableDayDto | null>(null);
   const [taskDescription, setTaskDescription] = useState<string>("");
   const [error, setError] = useState("");
@@ -63,7 +65,7 @@ const AppointmentCreatePage: React.FC = () => {
       setBusy(true);
       // Fiks payload - bruk email som ClientId
       const dto = {
-        ClientId: email, // Bruk email fra innlogget bruker
+        ClientId: userId, // Bruk email fra innlogget bruker
         AvailableDayId: Number(availableDayId),
         TaskDescription: taskDescription.trim()
       };

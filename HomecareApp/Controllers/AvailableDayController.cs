@@ -36,6 +36,9 @@ public class AvailableDayAPIController : ControllerBase
             return NotFound("Available day list not found");
         }
 
+        availableDays = availableDays.Where(ad => ad.Appointments == null || ad.Appointments.Count == 0)
+        .ToList();
+
         var groupedData = new List<Object>();
         
         foreach (var personnelGroup in availableDays 
@@ -85,7 +88,7 @@ public class AvailableDayAPIController : ControllerBase
             HealthcarePersonnelId = availableDayDto.HealthcarePersonnelId,
             Date = availableDayDto.Date,
             StartTime = availableDayDto.StartTime,
-            EndTime = availableDayDto.EndTime,
+            EndTime = availableDayDto.StartTime.Add(TimeSpan.FromMinutes(45)),
             Appointments = new List<Appointment>()
         };
         bool returnOk = await _availableDayRepository.Create(newAvailableDay);

@@ -58,11 +58,13 @@ public class AppointmentControllerTests
 
         // Arrange: set up mock logger
         var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
+        var mockAvailableDayRepository = new Mock<IAvailableDayRepository>();
         
         // Arrange: create controller with mocked user (needed for [Authorize])
         var appointmentController = new AppointmentAPIController(
             mockAppointmentRepository.Object, 
-            mockLogger.Object
+            mockLogger.Object,
+            mockAvailableDayRepository.Object
         );
         
         // Mock authenticated Admin user
@@ -109,11 +111,21 @@ public class AppointmentControllerTests
 
         // Arrange: set up mock logger
         var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
+        var mockAvailableDayRepository = new Mock<IAvailableDayRepository>();
+        mockAvailableDayRepository.Setup(repo => repo.GetAvailableDayById(1)).ReturnsAsync(new AvailableDay
+        {
+            AvailableDayId = 1,
+            HealthcarePersonnelId = "personnel-id",
+            Date = DateTime.Now.AddDays(1),
+            StartTime = TimeSpan.FromHours(10),
+            EndTime = TimeSpan.FromHours(11)
+        });
 
         // Arrange: create controller with mocked user
         var appointmentController = new AppointmentAPIController(
             mockAppointmentRepository.Object,
-            mockLogger.Object
+            mockLogger.Object,
+            mockAvailableDayRepository.Object
         );
 
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
@@ -168,11 +180,21 @@ public class AppointmentControllerTests
 
         // Arrange: set up mock logger
         var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
+        var mockAvailableDayRepository = new Mock<IAvailableDayRepository>();
+        mockAvailableDayRepository.Setup(repo => repo.GetAvailableDayById(2)).ReturnsAsync(new AvailableDay
+        {
+            AvailableDayId = 2,
+            HealthcarePersonnelId = "personnel-id",
+            Date = DateTime.Now.AddDays(1),
+            StartTime = TimeSpan.FromHours(14),
+            EndTime = TimeSpan.FromHours(16)
+        });
 
         // Arrange: create controller with mocked user
         var appointmentController = new AppointmentAPIController(
             mockAppointmentRepository.Object,
-            mockLogger.Object
+            mockLogger.Object,
+            mockAvailableDayRepository.Object
         );
 
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
@@ -202,7 +224,7 @@ public class AppointmentControllerTests
         mockAppointmentRepository.Verify(repo => repo.GetAppointmentById(1), Times.Once);
         mockAppointmentRepository.Verify(repo => repo.Update(It.IsAny<Appointment>()), Times.Once);
     }
-    
+
     [Fact]
     public async Task TestDeleteAppointment_positive()
     {
@@ -219,7 +241,7 @@ public class AppointmentControllerTests
 
         // Arrange: set up mock repository
         var mockAppointmentRepository = new Mock<IAppointmentRepository>();
-        
+
         // Gets the appointment that is going to be deleted
         mockAppointmentRepository.Setup(repo => repo.GetAppointmentById(1)).ReturnsAsync(appointmentToDelete);
 
@@ -228,11 +250,13 @@ public class AppointmentControllerTests
 
         // Arrange: set up mock logger
         var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
+        var mockAvailableDayRepository = new Mock<IAvailableDayRepository>();
 
         // Arrange: create controller with mocked user
         var appointmentController = new AppointmentAPIController(
             mockAppointmentRepository.Object,
-            mockLogger.Object
+            mockLogger.Object,
+            mockAvailableDayRepository.Object
         );
 
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
@@ -249,15 +273,110 @@ public class AppointmentControllerTests
         // Act: call the create method
         var result = await appointmentController.DeleteConfirmed(1);
 
-        // Assert - Verify it returns HTTP 204 No Content
+        // Assert: verify it returns HTTP 204 No Content
         Assert.IsType<NoContentResult>(result);
-        
-        // Assert - Verify GetAppointmentById was called
+
+        // Assert: verify GetAppointmentById was called
         mockAppointmentRepository.Verify(repo => repo.GetAppointmentById(1), Times.Once);
-        
-        // Assert - Verify Delete was called with correct ID
+
+        // Assert: verify Delete was called with correct ID
         mockAppointmentRepository.Verify(repo => repo.Delete(1), Times.Once);
     }
 
+    [Fact]
+    public async Task TestAppointmentList_negative()
+    {
+        // Arrange: set up mock repository to return NULL
+        var mockAppointmentRepository = new Mock<IAppointmentRepository>();
+        mockAppointmentRepository.Setup(repo => repo.GetAll()).ReturnsAsync((IEnumerable<Appointment>?)null);
+
+        // Arrange: set up mock logger and controller
+        var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
+        var mockAvailableDayRepository = new Mock<IAvailableDayRepository>();
+        
+        var appointmentController = new AppointmentAPIController(
+            mockAppointmentRepository.Object,
+            mockLogger.Object,
+            mockAvailableDayRepository.Object
+        );
+
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, "admin-id"),
+            new Claim(ClaimTypes.Role, "Admin")
+        }, "mock"));
+
+        appointmentController.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext() { User = user }
+        };
+
+        // Act: call the AppointmentList method
+        var result = await appointmentController.AppointmentList();
+
+        // Assert: verify it returns HTTP 404 Not Found
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("Appointment list not found", notFoundResult.Value);
+        
+        // Assert: verify GetAll was called
+        mockAppointmentRepository.Verify(repo => repo.GetAll(), Times.Once);
+    }
+
+    [Fact]
+    public async Task TestCreateAppointment_negative()
+    {
+        // Arrange: create valid appointment DTO
+        var testDto = new AppointmentDto
+        {
+            ClientId = "client-id",
+            AvailableDayId = 1,
+            StartTime = TimeSpan.FromHours(10),
+            EndTime = TimeSpan.FromHours(11),
+            TaskDescription = "Shopping help"
+        };
+
+        // Arrange: set up mock repository to FAIL by returning false
+        var mockAppointmentRepository = new Mock<IAppointmentRepository>();
+        mockAppointmentRepository.Setup(repo => repo.Create(It.IsAny<Appointment>())).ReturnsAsync(false);
+
+        // Arrange: set up mock logger and controller
+        var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
+        var mockAvailableDayRepository = new Mock<IAvailableDayRepository>();
+        mockAvailableDayRepository.Setup(repo => repo.GetAvailableDayById(1)).ReturnsAsync(new AvailableDay
+        {
+            AvailableDayId = 1,
+            HealthcarePersonnelId = "personnel-id",
+            Date = DateTime.Now.AddDays(1),
+            StartTime = TimeSpan.FromHours(10),
+            EndTime = TimeSpan.FromHours(11)
+        });
+        
+        var appointmentController = new AppointmentAPIController(
+            mockAppointmentRepository.Object,
+            mockLogger.Object,
+            mockAvailableDayRepository.Object
+        );
+
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, "client-id"),
+            new Claim(ClaimTypes.Role, "Client")
+        }, "mock"));
+
+        appointmentController.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext() { User = user }
+        };
+
+        // Act: call the Create method
+        var result = await appointmentController.Create(testDto);
+
+        // Assert: verify it returns HTTP 500 Internal Server Error
+        var statusCodeResult = Assert.IsType<ObjectResult>(result);
+        Assert.Equal(500, statusCodeResult.StatusCode);
+        
+        // Assert: verify Create was still called (but failed)
+        mockAppointmentRepository.Verify(repo => repo.Create(It.IsAny<Appointment>()), Times.Once);
+    }
+
 }
-    

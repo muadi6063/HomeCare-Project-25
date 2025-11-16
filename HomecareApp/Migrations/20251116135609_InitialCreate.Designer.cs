@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace HomecareApp.Migrations
+namespace HomeCareApp.Migrations
 {
     [DbContext(typeof(HomeCareDbContext))]
-    [Migration("20251104004424_InitialIdentitySetup")]
-    partial class InitialIdentitySetup
+    [Migration("20251116135609_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

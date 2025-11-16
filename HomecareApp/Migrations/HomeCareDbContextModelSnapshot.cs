@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace HomecareApp.Migrations
+namespace HomeCareApp.Migrations
 {
     [DbContext(typeof(HomeCareDbContext))]
     partial class HomeCareDbContextModelSnapshot : ModelSnapshot

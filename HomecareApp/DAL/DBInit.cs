@@ -83,14 +83,14 @@ public static class DBInit
                         HealthcarePersonnelId = sarah.Id, // String ID
                         Date = DateTime.Today.AddDays(1),
                         StartTime = new TimeSpan(9, 0, 0),
-                        EndTime = new TimeSpan(12, 0, 0)
+                        EndTime = new TimeSpan(9, 45, 0)
                     },
                     new AvailableDay 
                     { 
                         HealthcarePersonnelId = mike.Id, // String ID
                         Date = DateTime.Today.AddDays(2),
                         StartTime = new TimeSpan(14, 0, 0),
-                        EndTime = new TimeSpan(17, 0, 0)
+                        EndTime = new TimeSpan(14, 45, 0)
                     }
                 };
 
@@ -109,7 +109,7 @@ public static class DBInit
                         ClientId = john.Id, // String ID
                         AvailableDayId = firstAvailableDay.AvailableDayId,
                         StartTime = new TimeSpan(9, 0, 0),
-                        EndTime = new TimeSpan(12, 0, 0),
+                        EndTime = new TimeSpan(9, 45, 0),
                         TaskDescription = "Medication reminder and blood pressure check"
                     }
                 };

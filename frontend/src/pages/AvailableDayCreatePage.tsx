@@ -12,7 +12,6 @@ const AvailableDayCreatePage = () => {
   const [healthcarePersonnelId, setHealthcarePersonnelId] = useState(userId || "");
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
 
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -23,7 +22,7 @@ const AvailableDayCreatePage = () => {
     e.preventDefault();
     setError("");
 
-    if (!healthcarePersonnelId || !date || !startTime || !endTime) {
+    if (!healthcarePersonnelId || !date || !startTime) {
       setError("Alle felt må fylles ut.");
       return;
     }
@@ -34,7 +33,6 @@ const AvailableDayCreatePage = () => {
         healthcarePersonnelId,
         date,
         startTime: startTime + ":00",
-        endTime: endTime + ":00",
       });
       navigate("/availabledays");
     } catch {
@@ -79,16 +77,6 @@ const AvailableDayCreatePage = () => {
             type="time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
-            required
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Sluttid</Form.Label>
-          <Form.Control
-            type="time"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
             required
           />
         </Form.Group>
