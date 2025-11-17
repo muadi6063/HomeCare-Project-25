@@ -27,46 +27,51 @@ public static class DBInit
 
         if (!context.Users.Any())
         {
-            var john = new User 
-            { 
+            var john = new User
+            {
                 UserName = "john@client.com",
                 Email = "john@client.com",
+                Name = "John",
                 EmailConfirmed = true
             };
             await userManager.CreateAsync(john, "Password123!");
             await userManager.AddToRoleAsync(john, "Client");
 
-            var mary = new User 
-            { 
+            var mary = new User
+            {
                 UserName = "mary@client.com",
                 Email = "mary@client.com",
+                Name = "Mary",
                 EmailConfirmed = true
             };
             await userManager.CreateAsync(mary, "Password123!");
             await userManager.AddToRoleAsync(mary, "Client");
 
-            var sarah = new User 
-            { 
+            var sarah = new User
+            {
                 UserName = "sarah@healthcare.com",
                 Email = "sarah@healthcare.com",
+                Name = "Sarah",
                 EmailConfirmed = true
             };
             await userManager.CreateAsync(sarah, "Password123!");
             await userManager.AddToRoleAsync(sarah, "HealthcarePersonnel");
 
-            var mike = new User 
-            { 
+            var mike = new User
+            {
                 UserName = "mike@healthcare.com",
                 Email = "mike@healthcare.com",
+                Name = "Mike",
                 EmailConfirmed = true
             };
             await userManager.CreateAsync(mike, "Password123!");
             await userManager.AddToRoleAsync(mike, "HealthcarePersonnel");
 
-            var admin = new User 
-            { 
+            var admin = new User
+            {
                 UserName = "admin@homecare.com",
                 Email = "admin@homecare.com",
+                Name = "Admin",
                 EmailConfirmed = true
             };
             await userManager.CreateAsync(admin, "Admin123!");
@@ -80,14 +85,14 @@ public static class DBInit
                 {
                     new AvailableDay 
                     { 
-                        HealthcarePersonnelId = sarah.Id, // String ID
+                        HealthcarePersonnelId = sarah.Id, 
                         Date = DateTime.Today.AddDays(1),
                         StartTime = new TimeSpan(9, 0, 0),
                         EndTime = new TimeSpan(9, 45, 0)
                     },
                     new AvailableDay 
                     { 
-                        HealthcarePersonnelId = mike.Id, // String ID
+                        HealthcarePersonnelId = mike.Id, 
                         Date = DateTime.Today.AddDays(2),
                         StartTime = new TimeSpan(14, 0, 0),
                         EndTime = new TimeSpan(14, 45, 0)
@@ -106,7 +111,7 @@ public static class DBInit
                 {
                     new Appointment 
                     { 
-                        ClientId = john.Id, // String ID
+                        ClientId = john.Id, 
                         AvailableDayId = firstAvailableDay.AvailableDayId,
                         StartTime = new TimeSpan(9, 0, 0),
                         EndTime = new TimeSpan(9, 45, 0),

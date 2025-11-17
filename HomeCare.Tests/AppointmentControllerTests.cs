@@ -1,4 +1,3 @@
-using Xunit;
 using Moq;
 using HomeCareApp.Controllers;
 using HomeCareApp.Models;
@@ -245,7 +244,7 @@ public class AppointmentControllerTests
         // Gets the appointment that is going to be deleted
         mockAppointmentRepository.Setup(repo => repo.GetAppointmentById(1)).ReturnsAsync(appointmentToDelete);
 
-        // Deletes the appointment and returns true
+        // Delete the appointment and return true
         mockAppointmentRepository.Setup(repo => repo.Delete(1)).ReturnsAsync(true);
 
         // Arrange: set up mock logger
@@ -350,7 +349,7 @@ public class AppointmentControllerTests
             StartTime = TimeSpan.FromHours(10),
             EndTime = TimeSpan.FromHours(11)
         });
-        
+
         var appointmentController = new AppointmentAPIController(
             mockAppointmentRepository.Object,
             mockLogger.Object,
@@ -374,9 +373,106 @@ public class AppointmentControllerTests
         // Assert: verify it returns HTTP 500 Internal Server Error
         var statusCodeResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(500, statusCodeResult.StatusCode);
-        
+
         // Assert: verify Create was still called (but failed)
         mockAppointmentRepository.Verify(repo => repo.Create(It.IsAny<Appointment>()), Times.Once);
+    }
+    
+    [Fact]
+    public async Task TestUpdateAppointment_negative()
+    {
+        // Arrange: create appointment DTO for non existent appointment
+        var updatedAppointmentDto = new AppointmentDto
+        {
+            AppointmentId = 999,  // Id does not exist
+            ClientId = "client-id",
+            AvailableDayId = 2,
+            StartTime = TimeSpan.FromHours(14),
+            EndTime = TimeSpan.FromHours(16),
+            TaskDescription = "Updated shopping help"
+        };
+
+        // Arrange: Mock GetAppointmentById to return null
+        var mockAppointmentRepository = new Mock<IAppointmentRepository>();
+        mockAppointmentRepository.Setup(repo => repo.GetAppointmentById(999)).ReturnsAsync((Appointment?)null);
+
+        // Arrange: set up mock logger
+        var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
+        var mockAvailableDayRepository = new Mock<IAvailableDayRepository>();
+
+        // Arrange: create controller with mocked user
+        var appointmentController = new AppointmentAPIController(
+            mockAppointmentRepository.Object,
+            mockLogger.Object,
+            mockAvailableDayRepository.Object
+        );
+
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, "client-id"),
+            new Claim(ClaimTypes.Role, "Client")
+        }, "mock"));
+
+        appointmentController.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext() { User = user }
+        };
+
+        // Act: call the Update method with non-existent ID
+        var result = await appointmentController.Update(999, updatedAppointmentDto);
+
+        // Assert: verify it returns HTTP 404 Not Found
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("Appointment not found", notFoundResult.Value);
+
+        // Assert: verify GetAppointmentById was called
+        mockAppointmentRepository.Verify(repo => repo.GetAppointmentById(999), Times.Once);
+        
+        // Assert: verify Update was NEVER called since appointment doesn't exist
+        mockAppointmentRepository.Verify(repo => repo.Update(It.IsAny<Appointment>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task TestDeleteAppointment_negative()
+    {
+        // Arrange: Mock GetAppointmentById to return null
+        var mockAppointmentRepository = new Mock<IAppointmentRepository>();
+        mockAppointmentRepository.Setup(repo => repo.GetAppointmentById(999)).ReturnsAsync((Appointment?)null);
+
+        // Arrange: set up mock logger
+        var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
+        var mockAvailableDayRepository = new Mock<IAvailableDayRepository>();
+
+        // Arrange: create controller with mocked user
+        var appointmentController = new AppointmentAPIController(
+            mockAppointmentRepository.Object,
+            mockLogger.Object,
+            mockAvailableDayRepository.Object
+        );
+
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, "client-id"),
+            new Claim(ClaimTypes.Role, "Client")
+        }, "mock"));
+
+        appointmentController.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext() { User = user }
+        };
+
+        // Act: call the DeleteConfirmed method with non existent ID
+        var result = await appointmentController.DeleteConfirmed(999);
+
+        // Assert: verify it returns HTTP 404 Not Found
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("Appointment not found", notFoundResult.Value);
+
+        // Assert: verify GetAppointmentById was called
+        mockAppointmentRepository.Verify(repo => repo.GetAppointmentById(999), Times.Once);
+        
+        // Assert: verify Delete was never called since appointment does not exist
+        mockAppointmentRepository.Verify(repo => repo.Delete(It.IsAny<int>()), Times.Never);
     }
 
 }
