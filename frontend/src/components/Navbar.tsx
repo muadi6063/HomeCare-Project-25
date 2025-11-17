@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar, Nav, Container } from "react-bootstrap";
+import { Navbar, Nav, Container, Modal, Button } from "react-bootstrap";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -11,12 +11,18 @@ const AppNavbar: React.FC = () => {
   const isHPOrAdmin =
     isAuthenticated && (role === "HealthcarePersonnel" || role === "Admin");
 
+  const [showLogoutModal, setShowLogoutModal] = React.useState(false);
+
   const handleLogout = () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
     logout();
     navigate("/login");
   };
 
- 
   let displayName = "";
   if (email) {
     const beforeAt = email.split("@")[0];
@@ -25,60 +31,83 @@ const AppNavbar: React.FC = () => {
   }
 
   return (
-    <Navbar
-      bg="dark"
-      variant="dark"
-      expand="lg"
-      fixed="top"
-      className="shadow-sm"
-    >
-      <Container fluid className="px-3">
-        <Navbar.Brand as={Link} to="/">
-          HomeCare SPA
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+    <>
+      <Navbar
+        bg="dark"
+        variant="dark"
+        expand="lg"
+        fixed="top"
+        className="shadow-sm"
+      >
+        <Container fluid className="px-3">
+          <Navbar.Brand as={Link} to="/">
+            HomeCare SPA
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link as={NavLink} to="/" end>
-              Home
-            </Nav.Link>
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link as={NavLink} to="/" end>
+                Home
+              </Nav.Link>
 
-            {isHPOrAdmin && (
-              <>
+              {isHPOrAdmin && (
+                <>
+                  <Nav.Link as={NavLink} to="/appointments">
+                    Appointments
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/availabledays">
+                    Available Days
+                  </Nav.Link>
+                </>
+              )}
+
+              {isClient && (
                 <Nav.Link as={NavLink} to="/appointments">
                   Appointments
                 </Nav.Link>
-                <Nav.Link as={NavLink} to="/availabledays">
-                  Available Days
+              )}
+            </Nav>
+
+            <Nav>
+              {isAuthenticated ? (
+                <>
+                  <Navbar.Text className="me-3">
+                    {displayName}
+                  </Navbar.Text>
+                  <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                </>
+              ) : (
+                <Nav.Link as={NavLink} to="/login">
+                  Login
                 </Nav.Link>
-              </>
-            )}
+              )}
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-            {isClient && (
-              <Nav.Link as={NavLink} to="/appointments">
-                Appointments
-              </Nav.Link>
-            )}
-          </Nav>
-
-          <Nav>
-            {isAuthenticated ? (
-              <>
-                <Navbar.Text className="me-3">
-                  {displayName}
-                </Navbar.Text>
-                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
-              </>
-            ) : (
-              <Nav.Link as={NavLink} to="/login">
-                Login
-              </Nav.Link>
-            )}
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+      <Modal
+        show={showLogoutModal}
+        onHide={() => setShowLogoutModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Bekreft utlogging</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Er du sikker på at du vil logge ut?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowLogoutModal(false)}>
+            Avbryt
+          </Button>
+          <Button variant="danger" onClick={confirmLogout}>
+            Logg ut
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 

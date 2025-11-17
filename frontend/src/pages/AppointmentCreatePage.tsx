@@ -8,17 +8,17 @@ import type { AvailableDayDto } from "../types/homecare";
 const AppointmentCreatePage: React.FC = () => {
   const { availableDayId } = useParams<{ availableDayId: string }>();
   const navigate = useNavigate();
-  const { email, userId } = useAuth() as { 
-  email?: string | null; 
-  userId?: string | null; 
-};
+  const { email, userId } = useAuth() as {
+    email?: string | null;
+    userId?: string | null;
+  };
+
   const [availableDay, setAvailableDay] = useState<AvailableDayDto | null>(null);
   const [taskDescription, setTaskDescription] = useState<string>("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Hent AvailableDay detaljer
   useEffect(() => {
     let cancelled = false;
 
@@ -46,7 +46,6 @@ const AppointmentCreatePage: React.FC = () => {
     e.preventDefault();
     setError("");
 
-    // Validering - som backend forventer
     if (!taskDescription.trim() || taskDescription.trim().length < 5) {
       setError("Oppgavebeskrivelse må være minst 5 tegn.");
       return;
@@ -56,18 +55,17 @@ const AppointmentCreatePage: React.FC = () => {
       return;
     }
 
-    if (!availableDayId || !email) {
+    if (!availableDayId || !email || !userId) {
       setError("Mangler nødvendig informasjon for booking.");
       return;
     }
 
     try {
       setBusy(true);
-      // Fiks payload - bruk email som ClientId
       const dto = {
-        ClientId: userId, // Bruk email fra innlogget bruker
+        ClientId: userId,
         AvailableDayId: Number(availableDayId),
-        TaskDescription: taskDescription.trim()
+        TaskDescription: taskDescription.trim(),
       };
       await ApiService.post("/AppointmentAPI/create", dto);
       navigate("/appointments");
@@ -96,6 +94,11 @@ const AppointmentCreatePage: React.FC = () => {
 
   const hhmm = (s: string) => (s ?? "").split(":").slice(0, 2).join(":");
 
+  const personnelLabel =
+    availableDay.healthcarePersonnelName ??
+    availableDay.healthcarePersonnelEmail ??
+    "Ukjent personell";
+
   return (
     <Container className="mt-4">
       <h2>Book Time</h2>
@@ -104,17 +107,16 @@ const AppointmentCreatePage: React.FC = () => {
 
       <Card>
         <Card.Body>
-          {/* AvailableDay informasjon - readonly */}
           <div className="mb-4 p-3 bg-light rounded">
             <h5>Timeinformasjon</h5>
             <p><strong>Dato:</strong> {new Date(availableDay.date).toLocaleDateString("no-NO")}</p>
             <p><strong>Tid:</strong> {hhmm(availableDay.startTime)} – {hhmm(availableDay.endTime)}</p>
+            <p><strong>Healthcare personell:</strong> {personnelLabel}</p>
             <p><strong>Available Day ID:</strong> {availableDay.availableDayId}</p>
             <p><strong>Booket av:</strong> {email}</p>
           </div>
 
           <Form onSubmit={handleSubmit}>
-            {/* Kun TaskDescription felt - som backend forventer */}
             <Form.Group className="mb-3">
               <Form.Label>Oppgavebeskrivelse *</Form.Label>
               <Form.Control
@@ -136,8 +138,8 @@ const AppointmentCreatePage: React.FC = () => {
             <Button type="submit" disabled={busy} variant="success">
               {busy ? "Booker..." : "Book Time"}
             </Button>
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               onClick={() => navigate("/appointments")}
               className="ms-2"
               disabled={busy}

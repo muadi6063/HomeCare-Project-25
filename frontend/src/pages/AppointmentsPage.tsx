@@ -20,9 +20,8 @@ const AppointmentsPage: React.FC = () => {
   const [err, setErr] = useState<string | null>(null);
   const [q, setQ] = useState("");
 
-  // Client kan lage appointments (booking)
   const canCreate = isAuthenticated;
-  // Admin kan slette alle, Client kan kun slette sine egne
+
   const canDeleteAppointment = (appointment: AppointmentDto) => {
     if (!isAuthenticated) return false;
     if (role === "Admin") return true;
@@ -31,7 +30,7 @@ const AppointmentsPage: React.FC = () => {
     }
     return false;
   };
-  // Admin kan edit alle, Client kan kun edit sine egne
+
   const canEditAppointment = (appointment: AppointmentDto) => {
     if (!isAuthenticated) return false;
     if (role === "Admin") return true;
@@ -105,7 +104,6 @@ const AppointmentsPage: React.FC = () => {
     });
   }, [appointments, q]);
 
-  // Flat available days for enkel visning
   const flatAvailableDays = useMemo(() => {
     if (!availableDays) return [];
     return availableDays.flatMap((g) =>
@@ -136,9 +134,9 @@ const AppointmentsPage: React.FC = () => {
       <div className="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
         <div>
           <h2 className="mb-1">Appointments</h2>
-        
         </div>
 
+        {/* 🔹 NY APPOINTMENT-KNAPP ER FJERNET HER 🔹 */}
         <div className="d-flex gap-2">
           <InputGroup>
             <Form.Control
@@ -152,17 +150,10 @@ const AppointmentsPage: React.FC = () => {
               </Button>
             )}
           </InputGroup>
-
-          {/* Kun Admin/HP ser "Ny appointment" - Client booker via AvailableDays */}
-          {canCreate && role !== "Client" && (
-            <Link className="btn btn-primary" to="/appointments/create">
-              + Ny appointment
-            </Link>
-          )}
         </div>
       </div>
 
-      {/* LEDIGE TIDER FOR CLIENT - som AvailableDaysPage */}
+      {/* LEDIGE TIDER FOR CLIENT */}
       {role === "Client" && (
         <div className="mb-5">
           <h3>Ledige tider for booking</h3>
@@ -200,7 +191,7 @@ const AppointmentsPage: React.FC = () => {
         </div>
       )}
 
-      {/* MINE/ALLE AVTALER */}
+      {/* AVTALER */}
       {filteredAppointments.length === 0 ? (
         <Alert variant="info">Ingen avtaler funnet.</Alert>
       ) : (
