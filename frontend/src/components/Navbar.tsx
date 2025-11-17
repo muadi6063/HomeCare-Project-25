@@ -42,7 +42,7 @@ const AppNavbar: React.FC = () => {
                 <Nav.Link as={NavLink} to="/availabledays">
                   Available days
                 </Nav.Link>
-                <Nav.Link as={NavLink} to="/appointments/all">
+                <Nav.Link as={NavLink} to="/appointments">
                   Appointments
                 </Nav.Link>
               </>
