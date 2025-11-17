@@ -16,6 +16,14 @@ const AppNavbar: React.FC = () => {
     navigate("/login");
   };
 
+ 
+  let displayName = "";
+  if (email) {
+    const beforeAt = email.split("@")[0];
+    displayName =
+      beforeAt.charAt(0).toUpperCase() + beforeAt.slice(1);
+  }
+
   return (
     <Navbar
       bg="dark"
@@ -36,19 +44,17 @@ const AppNavbar: React.FC = () => {
               Home
             </Nav.Link>
 
-            {/* Admin/HP */}
             {isHPOrAdmin && (
               <>
-                <Nav.Link as={NavLink} to="/availabledays">
-                  Available days
-                </Nav.Link>
                 <Nav.Link as={NavLink} to="/appointments">
                   Appointments
+                </Nav.Link>
+                <Nav.Link as={NavLink} to="/availabledays">
+                  Available Days
                 </Nav.Link>
               </>
             )}
 
-            {/* Client */}
             {isClient && (
               <Nav.Link as={NavLink} to="/appointments">
                 Appointments
@@ -56,12 +62,11 @@ const AppNavbar: React.FC = () => {
             )}
           </Nav>
 
-          {/* Right side (Auth) */}
           <Nav>
             {isAuthenticated ? (
               <>
                 <Navbar.Text className="me-3">
-                  {email} {role ? `(${role})` : ""}
+                  {displayName}
                 </Navbar.Text>
                 <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
               </>

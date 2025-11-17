@@ -30,7 +30,7 @@ public class AppointmentAPIController : Controller
         _availableDayRepository = availableDayRepository;
     }
     [HttpGet("appointmentlist")]
-    [Authorize(Roles = "Admin,Healthcarepersonnel,Client")]
+    [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
     public async Task<IActionResult> AppointmentList(){
         var appointments = await _appointmentRepository.GetAll();
         if (appointments == null)

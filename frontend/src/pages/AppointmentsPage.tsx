@@ -136,9 +136,7 @@ const AppointmentsPage: React.FC = () => {
       <div className="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
         <div>
           <h2 className="mb-1">Appointments</h2>
-          <small className="text-muted">
-            {role === "Admin" ? "Alle avtaler" : role === "HealthcarePersonnel" ? "Dine avtaler" : "Mine avtaler"}
-          </small>
+        
         </div>
 
         <div className="d-flex gap-2">
