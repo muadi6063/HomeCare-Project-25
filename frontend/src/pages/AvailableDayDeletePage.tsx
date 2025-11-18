@@ -17,13 +17,17 @@ const hhmm = (s?: string) => (s ?? "").split(":").slice(0, 2).join(":");
 const AvailableDayDeletePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { role } = useAuth() as { role?: string };
+  const { role, userId } = useAuth() as { role?: string; userId?: string | null };
 
   const [item, setItem] = useState<AvailableDayDto | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  const canDelete = role === "Admin" || role === "HealthcarePersonnel";
+  const canDelete =
+    role === "Admin" ||
+    (role === "HealthcarePersonnel" &&
+      item &&
+      String(item.healthcarePersonnelId) === String(userId));
 
   useEffect(() => {
     let cancelled = false;
@@ -39,7 +43,9 @@ const AvailableDayDeletePage: React.FC = () => {
     }
 
     if (id) load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   const handleDelete = async () => {
@@ -63,7 +69,7 @@ const AvailableDayDeletePage: React.FC = () => {
 
       {!canDelete && (
         <Alert variant="warning" className="mt-3">
-          Kun Admin kan slette.
+          Du har ikke tilgang til å slette denne tilgjengelige dagen.
         </Alert>
       )}
 

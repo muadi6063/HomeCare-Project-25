@@ -9,15 +9,31 @@ const hhmm = (s: string | null | undefined) =>
   (s ?? "").split(":").slice(0, 2).join(":");
 
 const AvailableDaysPage: React.FC = () => {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, userId } = useAuth();
   const [groups, setGroups] = useState<AvailableDaysGrouped[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const canCreate =
     isAuthenticated && (role === "Admin" || role === "HealthcarePersonnel");
-  const canEdit = canCreate;
-  const canDelete = isAuthenticated && role === "Admin";
+
+  const canEditDay = (ad: { healthcarePersonnelId: number }) => {
+    if (!isAuthenticated) return false;
+    if (role === "Admin") return true;
+    if (role === "HealthcarePersonnel") {
+      return String(ad.healthcarePersonnelId) === String(userId);
+    }
+    return false;
+  };
+
+  const canDeleteDay = (ad: { healthcarePersonnelId: number }) => {
+    if (!isAuthenticated) return false;
+    if (role === "Admin") return true;
+    if (role === "HealthcarePersonnel") {
+      return String(ad.healthcarePersonnelId) === String(userId);
+    }
+    return false;
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -93,9 +109,9 @@ const AvailableDaysPage: React.FC = () => {
                   {ad.personnelName ?? "Unknown staff"}
                 </p>
 
-                {(canEdit || canDelete) && (
+                {(canEditDay(ad) || canDeleteDay(ad)) && (
                   <div className="d-flex gap-2">
-                    {canEdit && (
+                    {canEditDay(ad) && (
                       <Link
                         className="btn btn-sm btn-outline-secondary"
                         to={`/availabledays/edit/${ad.availableDayId}`}
@@ -103,7 +119,7 @@ const AvailableDaysPage: React.FC = () => {
                         Edit
                       </Link>
                     )}
-                    {canDelete && (
+                    {canDeleteDay(ad) && (
                       <Link
                         className="btn btn-sm btn-outline-danger"
                         to={`/availabledays/delete/${ad.availableDayId}`}

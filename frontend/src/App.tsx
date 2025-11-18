@@ -32,7 +32,7 @@ const App: React.FC = () => {
               {/* Public routes */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="register" element={<RegisterPage/>} />
+              <Route path="/register" element={<RegisterPage />} />
               <Route path="/availabledays" element={<AvailableDaysPage />} />
               
               {/* AvailableDays - Admin/HealthcarePersonnel */}
@@ -55,13 +55,13 @@ const App: React.FC = () => {
               <Route 
                 path="/availabledays/delete/:id" 
                 element={
-                  <ProtectedRoute roles={["Admin"]}>
+                  <ProtectedRoute roles={["Admin", "HealthcarePersonnel"]}>
                     <AvailableDayDeletePage />
                   </ProtectedRoute>
                 } 
               />
               
-              {/* Appointments - Alle authorized users */}
+              {/* Appointments - alle autoriserte brukere */}
               <Route 
                 path="/appointments" 
                 element={

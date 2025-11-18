@@ -18,13 +18,17 @@ const hhmmss = (s: string) => (s.includes(":") ? `${s}:00` : s);
 const AvailableDayEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { role } = useAuth() as { role?: string };
+  const { role, userId } = useAuth() as { role?: string; userId?: string | null };
 
   const [model, setModel] = useState<AvailableDayDto | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  const canEdit = role === "Admin" || role === "HealthcarePersonnel";
+  const canEdit =
+    role === "Admin" ||
+    (role === "HealthcarePersonnel" &&
+      model &&
+      String(model.healthcarePersonnelId) === String(userId));
 
   useEffect(() => {
     async function load() {
@@ -61,7 +65,7 @@ const AvailableDayEditPage = () => {
     try {
       setBusy(true);
       await ApiService.put(`/AvailableDayAPI/update/${id}`, {
-        healthcarePersonnelId: model.healthcarePersonnelId, // unchanged
+        healthcarePersonnelId: model.healthcarePersonnelId,
         date: model.date,
         startTime: hhmmss(model.startTime),
         endTime: hhmmss(model.endTime),
@@ -74,7 +78,13 @@ const AvailableDayEditPage = () => {
     }
   };
 
-  if (!canEdit) return <Alert variant="warning" className="mt-4">Ingen tilgang</Alert>;
+  if (!canEdit)
+    return (
+      <div className="container mt-4">
+        <Alert variant="warning">Du har ikke tilgang til å redigere denne tilgjengelige dagen.</Alert>
+      </div>
+    );
+
   if (!model) return <div className="container mt-4">Laster…</div>;
 
   return (
@@ -122,8 +132,14 @@ const AvailableDayEditPage = () => {
           />
         </Form.Group>
 
-        <Button type="submit" disabled={busy}>Lagre</Button>{" "}
-        <Button variant="secondary" onClick={() => navigate("/availabledays")} disabled={busy}>
+        <Button type="submit" disabled={busy}>
+          {busy ? "Lagrer..." : "Lagre"}
+        </Button>{" "}
+        <Button
+          variant="secondary"
+          onClick={() => navigate("/availabledays")}
+          disabled={busy}
+        >
           Avbryt
         </Button>
       </Form>
