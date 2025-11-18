@@ -78,9 +78,15 @@ const AppNavbar: React.FC = () => {
                   <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
                 </>
               ) : (
-                <Nav.Link as={NavLink} to="/login">
-                  Login
-                </Nav.Link>
+                <>
+                <Nav.Link as={NavLink} to="/register">
+                    Register
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/login">
+                    Login
+                  </Nav.Link>
+                </>
+                
               )}
             </Nav>
           </Navbar.Collapse>

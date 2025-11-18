@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Alert, Button, Card, Col, Form, InputGroup, Row, Spinner, Container } from "react-bootstrap";
+import { Alert, Card, Col, Row, Spinner, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ApiService from "../services/ApiService";
 import { useAuth } from "../context/AuthContext";
@@ -8,7 +8,11 @@ import type { AvailableDaysGrouped } from "../types/homecare";
 
 const hhmm = (s?: string | null) => (s ?? "").split(":").slice(0, 2).join(":");
 const localDate = (d: any) =>
-  new Date(d).toLocaleDateString("no-NO", { year: "numeric", month: "short", day: "2-digit" });
+  new Date(d).toLocaleDateString("no-NO", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
 
 const AppointmentsPage: React.FC = () => {
   const { isAuthenticated, role, userId } = useAuth();
@@ -18,13 +22,15 @@ const AppointmentsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [loadingAvailableDays, setLoadingAvailableDays] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [q, setQ] = useState("");
 
   const canDeleteAppointment = (appointment: AppointmentDto) => {
     if (!isAuthenticated) return false;
     if (role === "Admin" || role === "HealthcarePersonnel") return true;
     if (role === "Client") {
-      return appointment.clientEmail === userId || appointment.clientId.toString() === userId;
+      return (
+        appointment.clientEmail === userId ||
+        appointment.clientId.toString() === userId
+      );
     }
     return false;
   };
@@ -33,7 +39,10 @@ const AppointmentsPage: React.FC = () => {
     if (!isAuthenticated) return false;
     if (role === "Admin" || role === "HealthcarePersonnel") return true;
     if (role === "Client") {
-      return appointment.clientEmail === userId || appointment.clientId.toString() === userId;
+      return (
+        appointment.clientEmail === userId ||
+        appointment.clientId.toString() === userId
+      );
     }
     return false;
   };
@@ -45,7 +54,9 @@ const AppointmentsPage: React.FC = () => {
       setErr(null);
       setLoading(true);
       try {
-        const data = await ApiService.get<AppointmentDto[]>("/AppointmentAPI/appointmentlist");
+        const data = await ApiService.get<AppointmentDto[]>(
+          "/AppointmentAPI/appointmentlist"
+        );
         if (!cancelled) setAppointments(data);
       } catch (e: any) {
         if (!cancelled) setErr(e?.message ?? "Klarte ikke å laste avtaler.");
@@ -67,7 +78,9 @@ const AppointmentsPage: React.FC = () => {
     async function loadAvailableDays() {
       setLoadingAvailableDays(true);
       try {
-        const data = await ApiService.get<AvailableDaysGrouped[]>("/AvailableDayAPI/availableDaysList");
+        const data = await ApiService.get<AvailableDaysGrouped[]>(
+          "/AvailableDayAPI/availableDaysList"
+        );
         if (!cancelled) setAvailableDays(data);
       } catch (e: any) {
         console.error("Kunne ikke hente ledige dager:", e);
@@ -81,26 +94,10 @@ const AppointmentsPage: React.FC = () => {
     };
   }, [role]);
 
-  const filteredAppointments = useMemo(() => {
+  const appointmentsToShow = useMemo(() => {
     if (!appointments) return [];
-    const s = q.trim().toLowerCase();
-    if (!s) return appointments;
-    return appointments.filter((a) => {
-      const hay = [
-        a.clientName,
-        a.clientEmail,
-        a.taskDescription,
-        a.healthcarePersonnelName,
-        a.availableDayDate,
-        a.startTime,
-        a.endTime,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-      return hay.includes(s);
-    });
-  }, [appointments, q]);
+    return appointments;
+  }, [appointments]);
 
   const flatAvailableDays = useMemo(() => {
     if (!availableDays) return [];
@@ -133,22 +130,6 @@ const AppointmentsPage: React.FC = () => {
         <div>
           <h2 className="mb-1">Appointments</h2>
         </div>
-
-        {/* 🔹 NY APPOINTMENT-KNAPP ER FJERNET HER 🔹 */}
-        <div className="d-flex gap-2">
-          <InputGroup>
-            <Form.Control
-              placeholder="Søk (navn, e-post, oppgave...)"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-            />
-            {q && (
-              <Button variant="outline-secondary" onClick={() => setQ("")}>
-                Tøm
-              </Button>
-            )}
-          </InputGroup>
-        </div>
       </div>
 
       {/* LEDIGE TIDER FOR CLIENT */}
@@ -156,16 +137,22 @@ const AppointmentsPage: React.FC = () => {
         <div className="mb-5">
           <h3>Ledige tider for booking</h3>
           {loadingAvailableDays ? (
-            <div className="text-center mt-3"><Spinner size="sm" /></div>
+            <div className="text-center mt-3">
+              <Spinner size="sm" />
+            </div>
           ) : flatAvailableDays.length === 0 ? (
-            <Alert variant="info" className="mt-3">Ingen ledige tider funnet.</Alert>
+            <Alert variant="info" className="mt-3">
+              Ingen ledige tider funnet.
+            </Alert>
           ) : (
             <Row className="g-3 mt-3">
               {flatAvailableDays.map((ad) => (
                 <Col key={ad.availableDayId} xs={12} md={6} lg={4}>
                   <Card className="h-100">
                     <Card.Body className="d-flex flex-column">
-                      <Card.Title>{new Date(ad.date).toLocaleDateString("no-NO")}</Card.Title>
+                      <Card.Title>
+                        {new Date(ad.date).toLocaleDateString("no-NO")}
+                      </Card.Title>
                       <Card.Text>
                         {hhmm(ad.startTime)} – {hhmm(ad.endTime)}
                       </Card.Text>
@@ -173,8 +160,8 @@ const AppointmentsPage: React.FC = () => {
                         {ad.personnelName ?? "Ukjent personell"}
                       </Card.Text>
                       <div className="mt-auto">
-                        <Link 
-                          className="btn btn-success btn-sm" 
+                        <Link
+                          className="btn btn-success btn-sm"
                           to={`/appointments/book/${ad.availableDayId}`}
                         >
                           Book Time
@@ -190,18 +177,22 @@ const AppointmentsPage: React.FC = () => {
       )}
 
       {/* AVTALER */}
-      {filteredAppointments.length === 0 ? (
+      {appointmentsToShow.length === 0 ? (
         <Alert variant="info">Ingen avtaler funnet.</Alert>
       ) : (
         <Row xs={1} md={2} lg={3} xl={4} className="g-3">
-          {filteredAppointments.map((a) => (
+          {appointmentsToShow.map((a) => (
             <Col key={a.appointmentId}>
               <Card className="h-100">
                 <Card.Body>
                   <div className="d-flex justify-content-between align-items-start">
                     <div>
-                      <Card.Title className="mb-1">{a.clientName ?? "Ukjent klient"}</Card.Title>
-                      <Card.Subtitle className="text-muted small">{a.clientEmail}</Card.Subtitle>
+                      <Card.Title className="mb-1">
+                        {a.clientName ?? "Ukjent klient"}
+                      </Card.Title>
+                      <Card.Subtitle className="text-muted small">
+                        {a.clientEmail}
+                      </Card.Subtitle>
                     </div>
                     <span className="badge text-bg-light border">
                       {a.healthcarePersonnelName ?? "Personell"}
@@ -210,7 +201,11 @@ const AppointmentsPage: React.FC = () => {
 
                   <div className="mt-3">
                     <div className="small text-muted">Dato</div>
-                    <div>{a.availableDayDate ? localDate(a.availableDayDate) : "—"}</div>
+                    <div>
+                      {a.availableDayDate
+                        ? localDate(a.availableDayDate)
+                        : "—"}
+                    </div>
                   </div>
 
                   <div className="mt-2">
@@ -230,16 +225,16 @@ const AppointmentsPage: React.FC = () => {
                   <Card.Footer className="bg-transparent">
                     <div className="d-flex gap-2">
                       {canEditAppointment(a) && (
-                        <Link 
-                          className="btn btn-sm btn-outline-secondary" 
+                        <Link
+                          className="btn btn-sm btn-outline-secondary"
                           to={`/appointments/edit/${a.appointmentId}`}
                         >
                           Edit
                         </Link>
                       )}
                       {canDeleteAppointment(a) && (
-                        <Link 
-                          className="btn btn-sm btn-outline-danger" 
+                        <Link
+                          className="btn btn-sm btn-outline-danger"
                           to={`/appointments/delete/${a.appointmentId}`}
                         >
                           Delete
