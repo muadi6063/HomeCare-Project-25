@@ -17,9 +17,15 @@ const AppointmentEditPage: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  // Admin and pesonnel can update all, client can only update their own
-  const canEdit = role === "Admin" || role === "HealthcarePersonnel" || 
-    (role === "Client" && model && (model.clientEmail === userId || model.clientId.toString() === userId));
+  const isClient = role === "Client";
+
+  // Admin and personnel can update all, client can only update their own
+  const canEdit =
+    role === "Admin" ||
+    role === "HealthcarePersonnel" ||
+    (role === "Client" &&
+      model &&
+      (model.clientEmail === userId || model.clientId.toString() === userId));
 
   useEffect(() => {
     async function load() {
@@ -28,7 +34,6 @@ const AppointmentEditPage: React.FC = () => {
         const data = await ApiService.get<AppointmentDto>(`/AppointmentAPI/${id}`);
         setModel({
           ...data,
-          // Formater tid for input felter
           startTime: hhmm(data.startTime),
           endTime: hhmm(data.endTime),
         });
@@ -70,11 +75,12 @@ const AppointmentEditPage: React.FC = () => {
     }
   };
 
-  if (!canEdit) return (
-    <Container className="mt-4">
-      <Alert variant="warning">Du har ikke tilgang til å redigere denne avtalen.</Alert>
-    </Container>
-  );
+  if (!canEdit)
+    return (
+      <Container className="mt-4">
+        <Alert variant="warning">Du har ikke tilgang til å redigere denne avtalen.</Alert>
+      </Container>
+    );
   if (!model) return <Container className="mt-4">Laster…</Container>;
 
   return (
@@ -88,26 +94,17 @@ const AppointmentEditPage: React.FC = () => {
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
               <Form.Label>Klient ID</Form.Label>
-              <Form.Control 
-                value={model.clientId} 
-                disabled 
-              />
+              <Form.Control value={model.clientId} disabled />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Klient navn</Form.Label>
-              <Form.Control 
-                value={model.clientName || "Ukjent"} 
-                disabled 
-              />
+              <Form.Control value={model.clientName || "Ukjent"} disabled />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Available Day ID</Form.Label>
-              <Form.Control 
-                value={model.availableDayId} 
-                disabled 
-              />
+              <Form.Control value={model.availableDayId} disabled />
             </Form.Group>
 
             <Form.Group className="mb-3">
@@ -117,7 +114,7 @@ const AppointmentEditPage: React.FC = () => {
                 value={model.startTime}
                 onChange={(e) => setModel({ ...model, startTime: e.target.value })}
                 required
-                disabled={busy}
+                disabled={busy || isClient}
               />
             </Form.Group>
 
@@ -128,7 +125,7 @@ const AppointmentEditPage: React.FC = () => {
                 value={model.endTime}
                 onChange={(e) => setModel({ ...model, endTime: e.target.value })}
                 required
-                disabled={busy}
+                disabled={busy || isClient}
               />
             </Form.Group>
 
@@ -147,9 +144,9 @@ const AppointmentEditPage: React.FC = () => {
             <Button type="submit" disabled={busy}>
               {busy ? "Lagrer..." : "Lagre endringer"}
             </Button>
-            <Button 
-              variant="secondary" 
-              onClick={() => navigate("/appointments")} 
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/appointments")}
               disabled={busy}
               className="ms-2"
             >
