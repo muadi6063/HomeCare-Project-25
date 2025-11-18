@@ -94,8 +94,19 @@ public class AvailableDayAPIController : ControllerBase
         bool returnOk = await _availableDayRepository.Create(newAvailableDay);
         if (returnOk)
         {
-            return CreatedAtAction(nameof(GetAvailableDay), new { id = newAvailableDay.AvailableDayId }, newAvailableDay);
-        }
+            var created = await _availableDayRepository.GetAvailableDayById(newAvailableDay.AvailableDayId);
+            var responseDto = new AvailableDayDto
+            {
+                AvailableDayId = created!.AvailableDayId,
+                HealthcarePersonnelId = created.HealthcarePersonnelId,
+                HealthcarePersonnelName = created.HealthcarePersonnel?.Name,
+                HealthcarePersonnelEmail = created.HealthcarePersonnel?.Email,
+                Date = created.Date,
+                StartTime = created.StartTime,
+                EndTime = created.EndTime
+            };
+            
+            return CreatedAtAction(nameof(GetAvailableDay), new { id = newAvailableDay.AvailableDayId }, responseDto);        }
 
         _logger.LogWarning("[AvailableDayAPIController] availableday creation failed {@availableDay}", newAvailableDay);
         return StatusCode(500, "Internal server error");
@@ -111,7 +122,19 @@ public class AvailableDayAPIController : ControllerBase
             _logger.LogError("[AvailableDayAPIController] AvailableDay not found for the Id {AvailableDayId:0000}", id);
             return NotFound("AvailableDay not found for the Id");
         }
-        return Ok(availableDay);
+        
+        var dto = new AvailableDayDto
+        {
+            AvailableDayId = availableDay.AvailableDayId,
+            HealthcarePersonnelId = availableDay.HealthcarePersonnelId,
+            HealthcarePersonnelName = availableDay.HealthcarePersonnel?.Name,
+            HealthcarePersonnelEmail = availableDay.HealthcarePersonnel?.Email,
+            Date = availableDay.Date,
+            StartTime = availableDay.StartTime,
+            EndTime = availableDay.EndTime
+        };
+        
+        return Ok(dto);
     }
 
     [HttpPut("update/{id}")]
@@ -138,7 +161,19 @@ public class AvailableDayAPIController : ControllerBase
         bool updateSuccessful = await _availableDayRepository.Update(existingAvailableDay);
         if (updateSuccessful)
         {
-            return Ok(existingAvailableDay);
+            var updated = await _availableDayRepository.GetAvailableDayById(id);
+            var responseDto = new AvailableDayDto
+            {
+                AvailableDayId = updated!.AvailableDayId,
+                HealthcarePersonnelId = updated.HealthcarePersonnelId,
+                HealthcarePersonnelName = updated.HealthcarePersonnel?.Name,
+                HealthcarePersonnelEmail = updated.HealthcarePersonnel?.Email,
+                Date = updated.Date,
+                StartTime = updated.StartTime,
+                EndTime = updated.EndTime
+            };
+            
+            return Ok(responseDto);
         }
 
         _logger.LogWarning("[AvailableDayAPIController] available day update failed {@availableDay}", existingAvailableDay);

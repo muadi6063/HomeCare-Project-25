@@ -19,7 +19,7 @@ public class AppointmentAPIController : Controller
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return User.IsInRole("Client") && currentUserId != ownerId;
     }
-    
+
     public AppointmentAPIController(
         IAppointmentRepository appointmentRepository,
         ILogger<AppointmentAPIController> logger,
@@ -29,6 +29,7 @@ public class AppointmentAPIController : Controller
         _logger = logger;
         _availableDayRepository = availableDayRepository;
     }
+    
     [HttpGet("appointmentlist")]
     [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
     public async Task<IActionResult> AppointmentList(){
@@ -63,12 +64,13 @@ public class AppointmentAPIController : Controller
 
     [HttpPost("create")]
     [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
-    public async Task<IActionResult> Create([FromBody] AppointmentDto dto){
-        
+    public async Task<IActionResult> Create([FromBody] AppointmentDto dto)
+    {
+
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (dto == null)
             return BadRequest("Appointment cannot be null");
-        
+
         var availableDay = await _availableDayRepository.GetAvailableDayById(dto.AvailableDayId);
         if (availableDay == null)
         {
@@ -78,7 +80,7 @@ public class AppointmentAPIController : Controller
 
         if (User.IsInRole("Client"))
         {
-            
+
 
             dto.ClientId = currentUserId!;
         }
@@ -91,24 +93,38 @@ public class AppointmentAPIController : Controller
             EndTime = availableDay.EndTime,
             TaskDescription = dto.TaskDescription
         };
-        
+
         bool success = await _appointmentRepository.Create(newAppointment);
         if (success)
         {
-            return CreatedAtAction(nameof(GetAppointment), new { id = newAppointment.AppointmentId }, newAppointment);
+            var created = await _appointmentRepository.GetAppointmentById(newAppointment.AppointmentId);
+            var responseDto = new AppointmentDto
+            {
+                AppointmentId = created!.AppointmentId,
+                ClientId = created.ClientId,
+                ClientName = created.Client?.Name,
+                ClientEmail = created.Client?.Email,
+                AvailableDayId = created.AvailableDayId,
+                AvailableDayDate = created.AvailableDay?.Date,
+                HealthcarePersonnelName = created.AvailableDay?.HealthcarePersonnel?.Name,
+                StartTime = created.StartTime,
+                EndTime = created.EndTime,
+                TaskDescription = created.TaskDescription
+            };
+            
+            return CreatedAtAction(nameof(GetAppointment), new { id = newAppointment.AppointmentId }, responseDto);
         }
 
         _logger.LogWarning("[AppointmentAPIController] appointment creation failed {@appointment}", newAppointment);
         return StatusCode(500, "Internal server error");
 
-      
-
     }
+    
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
     public async Task<IActionResult> GetAppointment(int id)
     {
-          var appointment = await _appointmentRepository.GetAppointmentById(id);
+        var appointment = await _appointmentRepository.GetAppointmentById(id);
         if (appointment == null)
         {
             _logger.LogError("[AppointmentAPIController] Appointment not found for the AppointmentId {AppointmentId:0000}", id);
@@ -134,13 +150,14 @@ public class AppointmentAPIController : Controller
             TaskDescription = appointment.TaskDescription
         };
 
-        return Ok(appointment);
+        return Ok(dto);
     }
+
     [HttpPut("update/{id}")]
     [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
     public async Task<IActionResult> Update(int id, [FromBody] AppointmentDto dto)
     {
-         if (dto == null)
+        if (dto == null)
             return BadRequest("Appointment data cannot be null");
 
         var existing = await _appointmentRepository.GetAppointmentById(id);
@@ -148,18 +165,18 @@ public class AppointmentAPIController : Controller
             return NotFound("Appointment not found");
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-    if (User.IsInRole("Client"))
-    {
-        if (IsClientAccessingOthers(existing.ClientId))
+        if (User.IsInRole("Client"))
         {
-            _logger.LogWarning("Client {UserId} attempted to update appointment {AppointmentId} not belonging to them",
-                currentUserId, id);
-            return Forbid();
+            if (IsClientAccessingOthers(existing.ClientId))
+            {
+                _logger.LogWarning("Client {UserId} attempted to update appointment {AppointmentId} not belonging to them",
+                    currentUserId, id);
+                return Forbid();
+            }
+
+            dto.ClientId = currentUserId!;
         }
 
-        dto.ClientId = currentUserId!;
-    }    
-        
         existing.ClientId = dto.ClientId!;
         existing.AvailableDayId = dto.AvailableDayId;
         existing.StartTime = dto.StartTime;
@@ -169,12 +186,28 @@ public class AppointmentAPIController : Controller
         bool updateSuccessful = await _appointmentRepository.Update(existing);
         if (updateSuccessful)
         {
-            return Ok(existing);
+            var updated = await _appointmentRepository.GetAppointmentById(id);
+            var responseDto = new AppointmentDto
+            {
+                AppointmentId = updated!.AppointmentId,
+                ClientId = updated.ClientId,
+                ClientName = updated.Client?.Name,
+                ClientEmail = updated.Client?.Email,
+                AvailableDayId = updated.AvailableDayId,
+                AvailableDayDate = updated.AvailableDay?.Date,
+                HealthcarePersonnelName = updated.AvailableDay?.HealthcarePersonnel?.Name,
+                StartTime = updated.StartTime,
+                EndTime = updated.EndTime,
+                TaskDescription = updated.TaskDescription
+            };
+            
+            return Ok(responseDto);;
         }
         _logger.LogError("[AppointmentAPIController] Appointment update failed {@appointment}", existing);
         return StatusCode(500, "Internal server error during update");
 
     }
+    
     [HttpDelete("delete/{id}")]
     [Authorize(Roles = "Admin,HealthcarePersonnel,Client")]
     public async Task<IActionResult> DeleteConfirmed(int id)

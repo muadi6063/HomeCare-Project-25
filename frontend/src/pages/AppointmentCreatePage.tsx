@@ -28,7 +28,7 @@ const AppointmentCreatePage: React.FC = () => {
         const data = await ApiService.get<AvailableDayDto>(`/AvailableDayAPI/${availableDayId}`);
         if (!cancelled) setAvailableDay(data);
       } catch {
-        if (!cancelled) setError("Kunne ikke laste tilgjengelig dag.");
+        if (!cancelled) setError("Could not load available day.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -47,16 +47,16 @@ const AppointmentCreatePage: React.FC = () => {
     setError("");
 
     if (!taskDescription.trim() || taskDescription.trim().length < 5) {
-      setError("Oppgavebeskrivelse må være minst 5 tegn.");
+      setError("Task description needs to have at least 5 charaters");
       return;
     }
     if (taskDescription.trim().length > 500) {
-      setError("Oppgavebeskrivelse kan være maks 500 tegn.");
+      setError("Task description ha max 500 characters");
       return;
     }
 
     if (!availableDayId || !email || !userId) {
-      setError("Mangler nødvendig informasjon for booking.");
+      setError("Missing required information for booking");
       return;
     }
 
@@ -70,7 +70,7 @@ const AppointmentCreatePage: React.FC = () => {
       await ApiService.post("/AppointmentAPI/create", dto);
       navigate("/appointments");
     } catch (e: any) {
-      setError(e?.message ?? "Klarte ikke å booke time.");
+      setError(e?.message ?? "Booking failed");
     } finally {
       setBusy(false);
     }
@@ -87,7 +87,7 @@ const AppointmentCreatePage: React.FC = () => {
   if (!availableDay) {
     return (
       <Container className="mt-4">
-        <Alert variant="danger">Kunne ikke finne tilgjengelig dag.</Alert>
+        <Alert variant="danger">Cannot find any available days.</Alert>
       </Container>
     );
   }
@@ -118,25 +118,25 @@ const AppointmentCreatePage: React.FC = () => {
 
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>Oppgavebeskrivelse *</Form.Label>
+              <Form.Label>Task description *</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={4}
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
-                placeholder="Beskriv hva du trenger hjelp med (minst 5 tegn, maks 500 tegn)..."
+                placeholder="Describe what you need help with (minimum 5 characters, max 500 characters)..."
                 required
                 disabled={busy}
                 minLength={5}
                 maxLength={500}
               />
               <Form.Text className="text-muted">
-                {taskDescription.length}/500 tegn (minimum 5 tegn)
+                {taskDescription.length}/500 characters (minimum 5 characters)
               </Form.Text>
             </Form.Group>
 
             <Button type="submit" disabled={busy} variant="success">
-              {busy ? "Booker..." : "Book Time"}
+              {busy ? "Booking..." : "Book appointment"}
             </Button>
             <Button
               variant="secondary"

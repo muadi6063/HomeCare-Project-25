@@ -39,14 +39,15 @@ public class AuthAPIController : ControllerBase
         var user = new User
         {
             UserName = registerDto.Email,
-            Email = registerDto.Email
+            Email = registerDto.Email,
+            Name = registerDto.Name,
         };
 
         var result = await _userManager.CreateAsync(user, registerDto.Password);
 
         if (result.Succeeded)
         {
-            await _userManager.AddToRoleAsync(user, "Client");
+            await _userManager.AddToRoleAsync(user, registerDto.Role);
             _logger.LogInformation("[AuthController] User registered: {Username}", registerDto.Username);
             return Ok(new { message = "User registered successfully" });
         }

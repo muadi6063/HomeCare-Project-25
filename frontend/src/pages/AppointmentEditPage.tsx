@@ -17,8 +17,8 @@ const AppointmentEditPage: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  // Admin kan edit alle, Client kan kun edit sine egne
-  const canEdit = role === "Admin" || 
+  // Admin and pesonnel can update all, client can only update their own
+  const canEdit = role === "Admin" || role === "HealthcarePersonnel" || 
     (role === "Client" && model && (model.clientEmail === userId || model.clientId.toString() === userId));
 
   useEffect(() => {

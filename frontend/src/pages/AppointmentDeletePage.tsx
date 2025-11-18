@@ -16,8 +16,8 @@ const AppointmentDeletePage: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  // Admin kan slette alle, Client kan kun slette sine egne
-  const canDelete = role === "Admin" || 
+  // Admin and pesonnel can delete all, client can only delete their own
+  const canDelete = role === "Admin" || role === "HealthcarePersonnel" || 
     (role === "Client" && item && (item.clientEmail === userId || item.clientId.toString() === userId));
 
   useEffect(() => {

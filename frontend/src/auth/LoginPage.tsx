@@ -59,6 +59,16 @@ const LoginPage: React.FC = () => {
               </Button>
             </div>
           </Form>
+          <div className="mt-3 text-center">
+            <span className="text-muted">Don't have an account? </span>
+            <Button
+              variant="link"
+              onClick={() => navigate('/register')}
+              disabled={busy}
+              className="p-0">
+              Register here
+            </Button>
+          </div>
         </Card.Body>
       </Card>
     </div>

@@ -20,11 +20,9 @@ const AppointmentsPage: React.FC = () => {
   const [err, setErr] = useState<string | null>(null);
   const [q, setQ] = useState("");
 
-  const canCreate = isAuthenticated;
-
   const canDeleteAppointment = (appointment: AppointmentDto) => {
     if (!isAuthenticated) return false;
-    if (role === "Admin") return true;
+    if (role === "Admin" || role === "HealthcarePersonnel") return true;
     if (role === "Client") {
       return appointment.clientEmail === userId || appointment.clientId.toString() === userId;
     }
@@ -33,7 +31,7 @@ const AppointmentsPage: React.FC = () => {
 
   const canEditAppointment = (appointment: AppointmentDto) => {
     if (!isAuthenticated) return false;
-    if (role === "Admin") return true;
+    if (role === "Admin" || role === "HealthcarePersonnel") return true;
     if (role === "Client") {
       return appointment.clientEmail === userId || appointment.clientId.toString() === userId;
     }

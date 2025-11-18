@@ -6,7 +6,8 @@ import AppNavbar from "./components/Navbar";
 
 // Pages
 import Home from "./pages/Home";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./auth/LoginPage";
+import RegisterPage from "./auth/RegisterPage";
 
 // AvailableDay 
 import AvailableDaysPage from "./pages/AvailableDaysPage";
@@ -28,9 +29,10 @@ const App: React.FC = () => {
           <AppNavbar />
           <main className="flex-grow-1 container-lg">
             <Routes>
-              {/* Offentlige ruter */}
+              {/* Public routes */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="register" element={<RegisterPage/>} />
               <Route path="/availabledays" element={<AvailableDaysPage />} />
               
               {/* AvailableDays - Admin/HealthcarePersonnel */}
@@ -59,7 +61,7 @@ const App: React.FC = () => {
                 } 
               />
               
-              {/* Appointments - Alle autentiserte brukere */}
+              {/* Appointments - Alle authorized users */}
               <Route 
                 path="/appointments" 
                 element={
