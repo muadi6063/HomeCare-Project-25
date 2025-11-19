@@ -23,9 +23,18 @@ const AvailableDayCreatePage = () => {
     setError("");
 
     if (!healthcarePersonnelId || !date || !startTime) {
-      setError("Alle felt må fylles ut.");
+      setError("All fields must be filled out");
       return;
     }
+
+      const selectedDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (selectedDate < today) {
+        setError("Date must be in the future.");
+        return;
+      }
 
     try {
       setBusy(true);
@@ -35,8 +44,9 @@ const AvailableDayCreatePage = () => {
         startTime: startTime + ":00",
       });
       navigate("/availabledays");
-    } catch {
-      setError("Klarte ikke å opprette tilgjengelig dag.");
+    } catch (err: any) {
+      const errorMessage = err?.message.replace(/^API \d+ [^:]+:\s*/, '') || "Could not create available day";
+      setError(errorMessage);
     } finally {
       setBusy(false);
     }
@@ -46,7 +56,7 @@ const AvailableDayCreatePage = () => {
 
   return (
     <div className="container mt-4">
-      <h2>Ny tilgjengelig dag</h2>
+      <h2>New available day</h2>
 
       {error && <Alert variant="danger">{error}</Alert>}
 
@@ -62,7 +72,7 @@ const AvailableDayCreatePage = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Dato</Form.Label>
+          <Form.Label>Date</Form.Label>
           <Form.Control
             type="date"
             value={date}
@@ -72,7 +82,7 @@ const AvailableDayCreatePage = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Starttid</Form.Label>
+          <Form.Label>Start time</Form.Label>
           <Form.Control
             type="time"
             value={startTime}
@@ -82,7 +92,7 @@ const AvailableDayCreatePage = () => {
         </Form.Group>
 
         <Button type="submit" disabled={busy}>
-          {busy ? "Lagrer..." : "Opprett"}
+          {busy ? "Saving..." : "Save"}
         </Button>{" "}
         <Button variant="secondary" onClick={() => navigate("/availabledays")}>
           Avbryt

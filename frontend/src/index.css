@@ -14,8 +14,8 @@
 
 body {
   margin: 0;
-  /* plass slik at fixed navbar ikke dekker innholdet */
-  padding-top: 56px; /* øk til 64px hvis navbaren er høyere */
+  /* space so that navbar doesnt cover the content */
+  padding-top: 56px; /* increase to 64px if navbar is to the right */
   min-width: 320px;
   background: inherit;
   color: inherit;

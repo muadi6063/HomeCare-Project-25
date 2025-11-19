@@ -47,7 +47,7 @@ const AppointmentsPage: React.FC = () => {
     return false;
   };
 
-  // Hent appointments
+  // Get appointments
   useEffect(() => {
     let cancelled = false;
     async function loadAppointments() {
@@ -59,7 +59,7 @@ const AppointmentsPage: React.FC = () => {
         );
         if (!cancelled) setAppointments(data);
       } catch (e: any) {
-        if (!cancelled) setErr(e?.message ?? "Klarte ikke å laste avtaler.");
+        if (!cancelled) setErr(e?.message ?? "Could not get appointments");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -70,7 +70,7 @@ const AppointmentsPage: React.FC = () => {
     };
   }, []);
 
-  // Hent available days for Client
+  // Get available days for Client
   useEffect(() => {
     if (role !== "Client") return;
 
@@ -83,7 +83,7 @@ const AppointmentsPage: React.FC = () => {
         );
         if (!cancelled) setAvailableDays(data);
       } catch (e: any) {
-        console.error("Kunne ikke hente ledige dager:", e);
+        console.error("Could not get available days: ", e);
       } finally {
         if (!cancelled) setLoadingAvailableDays(false);
       }
@@ -132,17 +132,17 @@ const AppointmentsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* LEDIGE TIDER FOR CLIENT */}
+      {/* AVAILABLE TIMES FOR CLIENT */}
       {role === "Client" && (
         <div className="mb-5">
-          <h3>Ledige tider for booking</h3>
+          <h3>Available times for booking</h3>
           {loadingAvailableDays ? (
             <div className="text-center mt-3">
               <Spinner size="sm" />
             </div>
           ) : flatAvailableDays.length === 0 ? (
             <Alert variant="info" className="mt-3">
-              Ingen ledige tider funnet.
+              No available times found.
             </Alert>
           ) : (
             <Row className="g-3 mt-3">
@@ -157,14 +157,14 @@ const AppointmentsPage: React.FC = () => {
                         {hhmm(ad.startTime)} – {hhmm(ad.endTime)}
                       </Card.Text>
                       <Card.Text className="text-muted small mb-1">
-                        {ad.personnelName ?? "Ukjent personell"}
+                        {ad.personnelName ?? "Unknown personnel"}
                       </Card.Text>
                       <div className="mt-auto">
                         <Link
                           className="btn btn-success btn-sm"
                           to={`/appointments/book/${ad.availableDayId}`}
                         >
-                          Book Time
+                          Book Appointment
                         </Link>
                       </div>
                     </Card.Body>
@@ -176,9 +176,9 @@ const AppointmentsPage: React.FC = () => {
         </div>
       )}
 
-      {/* AVTALER */}
+      {/* Appointments */}
       {appointmentsToShow.length === 0 ? (
-        <Alert variant="info">Ingen avtaler funnet.</Alert>
+        <Alert variant="info">No appointments found</Alert>
       ) : (
         <Row xs={1} md={2} lg={3} xl={4} className="g-3">
           {appointmentsToShow.map((a) => (
@@ -188,19 +188,22 @@ const AppointmentsPage: React.FC = () => {
                   <div className="d-flex justify-content-between align-items-start">
                     <div>
                       <Card.Title className="mb-1">
-                        {a.clientName ?? "Ukjent klient"}
+                        {a.clientName ?? "Unknown Client"}
                       </Card.Title>
                       <Card.Subtitle className="text-muted small">
                         {a.clientEmail}
                       </Card.Subtitle>
                     </div>
+                    <div className="text-end">
+                      <div className="small text-muted">Personnel</div>
                     <span className="badge text-bg-light border">
-                      {a.healthcarePersonnelName ?? "Personell"}
+                      {a.healthcarePersonnelName ?? "Unknown Personnel"}
                     </span>
+                  </div>
                   </div>
 
                   <div className="mt-3">
-                    <div className="small text-muted">Dato</div>
+                    <div className="small text-muted">Date</div>
                     <div>
                       {a.availableDayDate
                         ? localDate(a.availableDayDate)
@@ -209,14 +212,14 @@ const AppointmentsPage: React.FC = () => {
                   </div>
 
                   <div className="mt-2">
-                    <div className="small text-muted">Tid</div>
+                    <div className="small text-muted">Time</div>
                     <div>
                       {hhmm(a.startTime)}–{hhmm(a.endTime)}
                     </div>
                   </div>
 
                   <div className="mt-2">
-                    <div className="small text-muted">Oppgave</div>
+                    <div className="small text-muted">Task</div>
                     <div>{a.taskDescription || "—"}</div>
                   </div>
                 </Card.Body>

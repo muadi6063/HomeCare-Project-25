@@ -78,64 +78,63 @@ const AvailableDaysPage: React.FC = () => {
     );
   }
 
-  const flat = groups.flatMap((g) =>
-    g.availableDays.map((ad) => ({
-      ...ad,
-      personnelName: g.healthcarePersonnel.name,
-    }))
-  );
-
   return (
-    <Container className="mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Available Days</h2>
-        {canCreate && (
-          <Link to="/availabledays/create" className="btn btn-primary">
-            + New Available Day
-          </Link>
-        )}
-      </div>
+  <Container className="mt-4">
+    <div className="d-flex justify-content-between align-items-center mb-4">
+      <h2>Available Days</h2>
+      {canCreate && (
+        <Link to="/availabledays/create" className="btn btn-success">
+          Create Available Day
+        </Link>
+      )}
+    </div>
 
-      <div className="row g-3">
-        {flat.map((ad) => (
-          <div className="col-12 col-md-6 col-lg-4" key={ad.availableDayId}>
-            <div className="card h-100">
-              <div className="card-body">
-                <h5>{new Date(ad.date).toLocaleDateString("no-NO")}</h5>
-                <p>
-                  {hhmm(ad.startTime)} – {hhmm(ad.endTime)}
-                </p>
-                <p className="text-muted small mb-1">
-                  {ad.personnelName ?? "Unknown staff"}
-                </p>
-
-                {(canEditDay(ad) || canDeleteDay(ad)) && (
-                  <div className="d-flex gap-2">
-                    {canEditDay(ad) && (
-                      <Link
-                        className="btn btn-sm btn-outline-secondary"
-                        to={`/availabledays/edit/${ad.availableDayId}`}
-                      >
-                        Edit
-                      </Link>
-                    )}
-                    {canDeleteDay(ad) && (
-                      <Link
-                        className="btn btn-sm btn-outline-danger"
-                        to={`/availabledays/delete/${ad.availableDayId}`}
-                      >
-                        Delete
-                      </Link>
-                    )}
-                  </div>
-                )}
-              </div>
+    <div className="row g-3">
+      {groups.map((item) => (
+        <div className="col-12 col-md-6 col-lg-4" key={item.healthcarePersonnel.userId}>
+          <div className="card h-100 hover-card">
+            <div className="card-header bg-light">
+              <h5 className="mb-1">{item.healthcarePersonnel.name}</h5>
+              <small className="text-muted">{item.healthcarePersonnel.email}</small>
+            </div>
+            <div className="card-body">
+              {item.availableDays.length === 0 ? (
+                <p className="text-muted mb-0">No available time slots</p>
+              ) : (
+                <div className="d-flex flex-column gap-2">
+                  {item.availableDays.map((availableDay) => (
+                    <div key={availableDay.availableDayId} className="p-2 border rounded bg-light">
+                      <div className="d-flex justify-content-between">
+                        <div>
+                          <div className="fw-bold">{new Date(availableDay.date).toLocaleDateString("no-NO")}</div>
+                          <div className="text-muted small">{hhmm(availableDay.startTime)} – {hhmm(availableDay.endTime)}</div>
+                        </div>
+                        {(canEditDay(availableDay) || canDeleteDay(availableDay)) && (
+                          <div className="d-flex gap-1">
+                            {canEditDay(availableDay) && (
+                              <Link to={`/availabledays/edit/${availableDay.availableDayId}`} className="btn btn-sm btn-outline-secondary">
+                                Edit
+                              </Link>
+                            )}
+                            {canDeleteDay(availableDay) && (
+                              <Link to={`/availabledays/delete/${availableDay.availableDayId}`} className="btn btn-sm btn-outline-danger">
+                                Delete
+                              </Link>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        ))}
-      </div>
-    </Container>
-  );
-};
+        </div>
+      ))}
+    </div>
+  </Container>
+);
+}
 
 export default AvailableDaysPage;

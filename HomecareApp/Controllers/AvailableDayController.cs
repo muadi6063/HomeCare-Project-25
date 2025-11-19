@@ -83,6 +83,20 @@ public class AvailableDayAPIController : ControllerBase
             return BadRequest("Item cannot be null");
         }
 
+        var existingDays = await _availableDayRepository.GetAll();
+        var endTime = availableDayDto.StartTime.Add(TimeSpan.FromMinutes(45));
+
+        var availableDayExists = existingDays
+            .Where(ad => ad.HealthcarePersonnelId == availableDayDto.HealthcarePersonnelId)
+            .Where(ad => ad.Date.Date == availableDayDto.Date.Date)
+            .Any(ad => availableDayDto.StartTime < ad.EndTime && endTime > ad.StartTime);
+            
+        if (availableDayExists)
+        {
+            _logger.LogError("Time slot exists for personnel");
+            return BadRequest("This time slot overlaps with an existing available day for this personnel");
+        }
+
         var newAvailableDay = new AvailableDay
         {
             HealthcarePersonnelId = availableDayDto.HealthcarePersonnelId,
