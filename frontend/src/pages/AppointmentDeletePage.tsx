@@ -74,6 +74,9 @@ const AppointmentDeletePage: React.FC = () => {
             <strong>Klient:</strong> {item.clientName ?? "Ukjent"} ({item.clientEmail ?? "—"})
           </div>
           <div className="mb-3">
+            <strong>Adresse:</strong> {item.address ?? "—"}
+          </div>
+          <div className="mb-3">
             <strong>Tid:</strong> {item.availableDayDate ? new Date(item.availableDayDate).toLocaleDateString("no-NO") : "—"} {hhmm(item.startTime)}–{hhmm(item.endTime)}
           </div>
           <div className="mb-3">

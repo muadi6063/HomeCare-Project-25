@@ -15,6 +15,7 @@ const AppointmentCreatePage: React.FC = () => {
 
   const [availableDay, setAvailableDay] = useState<AvailableDayDto | null>(null);
   const [taskDescription, setTaskDescription] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -57,6 +58,7 @@ const AppointmentCreatePage: React.FC = () => {
         ClientId: userId,
         AvailableDayId: Number(availableDayId),
         TaskDescription: taskDescription.trim(),
+        Address: address.trim(),
       };
       await ApiService.post("/AppointmentAPI/create", dto);
       navigate("/appointments");
@@ -126,6 +128,25 @@ const AppointmentCreatePage: React.FC = () => {
                 {taskDescription.length}/500 characters (minimum 5 characters)
               </Form.Text>
             </Form.Group>
+
+            <Form.Group className="mb-3">
+            <Form.Label>Address *</Form.Label>
+            <Form.Control
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Where should the visit take place? (e.g., Pilestredet 35, Oslo)"
+              required
+              disabled={busy}
+              minLength={5}
+              maxLength={200}
+              title="Address must be between 5 and 200 characters."
+            />
+            <Form.Text className="text-muted">
+              Enter the address where you need the service
+            </Form.Text>
+          </Form.Group>
+
 
             <Button type="submit" disabled={busy} variant="success">
               {busy ? "Booking..." : "Book appointment"}

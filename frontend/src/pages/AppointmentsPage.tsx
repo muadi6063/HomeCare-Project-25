@@ -228,6 +228,11 @@ const AppointmentsPage: React.FC = () => {
                   </div>
 
                   <div className="mt-2">
+                    <div className="small text-muted">Address</div>
+                    <div>{a.address || "—"}</div>
+                  </div>
+
+                  <div className="mt-2">
                     <div className="small text-muted">Task</div>
                     <div>{a.taskDescription || "—"}</div>
                   </div>

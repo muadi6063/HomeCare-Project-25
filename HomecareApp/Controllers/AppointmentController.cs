@@ -51,6 +51,7 @@ public class AppointmentAPIController : Controller
             ClientId = a.ClientId,
             ClientName = a.Client?.Name,
             ClientEmail = a.Client?.Email,
+            Address = a.Address,
             AvailableDayId = a.AvailableDayId,
             AvailableDayDate = a.AvailableDay?.Date,
             HealthcarePersonnelName = a.AvailableDay?.HealthcarePersonnel?.Name,
@@ -91,7 +92,8 @@ public class AppointmentAPIController : Controller
             AvailableDayId = dto.AvailableDayId,
             StartTime = availableDay.StartTime,
             EndTime = availableDay.EndTime,
-            TaskDescription = dto.TaskDescription
+            TaskDescription = dto.TaskDescription,
+            Address = dto.Address
         };
 
         bool success = await _appointmentRepository.Create(newAppointment);
@@ -104,6 +106,7 @@ public class AppointmentAPIController : Controller
                 ClientId = created.ClientId,
                 ClientName = created.Client?.Name,
                 ClientEmail = created.Client?.Email,
+                Address = created.Address,
                 AvailableDayId = created.AvailableDayId,
                 AvailableDayDate = created.AvailableDay?.Date,
                 HealthcarePersonnelName = created.AvailableDay?.HealthcarePersonnel?.Name,
@@ -142,6 +145,7 @@ public class AppointmentAPIController : Controller
             ClientId = appointment.ClientId,
             ClientName = appointment.Client?.Name,
             ClientEmail = appointment.Client?.Email,
+            Address = appointment.Address,
             AvailableDayId = appointment.AvailableDayId,
             AvailableDayDate = appointment.AvailableDay?.Date,
             HealthcarePersonnelName = appointment.AvailableDay?.HealthcarePersonnel?.Name,
@@ -182,6 +186,7 @@ public class AppointmentAPIController : Controller
         existing.StartTime = dto.StartTime;
         existing.EndTime = dto.EndTime;
         existing.TaskDescription = dto.TaskDescription;
+        existing.Address = dto.Address;
 
         bool updateSuccessful = await _appointmentRepository.Update(existing);
         if (updateSuccessful)
@@ -193,6 +198,7 @@ public class AppointmentAPIController : Controller
                 ClientId = updated.ClientId,
                 ClientName = updated.Client?.Name,
                 ClientEmail = updated.Client?.Email,
+                Address = updated.Address,
                 AvailableDayId = updated.AvailableDayId,
                 AvailableDayDate = updated.AvailableDay?.Date,
                 HealthcarePersonnelName = updated.AvailableDay?.HealthcarePersonnel?.Name,

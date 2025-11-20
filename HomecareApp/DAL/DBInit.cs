@@ -109,13 +109,14 @@ public static class DBInit
                 
                 var appointments = new List<Appointment>
                 {
-                    new Appointment 
-                    { 
-                        ClientId = john.Id, 
+                    new Appointment
+                    {
+                        ClientId = john.Id,
                         AvailableDayId = firstAvailableDay.AvailableDayId,
                         StartTime = new TimeSpan(9, 0, 0),
                         EndTime = new TimeSpan(9, 45, 0),
-                        TaskDescription = "Medication reminder and blood pressure check"
+                        TaskDescription = "Medication reminder and blood pressure check",
+                        Address = "Oslomet 23, Oslo"
                     }
                 };
 

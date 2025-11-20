@@ -66,6 +66,7 @@ const AppointmentEditPage: React.FC = () => {
         startTime: hhmmss(model.startTime),
         endTime: hhmmss(model.endTime),
         taskDescription: model.taskDescription,
+        address: model.address,
       });
       navigate("/appointments");
     } catch {
@@ -105,6 +106,20 @@ const AppointmentEditPage: React.FC = () => {
                 minLength={5}
                 maxLength={500}
                 title="Task description must be between 5 and 500 characters."
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Address *</Form.Label>
+              <Form.Control
+                type="text"
+                value={model.address || ""}
+                onChange={(e) => setModel({ ...model, address: e.target.value })}
+                placeholder="Service location address"
+                required
+                disabled={busy}
+                minLength={5}
+                maxLength={200}
+                title="Address must be between 5 and 200 characters."
               />
             </Form.Group>
 

@@ -20,6 +20,10 @@ public class Appointment
     [DataType(DataType.Time)]
     public TimeSpan EndTime { get; set; }
 
+    [Required]
+    [StringLength(200, MinimumLength = 5)]
+    public string Address { get; set; } = string.Empty;
+
     [Required(ErrorMessage = "Task description is required")]
     [StringLength(500, MinimumLength = 5, ErrorMessage = "Task description must be between 5 and 500 characters")]
     public string TaskDescription { get; set; } = string.Empty;

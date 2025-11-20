@@ -3,6 +3,7 @@ export interface AppointmentDto {
   clientId: number;
   clientName: string | null;
   clientEmail: string | null;
+  address: string;
   availableDayId: number;
   availableDayDate: string | null; 
   healthcarePersonnelName: string | null;
