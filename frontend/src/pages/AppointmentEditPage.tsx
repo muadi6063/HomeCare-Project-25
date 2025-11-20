@@ -38,7 +38,7 @@ const AppointmentEditPage: React.FC = () => {
           endTime: hhmm(data.endTime),
         });
       } catch {
-        setError("Kunne ikke laste avtalen.");
+        setError("Could not load appointment");
       }
     }
 
@@ -50,11 +50,11 @@ const AppointmentEditPage: React.FC = () => {
     if (!model) return;
 
     if (!model.startTime || !model.endTime) {
-      setError("Alle påkrevde felter må fylles ut.");
+      setError("All required fields needs to be filled out.");
       return;
     }
     if (hhmmss(model.endTime) <= hhmmss(model.startTime)) {
-      setError("Sluttid må være etter starttid.");
+      setError("End time needs to be after Start time");
       return;
     }
 
@@ -69,7 +69,7 @@ const AppointmentEditPage: React.FC = () => {
       });
       navigate("/appointments");
     } catch {
-      setError("Oppdatering feilet.");
+      setError("Update failed");
     } finally {
       setBusy(false);
     }
@@ -78,14 +78,14 @@ const AppointmentEditPage: React.FC = () => {
   if (!canEdit)
     return (
       <Container className="mt-4">
-        <Alert variant="warning">Du har ikke tilgang til å redigere denne avtalen.</Alert>
+        <Alert variant="warning">You do not have access to edit this appointment.</Alert>
       </Container>
     );
-  if (!model) return <Container className="mt-4">Laster…</Container>;
+  if (!model) return <Container className="mt-4">Loading...</Container>;
 
   return (
     <Container className="mt-4">
-      <h2>Rediger avtale</h2>
+      <h2>Edit appointment</h2>
 
       {error && <Alert variant="danger">{error}</Alert>}
 
@@ -93,56 +93,23 @@ const AppointmentEditPage: React.FC = () => {
         <Card.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>Klient ID</Form.Label>
-              <Form.Control value={model.clientId} disabled />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Klient navn</Form.Label>
-              <Form.Control value={model.clientName || "Ukjent"} disabled />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Available Day ID</Form.Label>
-              <Form.Control value={model.availableDayId} disabled />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Starttid</Form.Label>
-              <Form.Control
-                type="time"
-                value={model.startTime}
-                onChange={(e) => setModel({ ...model, startTime: e.target.value })}
-                required
-                disabled={busy || isClient}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Sluttid</Form.Label>
-              <Form.Control
-                type="time"
-                value={model.endTime}
-                onChange={(e) => setModel({ ...model, endTime: e.target.value })}
-                required
-                disabled={busy || isClient}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Oppgavebeskrivelse</Form.Label>
+              <Form.Label>Edit task description</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 value={model.taskDescription || ""}
                 onChange={(e) => setModel({ ...model, taskDescription: e.target.value })}
-                placeholder="F.eks. medication reminder, assistance with shopping..."
+                placeholder="Tell us about your needs, your adress and other relevant information"
                 disabled={busy}
+                required
+                minLength={5}
+                maxLength={500}
+                title="Task description must be between 5 and 500 characters."
               />
             </Form.Group>
 
             <Button type="submit" disabled={busy}>
-              {busy ? "Lagrer..." : "Lagre endringer"}
+              {busy ? "Saving..." : "Save changes"}
             </Button>
             <Button
               variant="secondary"
@@ -150,7 +117,7 @@ const AppointmentEditPage: React.FC = () => {
               disabled={busy}
               className="ms-2"
             >
-              Avbryt
+              Cancel
             </Button>
           </Form>
         </Card.Body>

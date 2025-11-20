@@ -46,19 +46,10 @@ const AppointmentCreatePage: React.FC = () => {
     e.preventDefault();
     setError("");
 
-    if (!taskDescription.trim() || taskDescription.trim().length < 5) {
-      setError("Task description needs to have at least 5 charaters");
-      return;
-    }
-    if (taskDescription.trim().length > 500) {
-      setError("Task description ha max 500 characters");
-      return;
-    }
-
     if (!availableDayId || !email || !userId) {
-      setError("Missing required information for booking");
-      return;
-    }
+    setError("Missing required information for booking");
+    return;
+    } 
 
     try {
       setBusy(true);
@@ -129,6 +120,7 @@ const AppointmentCreatePage: React.FC = () => {
                 disabled={busy}
                 minLength={5}
                 maxLength={500}
+                title="Task description must be between 5 and 500 characters."
               />
               <Form.Text className="text-muted">
                 {taskDescription.length}/500 characters (minimum 5 characters)
