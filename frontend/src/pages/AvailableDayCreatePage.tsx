@@ -1,15 +1,27 @@
-// src/pages/AvailableDayCreatePage.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import ApiService from "../services/ApiService";
 import { useAuth } from "../context/AuthContext";
 
-const AvailableDayCreatePage = () => {
-  const navigate = useNavigate();
-  const { role, userId } = useAuth() as { role?: string; userId?: string | null };
+type HealthcarePersonnel = {
+  userId: string;
+  name: string;
+  email: string;
+  role: string;
+};
 
-  const [healthcarePersonnelId, setHealthcarePersonnelId] = useState(userId || "");
+const AvailableDayCreatePage: React.FC = () => {
+  const navigate = useNavigate();
+  const { role, userId } = useAuth() as {
+    role?: string;
+    userId?: string | null;
+  };
+
+  const [healthcarePersonnelId, setHealthcarePersonnelId] = useState("");
+  const [personnel, setPersonnel] = useState<HealthcarePersonnel[]>([]);
+  const [loadingPersonnel, setLoadingPersonnel] = useState(false);
+
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
 
@@ -17,6 +29,41 @@ const AvailableDayCreatePage = () => {
   const [busy, setBusy] = useState(false);
 
   const canCreate = role === "Admin" || role === "HealthcarePersonnel";
+
+  // Last inn helsepersonell-liste for Admin,
+  // og sett egen id automatisk for HealthcarePersonnel
+  useEffect(() => {
+    // HealthcarePersonnel: alltid seg selv
+    if (role === "HealthcarePersonnel" && userId) {
+      setHealthcarePersonnelId(userId);
+    }
+
+    // Admin: hent alle brukere og filtrer til HealthcarePersonnel
+    if (role === "Admin") {
+      (async () => {
+        try {
+          setLoadingPersonnel(true);
+
+          // Henter hele user-listen
+          const data = await ApiService.get<HealthcarePersonnel[]>(
+            "/UserAPI/userlist"
+          );
+
+          // Filtrer kun helsepersonell
+          const hpOnly = data.filter(
+            (u) => u.role === "HealthcarePersonnel"
+          );
+
+          setPersonnel(hpOnly);
+        } catch (e) {
+          console.error("Could not load healthcare personnel", e);
+          setError("Could not load healthcare personnel list.");
+        } finally {
+          setLoadingPersonnel(false);
+        }
+      })();
+    }
+  }, [role, userId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,14 +74,14 @@ const AvailableDayCreatePage = () => {
       return;
     }
 
-      const selectedDate = new Date(date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      if (selectedDate < today) {
-        setError("Date must be in the future.");
-        return;
-      }
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      setError("Date must be in the future.");
+      return;
+    }
 
     try {
       setBusy(true);
@@ -45,14 +92,18 @@ const AvailableDayCreatePage = () => {
       });
       navigate("/availabledays");
     } catch (err: any) {
-      const errorMessage = err?.message.replace(/^API \d+ [^:]+:\s*/, '') || "Could not create available day";
+      const errorMessage =
+        err?.message.replace(/^API \d+ [^:]+:\s*/, "") ||
+        "Could not create available day";
       setError(errorMessage);
     } finally {
       setBusy(false);
     }
   };
 
-  if (!canCreate) return <Alert variant="warning">Ingen tilgang</Alert>;
+  if (!canCreate) {
+    return <Alert variant="warning">Ingen tilgang</Alert>;
+  }
 
   return (
     <div className="container mt-4">
@@ -62,13 +113,30 @@ const AvailableDayCreatePage = () => {
 
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
-          <Form.Label>Healthcare Personnel Id</Form.Label>
-          <Form.Control
-            value={healthcarePersonnelId}
-            onChange={(e) => setHealthcarePersonnelId(e.target.value)}
-            required
-            disabled={!!userId}
-          />
+          <Form.Label>Healthcare personnel</Form.Label>
+
+          {role === "Admin" ? (
+            <Form.Select
+              value={healthcarePersonnelId}
+              onChange={(e) => setHealthcarePersonnelId(e.target.value)}
+              required
+              disabled={busy || loadingPersonnel || personnel.length === 0}
+            >
+              <option value="">
+                {loadingPersonnel
+                  ? "Loading personnel..."
+                  : "Select healthcare personnel"}
+              </option>
+              {personnel.map((p) => (
+                <option key={p.userId} value={p.userId}>
+                  {p.name} ({p.email})
+                </option>
+              ))}
+            </Form.Select>
+          ) : (
+            // HealthcarePersonnel: viser egen id
+            <Form.Control type="text" value={userId ?? ""} disabled readOnly />
+          )}
         </Form.Group>
 
         <Form.Group className="mb-3">
@@ -94,7 +162,11 @@ const AvailableDayCreatePage = () => {
         <Button type="submit" disabled={busy}>
           {busy ? "Saving..." : "Save"}
         </Button>{" "}
-        <Button variant="secondary" onClick={() => navigate("/availabledays")}>
+        <Button
+          variant="secondary"
+          onClick={() => navigate("/availabledays")}
+          disabled={busy}
+        >
           Avbryt
         </Button>
       </Form>

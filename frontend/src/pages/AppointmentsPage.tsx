@@ -216,6 +216,10 @@ const AppointmentsPage: React.FC = () => {
       )}
 
       {/* Appointments */}
+      {role === "Client" && (
+        <h3 className="mt-4 mb-3">My appointments</h3>
+      )}
+
       {appointmentsToShow.length === 0 ? (
         <Alert variant="info">No appointments found</Alert>
       ) : (

@@ -114,7 +114,7 @@ const AvailableDaysPage: React.FC = () => {
 
       <div className="row g-3">
         {groups.map((item) => {
-          // grupper denne personens dager per dato
+          // grpoups available days by date
           const groupedByDate: Record<
             string,
             typeof item.availableDays
