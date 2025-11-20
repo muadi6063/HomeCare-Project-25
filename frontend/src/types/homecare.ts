@@ -1,24 +1,24 @@
 export interface AppointmentDto {
   appointmentId: number;
-  clientId: number;
+  clientId: string;                     
   clientName: string | null;
   clientEmail: string | null;
   availableDayId: number;
-  availableDayDate: string | null; 
+  availableDayDate: string | null;
   healthcarePersonnelName: string | null;
-  startTime: string; 
-  endTime: string; 
+  startTime: string;
+  endTime: string;
   taskDescription: string;
 }
 
 export interface AvailableDayDto {
   availableDayId: number;
-  healthcarePersonnelId: number;
+  healthcarePersonnelId: number;        
   healthcarePersonnelName: string | null;
   healthcarePersonnelEmail: string | null;
-  date: string; 
-  startTime: string; 
-  endTime: string; 
+  date: string;
+  startTime: string;
+  endTime: string;
 }
 
 export interface UserDto {
