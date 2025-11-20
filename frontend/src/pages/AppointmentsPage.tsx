@@ -3,8 +3,7 @@ import { Alert, Card, Col, Row, Spinner, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ApiService from "../services/ApiService";
 import { useAuth } from "../context/AuthContext";
-import type { AppointmentDto } from "../types/homecare";
-import type { AvailableDaysGrouped } from "../types/homecare";
+import type { AppointmentDto, AvailableDaysGrouped } from "../types/homecare";
 
 const hhmm = (s?: string | null) => (s ?? "").split(":").slice(0, 2).join(":");
 const localDate = (d: any) =>
@@ -29,7 +28,7 @@ const AppointmentsPage: React.FC = () => {
     if (role === "Client") {
       return (
         appointment.clientEmail === userId ||
-        appointment.clientId.toString() === userId
+        appointment.clientId === userId           
       );
     }
     return false;
@@ -41,13 +40,12 @@ const AppointmentsPage: React.FC = () => {
     if (role === "Client") {
       return (
         appointment.clientEmail === userId ||
-        appointment.clientId.toString() === userId
+        appointment.clientId === userId       
       );
     }
     return false;
   };
 
-  // Get appointments
   useEffect(() => {
     let cancelled = false;
     async function loadAppointments() {
@@ -70,7 +68,6 @@ const AppointmentsPage: React.FC = () => {
     };
   }, []);
 
-  // Get available days for Client
   useEffect(() => {
     if (role !== "Client") return;
 
@@ -118,7 +115,7 @@ const AppointmentsPage: React.FC = () => {
   }
   if (err) {
     return (
-      <Container className="mt-4" >
+      <Container className="mt-4">
         <Alert variant="danger">Feil: {err}</Alert>
       </Container>
     );
@@ -132,64 +129,55 @@ const AppointmentsPage: React.FC = () => {
         </div>
       </div>
 
-     {/* AVAILABLE TIMES FOR CLIENT */}
-{role === "Client" && (
-  <div className="mb-5">
-    <h3>Available times for booking</h3>
-    {loadingAvailableDays ? (
-      <div className="text-center mt-3">
-        <Spinner size="sm" />
-      </div>
-    ) : !availableDays || availableDays.length === 0 ? (
-      <Alert variant="info" className="mt-3">
-        No available times found.
-      </Alert>
-    ) : (
-      <Row className="g-3 mt-3">
-        {availableDays.map((item) => (
-          <Col key={item.healthcarePersonnel.userId} xs={12} md={6} lg={4}>
-            <Card className="h-100 hover-card">
-              <Card.Header className="bg-light">
-                <h5 className="mb-1">{item.healthcarePersonnel.name}</h5>
-                <small className="text-muted">{item.healthcarePersonnel.email}</small>
-              </Card.Header>
-              <Card.Body>
-                {item.availableDays.length === 0 ? (
-                  <p className="text-muted mb-0">No available time slots</p>
-                ) : (
-                  <div className="d-flex flex-column gap-2">
-                    {item.availableDays.map((availableDay) => (
-                      <div key={availableDay.availableDayId} className="p-2 border rounded bg-light">
-                        <div className="d-flex justify-content-between align-items-center">
-                          <div className="flex-grow-1">
-                            <div className="fw-bold">{new Date(availableDay.date).toLocaleDateString("no-NO")}</div>
-                            <div className="text-muted small">{hhmm(availableDay.startTime)} – {hhmm(availableDay.endTime)}</div>
-                          </div>
-                          <Link
-                            className="btn btn-success btn-sm"
-                            to={`/appointments/book/${availableDay.availableDayId}`}
-                          >
-                            Book
-                          </Link>
-                        </div>
+      {/* AVAILABLE TIMES FOR CLIENT */}
+      {role === "Client" && (
+        <div className="mb-5">
+          <h3>Available times for booking</h3>
+          {loadingAvailableDays ? (
+            <div className="text-center mt-3">
+              <Spinner size="sm" />
+            </div>
+          ) : flatAvailableDays.length === 0 ? (
+            <Alert variant="info" className="mt-3">
+              No available times found.
+            </Alert>
+          ) : (
+            <Row className="g-3 mt-3">
+              {flatAvailableDays.map((ad) => (
+                <Col key={ad.availableDayId} xs={12} md={6} lg={4}>
+                  <Card className="h-100">
+                    <Card.Body className="d-flex flex-column">
+                      <Card.Title>
+                        {new Date(ad.date).toLocaleDateString("no-NO")}
+                      </Card.Title>
+                      <Card.Text>
+                        {hhmm(ad.startTime)} – {hhmm(ad.endTime)}
+                      </Card.Text>
+                      <Card.Text className="text-muted small mb-1">
+                        {ad.personnelName ?? "Unknown personnel"}
+                      </Card.Text>
+                      <div className="mt-auto">
+                        <Link
+                          className="btn btn-success btn-sm"
+                          to={`/appointments/book/${ad.availableDayId}`}
+                        >
+                          Book Appointment
+                        </Link>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-    )}
-  </div>
-)}
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          )}
+        </div>
+      )}
 
       {/* Appointments */}
       {appointmentsToShow.length === 0 ? (
         <Alert variant="info">No appointments found</Alert>
       ) : (
-        <Row xs={1} md={2} lg={3} xl={4} className="g-3 mb-5 pb-5">
+        <Row xs={1} md={2} lg={3} xl={4} className="g-3">
           {appointmentsToShow.map((a) => (
             <Col key={a.appointmentId}>
               <Card className="h-100">
@@ -205,10 +193,10 @@ const AppointmentsPage: React.FC = () => {
                     </div>
                     <div className="text-end">
                       <div className="small text-muted">Personnel</div>
-                    <span className="badge text-bg-light border">
-                      {a.healthcarePersonnelName ?? "Unknown Personnel"}
-                    </span>
-                  </div>
+                      <span className="badge text-bg-light border">
+                        {a.healthcarePersonnelName ?? "Unknown Personnel"}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="mt-3">
@@ -265,7 +253,7 @@ const AppointmentsPage: React.FC = () => {
           ))}
         </Row>
       )}
-    </Container >
+    </Container>
   );
 };
 
