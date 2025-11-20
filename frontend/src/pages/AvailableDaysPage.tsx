@@ -45,6 +45,15 @@ const AvailableDaysPage: React.FC = () => {
         const data = await ApiService.get<AvailableDaysGrouped[]>(
           "/AvailableDayAPI/availableDaysList"
         );
+
+        data.forEach(group => {
+          group.availableDays.sort((a, b) => {
+            const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
+            if (dateCompare !== 0) return dateCompare;
+            return (a.startTime ?? "").localeCompare(b.startTime ?? "");
+          });
+        });
+        
         if (!cancelled) setGroups(data);
       } catch (e: any) {
         if (!cancelled) setError("Kunne ikke hente tilgjengelige dager.");
