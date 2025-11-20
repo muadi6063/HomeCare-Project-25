@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
             <p className="small mb-1">
               Developed as part of the Web Applications course (ITPE3200) at OsloMet.
             </p>
-            <p className="small mb-0 text-muted">
+            <p className="small mb-0">
               Demonstrating secure development with .NET 8, React, JWT and Service Layer patterns.
             </p>
           </Col>
@@ -33,8 +33,22 @@ const Footer: React.FC = () => {
           <Col md={3}>
             <h6 className="mb-2">Contact us</h6>
             <ul className="list-unstyled small">
-              <li>Email: support@homecare.no</li>
-              <li>Phone: +47 00000000</li>
+              <li>
+                <a 
+                  href="mailto:support@homecare.example" 
+                  className="text-light text-decoration-none"
+                >
+                  support@homecare.example
+                </a>
+              </li>
+              <li>
+                <a
+                  href="tel:+4722000000"
+                  className="text-light text-decoration-none"
+                >
+                  +47 22 00 00 00
+                </a>
+              </li>
             </ul>
           </Col>
         </Row>
