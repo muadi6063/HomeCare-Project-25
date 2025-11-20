@@ -41,15 +41,12 @@ const AppNavbar: React.FC = () => {
       >
         <Container fluid className="px-3">
           <Navbar.Brand as={Link} to="/">
-            HomeCare SPA
+            HomeCare
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={NavLink} to="/" end>
-                Home
-              </Nav.Link>
 
               {isHPOrAdmin && (
                 <>
@@ -72,7 +69,7 @@ const AppNavbar: React.FC = () => {
             <Nav>
               {isAuthenticated ? (
                 <>
-                  <Navbar.Text className="me-3">
+                  <Navbar.Text className="me-3 text-light">
                     {displayName}
                   </Navbar.Text>
                   <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
