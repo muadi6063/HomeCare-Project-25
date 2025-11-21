@@ -42,7 +42,7 @@ const AvailableDayEditPage = () => {
           endTime: hhmm(data.endTime),
         });
       } catch {
-        setError("Kunne ikke laste tilgjengelig dag.");
+        setError("Could not load available day");
       }
     }
 
@@ -51,16 +51,7 @@ const AvailableDayEditPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!model) return;
-
-    if (!model.date || !model.startTime || !model.endTime) {
-      setError("Alle felt må fylles ut.");
-      return;
-    }
-    if (hhmmss(model.endTime) <= hhmmss(model.startTime)) {
-      setError("Sluttid må være etter starttid.");
-      return;
-    }
+    if (!model) return;   
 
     try {
       setBusy(true);
@@ -72,7 +63,7 @@ const AvailableDayEditPage = () => {
       });
       navigate("/availabledays");
     } catch {
-      setError("Oppdatering feilet.");
+      setError("Update failed.");
     } finally {
       setBusy(false);
     }
@@ -81,15 +72,15 @@ const AvailableDayEditPage = () => {
   if (!canEdit)
     return (
       <div className="container mt-4">
-        <Alert variant="warning">Du har ikke tilgang til å redigere denne tilgjengelige dagen.</Alert>
+        <Alert variant="warning">You don't have access to edit this available time</Alert>
       </div>
     );
 
-  if (!model) return <div className="container mt-4">Laster…</div>;
+  if (!model) return <div className="container mt-4">Loading...</div>;
 
   return (
     <div className="container mt-4">
-      <h2>Rediger tilgjengelig dag</h2>
+      <h2>Edit available time slot</h2>
 
       {error && <Alert variant="danger">{error}</Alert>}
 
@@ -100,47 +91,38 @@ const AvailableDayEditPage = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Dato</Form.Label>
+          <Form.Label>Date</Form.Label>
           <Form.Control
             type="date"
             value={model.date}
             onChange={(e) => setModel({ ...model, date: e.target.value })}
             required
             disabled={busy}
+            title="Please select a date"
           />
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Starttid</Form.Label>
+          <Form.Label>Start time</Form.Label>
           <Form.Control
             type="time"
             value={model.startTime}
             onChange={(e) => setModel({ ...model, startTime: e.target.value })}
             required
             disabled={busy}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Sluttid</Form.Label>
-          <Form.Control
-            type="time"
-            value={model.endTime}
-            onChange={(e) => setModel({ ...model, endTime: e.target.value })}
-            required
-            disabled={busy}
+            title="Please select a start time"
           />
         </Form.Group>
 
         <Button type="submit" disabled={busy}>
-          {busy ? "Lagrer..." : "Lagre"}
+          {busy ? "Saving..." : "Save"}
         </Button>{" "}
         <Button
           variant="secondary"
           onClick={() => navigate("/availabledays")}
           disabled={busy}
         >
-          Avbryt
+          Cancel
         </Button>
       </Form>
     </div>

@@ -17,8 +17,6 @@ const AppointmentEditPage: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  const isClient = role === "Client";
-
   // Admin and personnel can update all, client can only update their own
   const canEdit =
     role === "Admin" ||
@@ -48,15 +46,6 @@ const AppointmentEditPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!model) return;
-
-    if (!model.startTime || !model.endTime) {
-      setError("All required fields needs to be filled out.");
-      return;
-    }
-    if (hhmmss(model.endTime) <= hhmmss(model.startTime)) {
-      setError("End time needs to be after Start time");
-      return;
-    }
 
     try {
       setBusy(true);
@@ -93,6 +82,7 @@ const AppointmentEditPage: React.FC = () => {
       <Card>
         <Card.Body>
           <Form onSubmit={handleSubmit}>
+            
             <Form.Group className="mb-3">
               <Form.Label>Edit task description</Form.Label>
               <Form.Control
@@ -108,7 +98,12 @@ const AppointmentEditPage: React.FC = () => {
                 title="Task description must be between 5 and 500 characters."
               />
             </Form.Group>
+        
+            <Form.Text className="text-muted">
+              {(model.taskDescription || "").length}/500 characters
+            </Form.Text>
             <Form.Group className="mb-3">
+
               <Form.Label>Address *</Form.Label>
               <Form.Control
                 type="text"

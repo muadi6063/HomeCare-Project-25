@@ -70,6 +70,7 @@ const RegisterPage: React.FC = () => {
                 required
                 disabled={isSubmitting}
                 minLength={2}
+                title="Please enter your full name"
               />
             </Form.Group>
 
@@ -84,6 +85,7 @@ const RegisterPage: React.FC = () => {
                 placeholder="Enter your email"
                 required
                 disabled={isSubmitting}
+                title="Please enter your email address"
               />
               <Form.Text className="text-muted">
                 Your email will be used as your username.
@@ -102,6 +104,7 @@ const RegisterPage: React.FC = () => {
                 required
                 disabled={isSubmitting}
                 minLength={6}
+                title="Please enter your password"
               />
               <Form.Text className="text-muted">
                 Password must be at least 6 characters long.

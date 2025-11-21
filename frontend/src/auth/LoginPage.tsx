@@ -41,6 +41,7 @@ const LoginPage: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                title="Please enter your email address"
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="password">
@@ -51,6 +52,7 @@ const LoginPage: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                title="Please enter your password"
               />
             </Form.Group>
             <div className="d-grid">

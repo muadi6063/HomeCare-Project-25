@@ -102,7 +102,7 @@ const AvailableDayCreatePage: React.FC = () => {
   };
 
   if (!canCreate) {
-    return <Alert variant="warning">Ingen tilgang</Alert>;
+    return <Alert variant="warning">No access</Alert>;
   }
 
   return (
@@ -134,7 +134,7 @@ const AvailableDayCreatePage: React.FC = () => {
               ))}
             </Form.Select>
           ) : (
-            // HealthcarePersonnel: viser egen id
+            // HealthcarePersonnel: show own id
             <Form.Control type="text" value={userId ?? ""} disabled readOnly />
           )}
         </Form.Group>
@@ -146,6 +146,7 @@ const AvailableDayCreatePage: React.FC = () => {
             value={date}
             onChange={(e) => setDate(e.target.value)}
             required
+            title="Please select a date"
           />
         </Form.Group>
 
@@ -156,6 +157,7 @@ const AvailableDayCreatePage: React.FC = () => {
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
             required
+            title="Please select start time"
           />
         </Form.Group>
 
@@ -167,7 +169,7 @@ const AvailableDayCreatePage: React.FC = () => {
           onClick={() => navigate("/availabledays")}
           disabled={busy}
         >
-          Avbryt
+          Cancel
         </Button>
       </Form>
     </div>
