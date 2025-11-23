@@ -55,3 +55,46 @@ button:focus, button:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 .5rem 1rem rgba(0,0,0,.08);
 }
+/* ---- HomeCare theme tweaks ---- */
+
+body {
+  background: #f4f6fb;
+}
+
+/* Løft hoved-innholdet litt fra bakgrunnen */
+main.container-lg {
+  padding-top: 5rem;
+  padding-bottom: 3rem;
+}
+
+/* Mykere kort */
+.card {
+  border-radius: 1rem;
+}
+
+/* Hero-seksjon på forsiden */
+.hero-section {
+  background: linear-gradient(135deg, #ffffff, #eef3ff);
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+}
+
+.hero-title {
+  letter-spacing: 0.02em;
+}
+
+.hero-image-wrapper {
+  overflow: hidden;
+  border-radius: 1.5rem;
+}
+
+.hero-image {
+  object-fit: cover;
+  max-height: 320px;
+  width: 100%;
+}
+
+/* Litt ekstra luft under navbar */
+.navbar {
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+}
