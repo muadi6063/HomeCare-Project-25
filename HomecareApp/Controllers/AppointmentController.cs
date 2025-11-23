@@ -39,11 +39,23 @@ public class AppointmentAPIController : Controller
             _logger.LogError("[AppointmentAPI] Appointment list not found while executing _appointmentRepository.GetAll()");
             return NotFound("Appointment list not found");
         }
+
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         if (User.IsInRole("Client"))
         {
-        appointments = appointments
-            .Where(a => !IsClientAccessingOthers(a.ClientId))
-            .ToList();
+            appointments = appointments
+                .Where(a => !IsClientAccessingOthers(a.ClientId))
+                .ToList();
+        }
+        else if (User.IsInRole("HealthcarePersonnel"))
+        {
+            if (currentUserId != null)
+            {
+                appointments = appointments
+                    .Where(a => a.AvailableDay != null && a.AvailableDay.HealthcarePersonnelId == currentUserId)
+                    .ToList();
+            }
         }
 
         var dtos = appointments.Select(a =>  new AppointmentDto{

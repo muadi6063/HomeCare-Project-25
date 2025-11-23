@@ -27,6 +27,7 @@ public class AppointmentControllerTests
                 StartTime = TimeSpan.FromHours(10),
                 EndTime = TimeSpan.FromHours(11),
                 TaskDescription = "Regular checkup",
+                Address = "Test Street 1, Oslo",
                 Client = new User { Id = "client-1", Name = "John Doe", Email = "john@example.com" },
                 AvailableDay = new AvailableDay 
                 { 
@@ -42,6 +43,7 @@ public class AppointmentControllerTests
                 StartTime = TimeSpan.FromHours(14),
                 EndTime = TimeSpan.FromHours(15),
                 TaskDescription = "Shopping help",
+                Address = "Test Street 2, Oslo",
                 Client = new User { Id = "client-2", Name = "Jane Smith", Email = "jane@example.com" },
                 AvailableDay = new AvailableDay 
                 { 
@@ -101,12 +103,32 @@ public class AppointmentControllerTests
             AvailableDayId = 1,
             StartTime = TimeSpan.FromHours(10),
             EndTime = TimeSpan.FromHours(11),
-            TaskDescription = "Shopping help"
+            TaskDescription = "Shopping help",
+            Address = "Test Address, Oslo"
         };
 
         // Arrange: set up mock repository
         var mockAppointmentRepository = new Mock<IAppointmentRepository>();
         mockAppointmentRepository.Setup(repo => repo.Create(It.IsAny<Appointment>())).ReturnsAsync(true);
+        mockAppointmentRepository.Setup(repo => repo.GetAppointmentById(It.IsAny<int>())).ReturnsAsync(new Appointment
+        {
+            AppointmentId = 1,
+            ClientId = "client-id",
+            AvailableDayId = 1,
+            StartTime = TimeSpan.FromHours(10),
+            EndTime = TimeSpan.FromHours(11),
+            TaskDescription = "Shopping help",
+            Address = "Test Address, Oslo",
+            Client = new User { Id = "client-id", Name = "Test Client", Email = "test@example.com" },
+            AvailableDay = new AvailableDay 
+            { 
+                AvailableDayId = 1,
+                Date = DateTime.Now.AddDays(1),
+                StartTime = TimeSpan.FromHours(10),
+                EndTime = TimeSpan.FromHours(11),
+                HealthcarePersonnel = new User { Name = "Dr. Smith" }
+            }
+        });
 
         // Arrange: set up mock logger
         var mockLogger = new Mock<ILogger<AppointmentAPIController>>();
@@ -150,14 +172,15 @@ public class AppointmentControllerTests
     public async Task TestUpdateAppointment_positive()
     {
         // Arrange: create test appointment DTO
-        var exisitingAppointment = new Appointment
+        var existingAppointment = new Appointment
         {
             AppointmentId = 1,
             ClientId = "client-id",
             AvailableDayId = 1,
             StartTime = TimeSpan.FromHours(10),
             EndTime = TimeSpan.FromHours(11),
-            TaskDescription = "Shopping help"
+            TaskDescription = "Shopping help",
+            Address = "Old Address, Oslo"
         };
 
         var updatedAppointmentDto = new AppointmentDto
@@ -167,12 +190,13 @@ public class AppointmentControllerTests
             AvailableDayId = 2,
             StartTime = TimeSpan.FromHours(14),
             EndTime = TimeSpan.FromHours(16),
-            TaskDescription = "Updated shopping help"
+            TaskDescription = "Updated shopping help",
+            Address = "New Address, Oslo"
         };
 
         // Arrange: Mock getAppointmentById
         var mockAppointmentRepository = new Mock<IAppointmentRepository>();
-        mockAppointmentRepository.Setup(repo => repo.GetAppointmentById(1)).ReturnsAsync(exisitingAppointment);
+        mockAppointmentRepository.Setup(repo => repo.GetAppointmentById(1)).ReturnsAsync(existingAppointment);
 
         // Mock Update
         mockAppointmentRepository.Setup(repo => repo.Update(It.IsAny<Appointment>())).ReturnsAsync(true);
@@ -207,12 +231,12 @@ public class AppointmentControllerTests
             HttpContext = new DefaultHttpContext() { User = user }
         };
 
-        // Act: call the create method
+        // Act: call the update method
         var result = await appointmentController.Update(1, updatedAppointmentDto);
 
         // Assert: verify it returns HTTP 200 OK
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var returnedAppointment = Assert.IsType<Appointment>(okResult.Value);
+        var returnedAppointment = Assert.IsType<AppointmentDto>(okResult.Value);
 
         // Assert: verify the appointment was updated with new data
         Assert.Equal("Updated shopping help", returnedAppointment.TaskDescription);
@@ -220,7 +244,7 @@ public class AppointmentControllerTests
         Assert.Equal(TimeSpan.FromHours(14), returnedAppointment.StartTime);
 
         // Assert: verify repository methods were called
-        mockAppointmentRepository.Verify(repo => repo.GetAppointmentById(1), Times.Once);
+        mockAppointmentRepository.Verify(repo => repo.GetAppointmentById(1), Times.Exactly(2));
         mockAppointmentRepository.Verify(repo => repo.Update(It.IsAny<Appointment>()), Times.Once);
     }
 
@@ -235,7 +259,8 @@ public class AppointmentControllerTests
             AvailableDayId = 1,
             StartTime = TimeSpan.FromHours(10),
             EndTime = TimeSpan.FromHours(11),
-            TaskDescription = "Appointment to be deleted"
+            TaskDescription = "Appointment to be deleted",
+            Address = "Delete Address, Oslo"
         };
 
         // Arrange: set up mock repository
@@ -331,7 +356,8 @@ public class AppointmentControllerTests
             AvailableDayId = 1,
             StartTime = TimeSpan.FromHours(10),
             EndTime = TimeSpan.FromHours(11),
-            TaskDescription = "Shopping help"
+            TaskDescription = "Shopping help",
+            Address = "Test Address, Oslo"
         };
 
         // Arrange: set up mock repository to FAIL by returning false
@@ -389,7 +415,8 @@ public class AppointmentControllerTests
             AvailableDayId = 2,
             StartTime = TimeSpan.FromHours(14),
             EndTime = TimeSpan.FromHours(16),
-            TaskDescription = "Updated shopping help"
+            TaskDescription = "Updated shopping help",
+            Address = "Test Address, Oslo"
         };
 
         // Arrange: Mock GetAppointmentById to return null

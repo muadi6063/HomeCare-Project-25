@@ -114,9 +114,11 @@ const AppointmentsPage: React.FC = () => {
   return (
     <Container className="mt-4">
       <div className="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-        <div>
-          <h2 className="mb-1">Appointments</h2>
-        </div>
+        {role === "Client" ? (
+          <h1 className="mt-4 mb-3">Appointments</h1>
+        ) : role === "HealthcarePersonnel" ? (
+          <h1 className="mt-4 mb-3">Your Appointments</h1>
+        ) : null}
       </div>
 
       {/* AVAILABLE TIMES FOR CLIENT */}
