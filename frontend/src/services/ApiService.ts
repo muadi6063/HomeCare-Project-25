@@ -21,18 +21,6 @@ class ApiService {
           ...(options.headers || {}),
         },
       });
-
-      if (!res.ok) {
-        const text = await res.text().catch(() => '');
-        const err = new Error(`API ${res.status} ${res.statusText}: ${text}`);
-        
-        if (res.status === 401) {
-          // her kan vi lage outo logout
-          // localStorage.removeItem("token");
-          // window.location.href = "/login";
-        }
-        throw err;
-      }
       
       if (res.status === 204) return undefined as T;
 
