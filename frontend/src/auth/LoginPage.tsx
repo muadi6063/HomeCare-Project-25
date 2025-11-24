@@ -19,8 +19,8 @@ const LoginPage: React.FC = () => {
     try {
       await login({ email, password });
       navigate('/');
-    } catch (err: any) {
-      setError(err?.message ?? 'Login failed');
+    } catch {
+      setError('Login failed');
     } finally {
       setBusy(false);
     }

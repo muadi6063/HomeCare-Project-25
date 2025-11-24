@@ -52,7 +52,7 @@ public class AuthAPIController : ControllerBase
             return Ok(new { message = "User registered successfully" });
         }
         _logger.LogWarning("Invalid registration for {username}", registerDto.Username);
-        return BadRequest(result.Errors);
+        return BadRequest(new { message = result.Errors.First().Description });
     }
 
     [HttpPost("login")]

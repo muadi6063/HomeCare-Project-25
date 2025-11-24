@@ -23,8 +23,12 @@ class ApiService {
       });
       
       if (res.status === 204) return undefined as T;
+    
+      const data = await res.json();
 
-      // JSON svar
+      if (!res.ok) {
+        throw new Error(data.message || 'Request failed');
+      }
       return (await res.json()) as T;
     } catch (e) {
       console.error('[ApiService] request error:', e);

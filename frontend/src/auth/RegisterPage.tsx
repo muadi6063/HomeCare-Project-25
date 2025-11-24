@@ -37,15 +37,10 @@ const RegisterPage: React.FC = () => {
         await ApiService.post('/AuthAPI/register', payload);
         setRegistrationSuccess('Registrering vellykket! Du kan nå logge inn.');
         setTimeout(() => navigate('/login'), 2000);
-        } catch (err: any) {
-        if (err instanceof Error) {
-            setRegistrationError(err.message);
-        } else {
-            setRegistrationError('En ukjent feil oppstod.');
-        }
-        console.error(err)
-        } finally{
-            setIsSubmitting(false)
+        } catch {
+          setRegistrationError('Registrering feilet.');
+        } finally {
+          setIsSubmitting(false);
         }
     };
 
