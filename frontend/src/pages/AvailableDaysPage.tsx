@@ -47,7 +47,7 @@ const AvailableDaysPage: React.FC = () => {
           "/AvailableDayAPI/availableDaysList"
         );
 
-        // sorter per person: dato + starttid
+        // sort per person: date + start time
         data.forEach((group) => {
           group.availableDays.sort((a, b) => {
             const dateCompare =
@@ -59,7 +59,7 @@ const AvailableDaysPage: React.FC = () => {
 
         if (!cancelled) setGroups(data);
       } catch (e: any) {
-        if (!cancelled) setError("Kunne ikke hente tilgjengelige dager.");
+        if (!cancelled) setError("Could not load available days.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -89,10 +89,10 @@ const AvailableDaysPage: React.FC = () => {
     return (
       <Container className="mt-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2>Available Days</h2>
+          <h2>Available days</h2>
           {canCreate && (
             <Link to="/availabledays/create" className="btn btn-primary">
-              + New Available Day
+              + New available day
             </Link>
           )}
         </div>
@@ -104,17 +104,16 @@ const AvailableDaysPage: React.FC = () => {
   return (
     <Container className="mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Available Days</h2>
+        <h2>Available days</h2>
         {canCreate && (
           <Link to="/availabledays/create" className="btn btn-success">
-            Create Available Day
+            Create available day
           </Link>
         )}
       </div>
 
       <div className="row g-3">
         {groups.map((item) => {
-          // grpoups available days by date
           const groupedByDate: Record<
             string,
             typeof item.availableDays

@@ -28,7 +28,7 @@ const AppointmentsPage: React.FC = () => {
     if (role === "Client") {
       return (
         appointment.clientEmail === userId ||
-        appointment.clientId === userId           
+        appointment.clientId === userId
       );
     }
     return false;
@@ -40,7 +40,7 @@ const AppointmentsPage: React.FC = () => {
     if (role === "Client") {
       return (
         appointment.clientEmail === userId ||
-        appointment.clientId === userId       
+        appointment.clientId === userId
       );
     }
     return false;
@@ -106,7 +106,7 @@ const AppointmentsPage: React.FC = () => {
   if (err) {
     return (
       <Container className="mt-4">
-        <Alert variant="danger">Feil: {err}</Alert>
+        <Alert variant="danger">Error: {err}</Alert>
       </Container>
     );
   }
@@ -117,12 +117,12 @@ const AppointmentsPage: React.FC = () => {
         {role === "Client" ? (
           <h1 className="mt-4 mb-3">Appointments</h1>
         ) : role === "HealthcarePersonnel" ? (
-          <h1 className="mt-4 mb-3">Your Appointments</h1>
+          <h1 className="mt-4 mb-3">Your appointments</h1>
         ) : null}
       </div>
 
       {/* AVAILABLE TIMES FOR CLIENT */}
-    {role === "Client" && (
+      {role === "Client" && (
         <div className="mb-5">
           <h3>Available times for booking</h3>
           {loadingAvailableDays ? (
@@ -136,14 +136,12 @@ const AppointmentsPage: React.FC = () => {
           ) : (
             <Row className="g-3 mt-3">
               {availableDays.map((item) => {
-                // sort available days by date + start time
                 const sortedDays = [...item.availableDays].sort((a, b) => {
                   const aKey = `${a.date}T${a.startTime ?? ""}`;
                   const bKey = `${b.date}T${b.startTime ?? ""}`;
                   return aKey.localeCompare(bKey);
                 });
 
-                // group personnels available days by date
                 const groupedByDate: Record<string, typeof item.availableDays> = {};
                 for (const ad of sortedDays) {
                   const dateLabel = localDate(ad.date);
@@ -228,12 +226,12 @@ const AppointmentsPage: React.FC = () => {
         <Row xs={1} md={2} lg={3} xl={4} className="g-3">
           {appointmentsToShow.map((a) => (
             <Col key={a.appointmentId}>
-              <Card className="h-100">
+              <Card className="h-100 hover-card">
                 <Card.Body>
                   <div className="d-flex justify-content-between align-items-start">
                     <div>
                       <Card.Title className="mb-1">
-                        {a.clientName ?? "Unknown Client"}
+                        {a.clientName ?? "Unknown client"}
                       </Card.Title>
                       <Card.Subtitle className="text-muted small">
                         {a.clientEmail}
@@ -242,7 +240,7 @@ const AppointmentsPage: React.FC = () => {
                     <div className="text-end">
                       <div className="small text-muted">Personnel</div>
                       <span className="badge text-bg-light border">
-                        {a.healthcarePersonnelName ?? "Unknown Personnel"}
+                        {a.healthcarePersonnelName ?? "Unknown personnel"}
                       </span>
                     </div>
                   </div>
@@ -265,7 +263,7 @@ const AppointmentsPage: React.FC = () => {
 
                   <div className="mt-2">
                     <div className="small text-muted">Address</div>
-                    <div>{a.address || "—"}</div>
+                    <div>{(a as any).address || "—"}</div>
                   </div>
 
                   <div className="mt-2">
