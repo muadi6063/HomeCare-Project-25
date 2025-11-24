@@ -1,64 +1,49 @@
+/* ===== HomeCare global theme ==================================== */
+
 :root {
+  /* Basis-typografi (som du hadde) */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color: #212529;
-  background-color: #f8f9fa; 
-  
+  /* Fargepalett – rolig, moderne, lett å lese for eldre brukere */
+  --hc-primary: #2563eb;            /* blå, hovedfarge */
+  --hc-primary-soft: #e0edff;       /* lys blå */
+  --hc-primary-strong: #1d4ed8;
+
+  --hc-accent: #22c55e;             /* grønn aksent */
+  --hc-page-bg: #e5edf7;            /* bakgrunn for siden */
+  --hc-page-bg-dark: #0b1220;       /* brukes i gradient */
+  --hc-surface: #ffffff;
+  --hc-surface-soft: #f3f4f6;
+
+  --hc-text-main: #111827;
+  --hc-text-muted: #6b7280;
+
+  color: var(--hc-text-main);
+  background-color: var(--hc-page-bg);
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ===== Base layout ============================================== */
+
 body {
   margin: 0;
-  /* plass slik at fixed navbar ikke dekker innholdet */
-  padding-top: 56px; /* øk til 64px hvis navbaren er høyere */
+  padding-top: 56px;     /* plass under fixed navbar (som før) */
   min-width: 320px;
-  background: inherit;
-  color: inherit;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, #c7d2fe 0, #e5edf7 40%, #e5edf7 100%);
+  color: var(--hc-text-main);
 }
 
 #root {
   width: 100%;
   min-height: 100vh;
-}
-
-/* Lenker */
-a { font-weight: 500; color: #646cff; text-decoration: none; }
-a:hover { color: #535bf2; }
-
-/* Knappestiler (valgfritt, beholdt fra Vite) */
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover { border-color: #646cff; }
-button:focus, button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-.hover-card {
-  transition: transform .12s ease, box-shadow .12s ease;
-  border: 1px solid rgba(0,0,0,.06);
-}
-.hover-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 .5rem 1rem rgba(0,0,0,.08);
-}
-/* ---- HomeCare theme tweaks ---- */
-
-body {
-  background: #f4f6fb;
 }
 
 /* Løft hoved-innholdet litt fra bakgrunnen */
@@ -67,34 +52,179 @@ main.container-lg {
   padding-bottom: 3rem;
 }
 
-/* Mykere kort */
-.card {
-  border-radius: 1rem;
+/* ===== Lenker =================================================== */
+
+a {
+  font-weight: 500;
+  color: var(--hc-primary);
+  text-decoration: none;
 }
 
-/* Hero-seksjon på forsiden */
+a:hover {
+  color: var(--hc-primary-strong);
+}
+
+/* ===== Vite button-basestil (beholder, men litt lysere) ========= */
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1f2937;
+  color: #f9fafb;
+  cursor: pointer;
+  transition: border-color 0.25s, background-color 0.15s ease;
+}
+
+button:hover {
+  border-color: var(--hc-primary);
+  background-color: #111827;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 3px solid var(--hc-primary-soft);
+  outline-offset: 1px;
+}
+
+/* React-Bootstrap .btn får egen form (pille-knapper) */
+.btn-primary {
+  background-color: var(--hc-primary);
+  border-color: var(--hc-primary);
+  border-radius: 999px;
+  padding-inline: 1.25rem;
+  font-weight: 500;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--hc-primary-strong);
+  border-color: var(--hc-primary-strong);
+}
+
+.btn-outline-primary {
+  border-radius: 999px;
+  border-color: var(--hc-primary);
+  color: var(--hc-primary);
+  font-weight: 500;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: var(--hc-primary-soft);
+  color: var(--hc-primary-strong);
+  border-color: var(--hc-primary-strong);
+}
+
+.btn-sm {
+  border-radius: 999px;
+}
+
+/* ===== Kort / cards ============================================ */
+
+.card {
+  border-radius: 1rem;               /* du hadde dette – beholdt */
+  border: none;
+  background-color: var(--hc-surface);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+}
+
+.card-body {
+  padding: 1.5rem 1.75rem;
+}
+
+/* Hover-effekten du hadde fra før, gjort litt mykere */
+.hover-card {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.hover-card:hover,
+.card.hover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 55px rgba(15, 23, 42, 0.18);
+}
+
+/* Badges (brukes bl.a. på appointments) */
+.badge.text-bg-light.border {
+  border-radius: 999px;
+}
+
+/* Alerts litt mykere */
+.alert {
+  border-radius: 0.75rem;
+}
+
+/* ===== Navbar =================================================== */
+
+.navbar {
+  background: radial-gradient(circle at top left, #1f2937 0, #020617 50%);
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.18);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-size: 1.3rem;
+}
+
+.navbar-brand,
+.navbar-dark .navbar-nav .nav-link {
+  color: #e5e7eb;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  opacity: 0.8;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.navbar-dark .navbar-nav .nav-link.active,
+.navbar-dark .navbar-nav .nav-link:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+/* ===== Hero-seksjon (Home) ===================================== */
+
 .hero-section {
+  /* du hadde en hero-section – nå litt mer “app-landing-page” */
   background: linear-gradient(135deg, #ffffff, #eef3ff);
   border-radius: 1.5rem;
   padding: 2.5rem 2rem;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
 }
 
 .hero-title {
-  letter-spacing: 0.02em;
+  letter-spacing: 0.02em; /* beholdt */
+  font-size: clamp(2.2rem, 4vw, 2.8rem);
+  font-weight: 700;
 }
 
 .hero-image-wrapper {
   overflow: hidden;
   border-radius: 1.5rem;
+  background: radial-gradient(circle at top, #e0f2fe 0, #eff6ff 55%, #ffffff 100%);
+  box-shadow: 0 20px 55px rgba(15, 23, 42, 0.2);
 }
 
 .hero-image {
   object-fit: cover;
-  max-height: 320px;
+  max-height: 360px;
   width: 100%;
 }
 
-/* Litt ekstra luft under navbar */
-.navbar {
-  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+/* ===== “How to use” / hjelpetekst på Home ======================= */
+
+.home-howto-list {
+  background-color: rgba(15, 23, 42, 0.03);
+  border-radius: 0.9rem;
+  padding: 1.4rem 1.6rem;
+}
+
+/* Litt ekstra luft mellom seksjoner */
+section + section {
+  margin-top: 2.5rem;
 }
