@@ -27,6 +27,11 @@ class ApiService {
       const data = await res.json();
 
       if (!res.ok) {
+        // Auto logout on unauthorized by clearing token and redirect to login
+        if (res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        }
         throw new Error(data.message || 'Request failed');
       }
       return data as T;
