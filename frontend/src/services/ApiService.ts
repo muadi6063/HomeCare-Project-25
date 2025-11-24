@@ -29,7 +29,7 @@ class ApiService {
       if (!res.ok) {
         throw new Error(data.message || 'Request failed');
       }
-      return (await res.json()) as T;
+      return data as T;
     } catch (e) {
       console.error('[ApiService] request error:', e);
       throw e;
