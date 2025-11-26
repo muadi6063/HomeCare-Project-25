@@ -97,11 +97,11 @@ const Home: React.FC = () => {
       </Row>
 
       {/* INFO CARDS */}
-      <Row className="g-4 justify-content-center">
+      <Row className="g-4">
         {/* Not signed in: focus on explanation + client entry */}
         {!isAuthenticated && (
           <>
-            <Col md={6} lg={5}>
+            <Col md={6} lg={6}>
               <Card className="h-100 hover-card">
                 <Card.Body>
                   <Card.Subtitle className="text-uppercase text-muted mb-2">
@@ -121,7 +121,7 @@ const Home: React.FC = () => {
               </Card>
             </Col>
 
-            <Col md={6} lg={5}>
+            <Col md={6} lg={6}>
               <Card className="h-100 hover-card">
                 <Card.Body>
                   <Card.Subtitle className="text-uppercase text-muted mb-2">
@@ -149,7 +149,7 @@ const Home: React.FC = () => {
 
         {/* Client dashboard card */}
         {isClient && (
-          <Col md={8} lg={7}>
+          <Col xs={12}>
             <Card className="h-100 hover-card">
               <Card.Body>
                 <Card.Subtitle className="text-uppercase text-muted mb-2">
@@ -165,14 +165,6 @@ const Home: React.FC = () => {
                   You can cancel or change existing bookings within the rules
                   agreed with your local homecare service.
                 </Card.Text>
-                <Button
-                  as={Link}
-                  to="/appointments"
-                  variant="primary"
-                  className="mt-2"
-                >
-                  Go to appointments
-                </Button>
               </Card.Body>
             </Card>
           </Col>
@@ -181,7 +173,7 @@ const Home: React.FC = () => {
         {/* Staff / admin dashboard cards */}
         {isHPOrAdmin && (
           <>
-            <Col md={6} lg={5}>
+            <Col md={6} lg={6}>
               <Card className="h-100 hover-card">
                 <Card.Body>
                   <Card.Subtitle className="text-uppercase text-muted mb-2">
@@ -201,7 +193,7 @@ const Home: React.FC = () => {
               </Card>
             </Col>
 
-            <Col md={6} lg={5}>
+            <Col md={6} lg={6}>
               <Card className="h-100 hover-card">
                 <Card.Body>
                   <Card.Subtitle className="text-uppercase text-muted mb-2">
@@ -222,10 +214,128 @@ const Home: React.FC = () => {
           </>
         )}
       </Row>
+      
+      {/* EXTENDED INFORMATION SECTION */}
+      <Row className="mt-5">
+        <Col xs={12}>
+          <h3 className="h4 fw-semibold mb-4">About HomeCare Services</h3>
+          <p className="text-muted mb-4" style={{ maxWidth: "760px" }}>
+            HomeCare Booking is built in collaboration with local health services to give 
+            clients a simple, predictable and secure way to receive support at home. 
+            Our healthcare personnel are trained professionals with backgrounds in 
+            nursing, elderly care, rehabilitation and general medical support.
+          </p>
+        </Col>
+      </Row>
 
-      {/* HOW TO USE SECTION */}
-      <Row className="justify-content-center mt-5">
-        <Col md={10} lg={8}>
+      {/* THREE-COLUMN VALUE CARDS */}
+      <Row className="g-4 mb-5">
+        <Col md={4}>
+          <Card className="h-100 shadow-sm border-0">
+            <Card.Body>
+              <Card.Title className="mb-2">Skilled healthcare staff</Card.Title>
+              <Card.Text className="text-muted">
+                All our healthcare personnel are certified professionals — including 
+                registered nurses, assistant nurses, care workers, and individuals 
+                with additional training in elderly and home-based healthcare.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col md={4}>
+          <Card className="h-100 shadow-sm border-0">
+            <Card.Body>
+              <Card.Title className="mb-2">Safe and predictable</Card.Title>
+              <Card.Text className="text-muted">
+                Visits are booked in fixed time slots so both clients and family members 
+                know exactly when help arrives. Our goal is to make everyday routines 
+                stable, calm and respectful.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col md={4}>
+          <Card className="h-100 shadow-sm border-0">
+            <Card.Body>
+              <Card.Title className="mb-2">Built with dignity in mind</Card.Title>
+              <Card.Text className="text-muted">
+                We design our services from the perspective of older adults: large text, simple 
+                navigation, gentle colours and predictable layouts to make the experience 
+                comfortable and stress-free.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* IMAGE + TEXT SECTION */}
+      <Row className="align-items-center my-5 gx-lg-5">
+        <Col lg={6} className="mb-4 mb-lg-0">
+          <img
+            src="https://images.pexels.com/photos/6129237/pexels-photo-6129237.jpeg"
+            alt="Homecare nurse assisting client"
+            className="img-fluid rounded shadow"
+          />
+        </Col>
+
+        <Col lg={6}>
+          <h3 className="fw-semibold mb-3">Who we are</h3>
+          <p className="text-muted mb-3">
+            HomeCare Booking is created as a modern coordination tool for home-based 
+            healthcare teams. Our mission is to improve how visits are planned, booked, 
+            communicated and followed up — for the benefit of both clients and staff.
+          </p>
+          <p className="text-muted mb-3">
+            The service is used daily by homecare departments across municipalities. 
+            Staff members log in to publish availability, follow up bookings and assist clients 
+            in receiving the help they need in a structured and caring way.
+          </p>
+          <p className="text-muted mb-0">
+            Clients and relatives use the portal to request support, keep track of visits and 
+            stay connected with their local care team.
+          </p>
+        </Col>
+      </Row>
+
+      {/* TWO-COLUMN SERVICE FEATURES */}
+      <Row className="g-4 mt-5 mb-5">
+        <Col md={6}>
+          <Card className="border-0 shadow-sm h-100">
+            <Card.Body>
+              <Card.Subtitle className="text-uppercase text-muted mb-2">
+                Our commitment
+              </Card.Subtitle>
+              <Card.Title className="mb-2">Quality care at home</Card.Title>
+              <Card.Text className="text-muted">
+                We believe that everyone deserves high-quality support in their own home. 
+                That's why our staff follow professional guidelines for safe, respectful and 
+                personalised homecare.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col md={6}>
+          <Card className="border-0 shadow-sm h-100">
+            <Card.Body>
+              <Card.Subtitle className="text-uppercase text-muted mb-2">
+                Community
+              </Card.Subtitle>
+              <Card.Title className="mb-2">Supporting families</Card.Title>
+              <Card.Text className="text-muted">
+                Our system makes it easier for relatives to stay updated and feel secure, 
+                knowing that their loved ones receive the care they need — when they need it.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+            {/* HOW TO USE SECTION */}
+      <Row className="mt-5">
+        <Col xs={12}>
           <h3 className="h5 mb-3">How to use HomeCare Booking</h3>
           <div className="home-howto-list">
             {!isAuthenticated && (
@@ -289,5 +399,4 @@ const Home: React.FC = () => {
     </Container>
   );
 };
-
 export default Home;
