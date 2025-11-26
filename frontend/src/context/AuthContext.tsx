@@ -8,6 +8,7 @@ interface AuthContextValue {
   role: string | null;
   token: string | null;
   userId: string | null;
+  name: string | null;
   login: (req: LoginRequest) => Promise<void>;
   logout: () => void;
 }
@@ -26,8 +27,9 @@ function pickUserId(d: any) {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
   const [email, setEmail] = useState<string | null>(null);
+  const [name, setName] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null); // ← NY
+  const [userId, setUserId] = useState<string | null>(null); 
 
   useEffect(() => {
     if (!token) return;
@@ -35,6 +37,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const d: any = jwtDecode(token);
       setEmail(d?.email ?? null);
+      setName(
+        d?.name ?? 
+        d?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] ?? 
+        null
+      );
       setRole(
         d?.role ??
           d?.roles ??
@@ -46,6 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logoutApi();
       setToken(null);
       setEmail(null);
+      setName(null);
       setRole(null);
       setUserId(null);
     }
@@ -54,15 +62,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   async function login(req: LoginRequest) {
     const result = await loginApi(req);
     setToken(result.token);
-    setEmail(result.email);
-    setRole(result.role);
-    setUserId(result.userId);
   }
 
   function logout() {
     logoutApi();
     setToken(null);
     setEmail(null);
+    setName(null);
     setRole(null);
     setUserId(null);
   }
@@ -74,10 +80,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       role,
       userId,
+      name,
       login,
       logout,
     }),
-    [token, email, role, userId]
+    [token, email, name, role, userId]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

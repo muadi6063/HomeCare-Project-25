@@ -121,7 +121,8 @@ public class AuthAPIController : ControllerBase
             new Claim(JwtRegisteredClaimNames.Sub, user.Id ??""),
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id ?? "") 
+            new Claim(ClaimTypes.NameIdentifier, user.Id ?? ""),
+            new Claim(ClaimTypes.Name, user.Name ?? "") 
         };
 
         foreach (var role in roles)
@@ -139,7 +140,4 @@ public class AuthAPIController : ControllerBase
         _logger.LogInformation("[AuthAPIController] JWT token created for {@username}", user.UserName);
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
-    
-
 }

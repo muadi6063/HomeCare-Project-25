@@ -79,8 +79,8 @@ const AppointmentsPage: React.FC = () => {
           "/AvailableDayAPI/availableDaysList"
         );
         if (!cancelled) setAvailableDays(data);
-      } catch (e: any) {
-        console.error("Could not get available days: ", e);
+      } catch {
+        console.error("Could not get available days");
       } finally {
         if (!cancelled) setLoadingAvailableDays(false);
       }
@@ -114,7 +114,7 @@ const AppointmentsPage: React.FC = () => {
   return (
     <Container className="mt-4">
       <div className="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-        {role === "Client" ? (
+        {role === "Client" || role === "Admin" ? (
           <h1 className="mt-4 mb-3">Appointments</h1>
         ) : role === "HealthcarePersonnel" ? (
           <h1 className="mt-4 mb-3">Your appointments</h1>

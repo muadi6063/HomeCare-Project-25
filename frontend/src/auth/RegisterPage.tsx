@@ -99,10 +99,11 @@ const RegisterPage: React.FC = () => {
                 required
                 disabled={isSubmitting}
                 minLength={6}
-                title="Please enter your password"
+                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{6,}$"
+                title="Password must be at least 6 characters and include uppercase, lowercase, number, and special character"
               />
               <Form.Text className="text-muted">
-                Password must be at least 6 characters long.
+                Password must be at least 6 characters long and include uppercase, number and special character .
               </Form.Text>
             </Form.Group>
 

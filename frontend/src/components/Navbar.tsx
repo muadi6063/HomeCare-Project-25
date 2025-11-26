@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 const AppNavbar: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, role, email, logout } = useAuth();
+  const { isAuthenticated, role, name, logout } = useAuth();
 
   const isClient = isAuthenticated && role === "Client";
   const isHPOrAdmin =
@@ -23,12 +23,7 @@ const AppNavbar: React.FC = () => {
     navigate("/login");
   };
 
-  let displayName = "";
-  if (email) {
-    const beforeAt = email.split("@")[0];
-    displayName =
-      beforeAt.charAt(0).toUpperCase() + beforeAt.slice(1);
-  }
+  const displayName = name || "User";
 
   return (
     <>
@@ -66,12 +61,12 @@ const AppNavbar: React.FC = () => {
               )}
             </Nav>
 
-            <Nav>
+            <Nav d-flex align-items-center>
               {isAuthenticated ? (
                 <>
-                  <Navbar.Text className="me-3 text-light">
+                  <Nav.Link disabled className="me-3 text-light">  {/* We use nav.Link disabled to keep displayname at same heigh as the rest */}
                     {displayName}
-                  </Navbar.Text>
+                  </Nav.Link>
                   <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
                 </>
               ) : (

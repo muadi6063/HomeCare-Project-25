@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
       await login({ email, password });
       navigate('/');
     } catch {
-      setError('Login failed');
+      setError('Login failed: Check username and password');
     } finally {
       setBusy(false);
     }
