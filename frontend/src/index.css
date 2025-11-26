@@ -4,8 +4,7 @@
   font-weight: 400;
 
   color: #111827;
-  background-color: #f3f4f6;
-
+  
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -16,9 +15,9 @@
 
 body {
   margin: 0;
-  padding-top: 64px; /* space for fixed navbar */
+  padding-top: 56px; /* space for fixed navbar */
   min-width: 320px;
-  background: #f3f4f6;
+  background: #f0f4f8;
   color: inherit;
 }
 
@@ -123,8 +122,6 @@ button:focus-visible,
   outline: none;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.45);
 }
-
-/* ---- Cards & layout tweaks ---- */
 
 .card {
   border-radius: 1rem;

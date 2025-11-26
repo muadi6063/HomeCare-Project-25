@@ -134,7 +134,7 @@ public class AuthAPIController : ControllerBase
             issuer: _configuration["JwtSettings:Issuer"],
             audience: _configuration["JwtSettings:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(3),
+            expires: DateTime.UtcNow.AddMinutes(50),
             signingCredentials: creds
         );
         _logger.LogInformation("[AuthAPIController] JWT token created for {@username}", user.UserName);

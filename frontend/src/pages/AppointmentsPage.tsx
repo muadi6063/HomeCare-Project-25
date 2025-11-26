@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Alert, Card, Col, Row, Spinner, Container } from "react-bootstrap";
+import { Alert, Card, Col, Row, Spinner, Container, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ApiService from "../services/ApiService";
 import { useAuth } from "../context/AuthContext";
@@ -21,6 +21,7 @@ const AppointmentsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [loadingAvailableDays, setLoadingAvailableDays] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const canDeleteAppointment = (appointment: AppointmentDto) => {
     if (!isAuthenticated) return false;
@@ -56,8 +57,8 @@ const AppointmentsPage: React.FC = () => {
           "/AppointmentAPI/appointmentlist"
         );
         if (!cancelled) setAppointments(data);
-      } catch (e: any) {
-        if (!cancelled) setErr(e?.message ?? "Could not get appointments");
+      } catch {
+        if (!cancelled) setErr("Could not get appointments");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -93,8 +94,33 @@ const AppointmentsPage: React.FC = () => {
 
   const appointmentsToShow = useMemo(() => {
     if (!appointments) return [];
-    return appointments;
-  }, [appointments]);
+    
+    let filtered = [...appointments];
+    
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(a => {
+        const matchesText = 
+          a.clientName?.toLowerCase().includes(query) ||
+          a.clientEmail?.toLowerCase().includes(query) ||
+          a.healthcarePersonnelName?.toLowerCase().includes(query) ||
+          a.taskDescription?.toLowerCase().includes(query);
+        
+        const dateStr = a.availableDayDate ? localDate(a.availableDayDate).toLowerCase() : "";
+        const matchesDate = dateStr.includes(query);
+        
+        return matchesText || matchesDate;
+      });
+    }
+    
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.availableDayDate || 0).getTime();
+      const dateB = new Date(b.availableDayDate || 0).getTime();
+      return dateA - dateB;
+    });
+    
+    return filtered;
+  }, [appointments, searchQuery]);
 
   if (loading) {
     return (
@@ -220,13 +246,26 @@ const AppointmentsPage: React.FC = () => {
         <h3 className="mt-4 mb-3">My appointments</h3>
       )}
 
+      {appointments && appointments.length > 0 && (
+        <Form.Control
+          type="text"
+          style={{ maxWidth: '400px' }}
+          placeholder="Search by name, email, date etc, E.g. 27.nov. 2025 "
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="mb-3"
+        />
+      )}
+
       {appointmentsToShow.length === 0 ? (
-        <Alert variant="info">No appointments found</Alert>
+        <Alert>
+          {searchQuery ? "No appointments match your search" : "No appointments found"} 
+        </Alert>
       ) : (
         <Row xs={1} md={2} lg={3} xl={4} className="g-3">
           {appointmentsToShow.map((a) => (
             <Col key={a.appointmentId}>
-              <Card className="h-100 hover-card">
+              <Card className="h-100 hover-card  hover-card">
                 <Card.Body>
                   <div className="d-flex justify-content-between align-items-start">
                     <div>

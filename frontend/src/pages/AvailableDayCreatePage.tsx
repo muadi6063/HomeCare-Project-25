@@ -55,8 +55,7 @@ const AvailableDayCreatePage: React.FC = () => {
           );
 
           setPersonnel(hpOnly);
-        } catch (e) {
-          console.error("Could not load healthcare personnel", e);
+        } catch  {
           setError("Could not load healthcare personnel list.");
         } finally {
           setLoadingPersonnel(false);
