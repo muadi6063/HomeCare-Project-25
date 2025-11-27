@@ -65,7 +65,8 @@ const RegisterPage: React.FC = () => {
                 required
                 disabled={isSubmitting}
                 minLength={2}
-                title="Please enter your full name"
+                maxLength={100}
+                title="Please enter your full name between 2 and 100 characters"
               />
             </Form.Group>
 
