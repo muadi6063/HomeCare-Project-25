@@ -55,29 +55,29 @@ const Home: React.FC = () => {
           <div className="d-flex flex-wrap gap-2">
             {!isAuthenticated && (
               <>
-                <Button as={Link} to="/register" variant="primary">
+                <Link to="/register" className="btn btn-primary">
                   Create client account
-                </Button>
-                <Button as={Link} to="/login" variant="outline-primary">
+                </Link>
+                <Link to="/login" className="btn btn-outline-primary">
                   Log in
-                </Button>
+                </Link>
               </>
             )}
 
             {isClient && (
-              <Button as={Link} to="/appointments" variant="primary">
+              <Link to="/appointments" className="btn btn-primary">
                 Go to my appointments
-              </Button>
+              </Link>
             )}
 
             {isHPOrAdmin && (
               <>
-                <Button as={Link} to="/availabledays" variant="primary">
+                <Link to="/availabledays" className="btn btn-primary">
                   Manage available days
-                </Button>
-                <Button as={Link} to="/appointments" variant="outline-primary">
+                </Link>
+                <Link to="/appointments" className="btn btn-outline-primary">
                   View appointments
-                </Button>
+                </Link>
               </>
             )}
           </div>
