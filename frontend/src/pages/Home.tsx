@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import heroImg from "../assets/home-hero.jpg";
+import socialWorkerImg from "../assets/social-worker.jpg";
 
 const Home: React.FC = () => {
   const { isAuthenticated, role } = useAuth();
@@ -234,7 +235,7 @@ const Home: React.FC = () => {
             <Card.Body>
               <Card.Title className="mb-2">Skilled healthcare staff</Card.Title>
               <Card.Text className="text-muted">
-                All our healthcare personnel are certified professionals — including 
+                All our healthcare personnel are certified professionals, including 
                 registered nurses, assistant nurses, care workers, and individuals 
                 with additional training in elderly and home-based healthcare.
               </Card.Text>
@@ -273,7 +274,7 @@ const Home: React.FC = () => {
       <Row className="align-items-center my-5 gx-lg-5">
         <Col lg={6} className="mb-4 mb-lg-0">
           <img
-            src="https://images.pexels.com/photos/6129237/pexels-photo-6129237.jpeg"
+            src={socialWorkerImg}
             alt="Homecare nurse assisting client"
             className="img-fluid rounded shadow"
           />
@@ -284,7 +285,7 @@ const Home: React.FC = () => {
           <p className="text-muted mb-3">
             HomeCare Booking is created as a modern coordination tool for home-based 
             healthcare teams. Our mission is to improve how visits are planned, booked, 
-            communicated and followed up — for the benefit of both clients and staff.
+            communicated and followed up, for the benefit of both clients and staff.
           </p>
           <p className="text-muted mb-3">
             The service is used daily by homecare departments across municipalities. 
@@ -325,7 +326,7 @@ const Home: React.FC = () => {
               <Card.Title className="mb-2">Supporting families</Card.Title>
               <Card.Text className="text-muted">
                 Our system makes it easier for relatives to stay updated and feel secure, 
-                knowing that their loved ones receive the care they need — when they need it.
+                knowing that their loved ones receive the care they need, when they need it.
               </Card.Text>
             </Card.Body>
           </Card>

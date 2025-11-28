@@ -141,15 +141,135 @@ const AppointmentsPage: React.FC = () => {
     <Container className="mt-4">
       <div className="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
         {role === "Client" || role === "Admin" ? (
-          <h1 className="mt-4 mb-3">Appointments</h1>
+          <h1 className="mt-3 mb-0">Appointments</h1>
         ) : role === "HealthcarePersonnel" ? (
           <h1 className="mt-4 mb-3">Your appointments</h1>
         ) : null}
       </div>
 
-      {/* AVAILABLE TIMES FOR CLIENT */}
       {role === "Client" && (
-        <div className="mb-5">
+        <p className="text-muted" style={{ maxWidth: "850px" }}>
+          This page gives you an overview of your homecare visits.
+          Your personal appointments are listed below, and further down the page you can book new visits based on the available time slots from our healthcare personnel.
+        </p>
+      )}
+
+      {role === "HealthcarePersonnel" && (
+        <p className="text-muted" style={{ maxWidth: "700px" }}>
+          Here you can see all the homecare visits assigned to you. Use this overview 
+          to stay updated on upcoming tasks, review client details, and manage any 
+          changes when needed.
+        </p>
+      )}
+
+      {role === "Admin" && (
+        <p className="text-muted" style={{ maxWidth: "650px" }}>
+          Here you can view all homecare visits across the service. Use this overview 
+          to follow up clients, coordinate staff, and manage appointments when needed.
+        </p>
+      )}
+
+      {/* Appointments */}
+      {role === "Client" && (
+        <h3 className="mb-3">My appointments</h3>
+      )}
+
+      {appointments && appointments.length > 0 && (
+        <Form.Control
+          type="text"
+          style={{ maxWidth: '400px' }}
+          placeholder="Search by name, email, date etc, E.g. 27.nov. 2025 "
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="mb-3"
+        />
+      )}
+
+      {appointmentsToShow.length === 0 ? (
+        <Alert>
+          {searchQuery ? "No appointments match your search" : "No appointments found"} 
+        </Alert>
+      ) : (
+        <Row xs={1} md={2} lg={3} xl={4} className="g-3">
+          {appointmentsToShow.map((a) => (
+            <Col key={a.appointmentId}>
+              <Card className="h-100 hover-card">
+                <Card.Body>
+                  <div className="d-flex justify-content-between align-items-start">
+                    <div>
+                      <Card.Title className="mb-1">
+                        {a.clientName ?? "Unknown client"}
+                      </Card.Title>
+                      <Card.Subtitle className="text-muted small">
+                        {a.clientEmail}
+                      </Card.Subtitle>
+                    </div>
+                    <div className="text-end">
+                      <div className="small text-muted">Personnel</div>
+                      <span className="badge text-bg-light border">
+                        {a.healthcarePersonnelName ?? "Unknown personnel"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-3">
+                    <div className="small text-muted">Date</div>
+                    <div>
+                      {a.availableDayDate
+                        ? localDate(a.availableDayDate)
+                        : "—"}
+                    </div>
+                  </div>
+
+                  <div className="mt-2">
+                    <div className="small text-muted">Time</div>
+                    <div>
+                      {hhmm(a.startTime)}–{hhmm(a.endTime)}
+                    </div>
+                  </div>
+
+                  <div className="mt-2">
+                    <div className="small text-muted">Address</div>
+                    <div>{(a as any).address || "—"}</div>
+                  </div>
+
+                  <div className="mt-2">
+                    <div className="small text-muted">Task</div>
+                    <div>{a.taskDescription || "—"}</div>
+                  </div>
+                </Card.Body>
+
+                {(canEditAppointment(a) || canDeleteAppointment(a)) && (
+                  <Card.Footer className="bg-transparent">
+                    <div className="d-flex gap-2">
+                      {canEditAppointment(a) && (
+                        <Link
+                          className="btn btn-sm btn-outline-secondary"
+                          to={`/appointments/edit/${a.appointmentId}`}
+                        >
+                          Edit
+                        </Link>
+                      )}
+                      {canDeleteAppointment(a) && (
+                        <Link
+                          className="btn btn-sm btn-outline-danger"
+                          to={`/appointments/delete/${a.appointmentId}`}
+                        >
+                          Delete
+                        </Link>
+                      )}
+                    </div>
+                  </Card.Footer>
+                )}
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
+
+            {/* AVAILABLE TIMES FOR CLIENT */}
+      {role === "Client" && (
+        <div className="mb-5 mt-5">
           <h3>Available times for booking</h3>
           {loadingAvailableDays ? (
             <div className="text-center mt-3">
@@ -239,104 +359,6 @@ const AppointmentsPage: React.FC = () => {
             </Row>
           )}
         </div>
-      )}
-
-      {/* Appointments */}
-      {role === "Client" && (
-        <h3 className="mt-4 mb-3">My appointments</h3>
-      )}
-
-      {appointments && appointments.length > 0 && (
-        <Form.Control
-          type="text"
-          style={{ maxWidth: '400px' }}
-          placeholder="Search by name, email, date etc, E.g. 27.nov. 2025 "
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="mb-3"
-        />
-      )}
-
-      {appointmentsToShow.length === 0 ? (
-        <Alert>
-          {searchQuery ? "No appointments match your search" : "No appointments found"} 
-        </Alert>
-      ) : (
-        <Row xs={1} md={2} lg={3} xl={4} className="g-3">
-          {appointmentsToShow.map((a) => (
-            <Col key={a.appointmentId}>
-              <Card className="h-100 hover-card  hover-card">
-                <Card.Body>
-                  <div className="d-flex justify-content-between align-items-start">
-                    <div>
-                      <Card.Title className="mb-1">
-                        {a.clientName ?? "Unknown client"}
-                      </Card.Title>
-                      <Card.Subtitle className="text-muted small">
-                        {a.clientEmail}
-                      </Card.Subtitle>
-                    </div>
-                    <div className="text-end">
-                      <div className="small text-muted">Personnel</div>
-                      <span className="badge text-bg-light border">
-                        {a.healthcarePersonnelName ?? "Unknown personnel"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-3">
-                    <div className="small text-muted">Date</div>
-                    <div>
-                      {a.availableDayDate
-                        ? localDate(a.availableDayDate)
-                        : "—"}
-                    </div>
-                  </div>
-
-                  <div className="mt-2">
-                    <div className="small text-muted">Time</div>
-                    <div>
-                      {hhmm(a.startTime)}–{hhmm(a.endTime)}
-                    </div>
-                  </div>
-
-                  <div className="mt-2">
-                    <div className="small text-muted">Address</div>
-                    <div>{(a as any).address || "—"}</div>
-                  </div>
-
-                  <div className="mt-2">
-                    <div className="small text-muted">Task</div>
-                    <div>{a.taskDescription || "—"}</div>
-                  </div>
-                </Card.Body>
-
-                {(canEditAppointment(a) || canDeleteAppointment(a)) && (
-                  <Card.Footer className="bg-transparent">
-                    <div className="d-flex gap-2">
-                      {canEditAppointment(a) && (
-                        <Link
-                          className="btn btn-sm btn-outline-secondary"
-                          to={`/appointments/edit/${a.appointmentId}`}
-                        >
-                          Edit
-                        </Link>
-                      )}
-                      {canDeleteAppointment(a) && (
-                        <Link
-                          className="btn btn-sm btn-outline-danger"
-                          to={`/appointments/delete/${a.appointmentId}`}
-                        >
-                          Delete
-                        </Link>
-                      )}
-                    </div>
-                  </Card.Footer>
-                )}
-              </Card>
-            </Col>
-          ))}
-        </Row>
       )}
     </Container>
   );

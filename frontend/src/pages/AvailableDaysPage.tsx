@@ -47,7 +47,7 @@ const AvailableDaysPage: React.FC = () => {
           "/AvailableDayAPI/availableDaysList"
         );
 
-        // sort per person: date + start time
+        // Sort per person: date + start time
         data.forEach((group) => {
           group.availableDays.sort((a, b) => {
             const dateCompare =
@@ -71,33 +71,19 @@ const AvailableDaysPage: React.FC = () => {
     };
   }, []);
 
-  if (loading)
+  if (loading) {
     return (
       <div className="text-center mt-5">
         <Spinner />
       </div>
     );
+  }
 
-  if (error)
+  if (error) {
     return (
       <Alert className="mt-5" variant="danger">
         {error}
       </Alert>
-    );
-
-  if (!groups || groups.length === 0) {
-    return (
-      <Container className="mt-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2>Available days</h2>
-          {canCreate && (
-            <Link to="/availabledays/create" className="btn btn-primary">
-              + New available day
-            </Link>
-          )}
-        </div>
-        <Alert variant="info">No available days found.</Alert>
-      </Container>
     );
   }
 
@@ -107,100 +93,120 @@ const AvailableDaysPage: React.FC = () => {
         <h2>Available days</h2>
         {canCreate && (
           <Link to="/availabledays/create" className="btn btn-success">
-            Create available day
+            + Create available day
           </Link>
         )}
       </div>
 
-      <div className="row g-3">
-        {groups.map((item) => {
-          const groupedByDate: Record<
-            string,
-            typeof item.availableDays
-          > = {};
+      {role === "HealthcarePersonnel" && (
+        <p className="text-muted" style={{ maxWidth: "650px" }}>
+          Here you register and manage the days and time when you are
+          available for home visits. Clients can only book appointments inside
+          the time slots you publish here, so it is important to keep them
+          up to date.
+        </p>
+      )}
 
-          for (const ad of item.availableDays) {
-            const dateLabel = new Date(ad.date).toLocaleDateString("no-NO", {
-              year: "numeric",
-              month: "short",
-              day: "2-digit",
-            });
-            if (!groupedByDate[dateLabel]) {
-              groupedByDate[dateLabel] = [];
+      {role === "Admin" && (
+        <p className="text-muted" style={{ maxWidth: "650px" }}>
+          This page shows the available days registered by all healthcare
+          personnel. You can use it to get an overview of capacity and to
+          support staff in updating or removing time slots when needed.
+        </p>
+      )}
+
+      {(!groups || groups.length === 0) ? (
+        <Alert variant="info">No available days found.</Alert>
+      ) : (
+        <div className="row g-3">
+          {groups.map((item) => {
+            const groupedByDate: Record<string, typeof item.availableDays> = {};
+
+            for (const ad of item.availableDays) {
+              const dateLabel = new Date(ad.date).toLocaleDateString("no-NO", {
+                year: "numeric",
+                month: "short",
+                day: "2-digit",
+              });
+              if (!groupedByDate[dateLabel]) {
+                groupedByDate[dateLabel] = [];
+              }
+              groupedByDate[dateLabel].push(ad);
             }
-            groupedByDate[dateLabel].push(ad);
-          }
 
-          return (
-            <div
-              className="col-12 col-md-6 col-lg-4"
-              key={item.healthcarePersonnel.userId}
-            >
-              <div className="card h-100 hover-card">
-                <div className="card-header bg-light">
-                  <h5 className="mb-1">{item.healthcarePersonnel.name}</h5>
-                  <small className="text-muted">
-                    {item.healthcarePersonnel.email}
-                  </small>
-                </div>
+            return (
+              <div
+                className="col-12 col-md-6 col-lg-4"
+                key={item.healthcarePersonnel.userId}
+              >
+                <div className="card h-100 hover-card">
+                  <div className="card-header bg-light">
+                    <h5 className="mb-1">{item.healthcarePersonnel.name}</h5>
+                    <small className="text-muted">
+                      {item.healthcarePersonnel.email}
+                    </small>
+                  </div>
 
-                <div className="card-body">
-                  {item.availableDays.length === 0 ? (
-                    <p className="text-muted mb-0">No available time slots</p>
-                  ) : (
-                    <div className="d-flex flex-column gap-3">
-                      {Object.entries(groupedByDate).map(
-                        ([dateLabel, slots]) => (
-                          <div key={dateLabel}>
-                            <div className="fw-semibold mb-1">
-                              {dateLabel}
+                  <div className="card-body">
+                    {item.availableDays.length === 0 ? (
+                      <p className="text-muted mb-0">
+                        No available time slots
+                      </p>
+                    ) : (
+                      <div className="d-flex flex-column gap-3">
+                        {Object.entries(groupedByDate).map(
+                          ([dateLabel, slots]) => (
+                            <div key={dateLabel}>
+                              <div className="fw-semibold mb-1">
+                                {dateLabel}
+                              </div>
+                              <div className="d-flex flex-column gap-2">
+                                {slots.map((availableDay) => (
+                                  <div
+                                    key={availableDay.availableDayId}
+                                    className="d-flex justify-content-between align-items-center border rounded bg-light px-2 py-2"
+                                  >
+                                    <span className="small">
+                                      {hhmm(availableDay.startTime)} –{" "}
+                                      {hhmm(availableDay.endTime)}
+                                    </span>
+
+                                    {(canEditDay(availableDay) ||
+                                      canDeleteDay(availableDay)) && (
+                                      <div className="d-flex gap-1">
+                                        {canEditDay(availableDay) && (
+                                          <Link
+                                            to={`/availabledays/edit/${availableDay.availableDayId}`}
+                                            className="btn btn-sm btn-outline-secondary"
+                                          >
+                                            Edit
+                                          </Link>
+                                        )}
+                                        {canDeleteDay(availableDay) && (
+                                          <Link
+                                            to={`/availabledays/delete/${availableDay.availableDayId}`}
+                                            className="btn btn-sm btn-outline-danger"
+                                          >
+                                            Delete
+                                          </Link>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                            <div className="d-flex flex-column gap-2">
-                              {slots.map((availableDay) => (
-                                <div
-                                  key={availableDay.availableDayId}
-                                  className="d-flex justify-content-between align-items-center border rounded bg-light px-2 py-2"
-                                >
-                                  <span className="small">
-                                    {hhmm(availableDay.startTime)} –{" "}
-                                    {hhmm(availableDay.endTime)}
-                                  </span>
-
-                                  {(canEditDay(availableDay) ||
-                                    canDeleteDay(availableDay)) && (
-                                    <div className="d-flex gap-1">
-                                      {canEditDay(availableDay) && (
-                                        <Link
-                                          to={`/availabledays/edit/${availableDay.availableDayId}`}
-                                          className="btn btn-sm btn-outline-secondary"
-                                        >
-                                          Edit
-                                        </Link>
-                                      )}
-                                      {canDeleteDay(availableDay) && (
-                                        <Link
-                                          to={`/availabledays/delete/${availableDay.availableDayId}`}
-                                          className="btn btn-sm btn-outline-danger"
-                                        >
-                                          Delete
-                                        </Link>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  )}
+                          )
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </Container>
   );
 };
