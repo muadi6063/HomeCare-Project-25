@@ -13,9 +13,9 @@ type HealthcarePersonnel = {
 
 const AvailableDayCreatePage: React.FC = () => {
   const navigate = useNavigate();
-  const { role, userId } = useAuth() as {
+  const { role, name } = useAuth() as {
     role?: string;
-    userId?: string | null;
+    name?: string | null;
   };
 
   const [healthcarePersonnelId, setHealthcarePersonnelId] = useState("");
@@ -34,8 +34,8 @@ const AvailableDayCreatePage: React.FC = () => {
   // og sett egen id automatisk for HealthcarePersonnel
   useEffect(() => {
     // HealthcarePersonnel: alltid seg selv
-    if (role === "HealthcarePersonnel" && userId) {
-      setHealthcarePersonnelId(userId);
+    if (role === "HealthcarePersonnel" && name) {
+      setHealthcarePersonnelId(name);
     }
 
     // Admin: hent alle brukere og filtrer til HealthcarePersonnel
@@ -62,7 +62,7 @@ const AvailableDayCreatePage: React.FC = () => {
         }
       })();
     }
-  }, [role, userId]);
+  }, [role, name]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,7 +134,7 @@ const AvailableDayCreatePage: React.FC = () => {
             </Form.Select>
           ) : (
             // HealthcarePersonnel: show own id
-            <Form.Control type="text" value={userId ?? ""} disabled readOnly />
+            <Form.Control type="text" value={name ?? ""} disabled readOnly />
           )}
         </Form.Group>
 
