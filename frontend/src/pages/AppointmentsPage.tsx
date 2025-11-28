@@ -140,106 +140,10 @@ const AppointmentsPage: React.FC = () => {
   return (
     <Container className="mt-4">
       <div className="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-        {role === "Client" || role === "Admin" ? (
-          <h1 className="mt-4 mb-3">Appointments</h1>
-        ) : role === "HealthcarePersonnel" ? (
+        {role === "HealthcarePersonnel" ? (
           <h1 className="mt-4 mb-3">Your appointments</h1>
         ) : null}
       </div>
-
-      {/* AVAILABLE TIMES FOR CLIENT */}
-      {role === "Client" && (
-        <div className="mb-5">
-          <h3>Available times for booking</h3>
-          {loadingAvailableDays ? (
-            <div className="text-center mt-3">
-              <Spinner size="sm" />
-            </div>
-          ) : !availableDays || availableDays.length === 0 ? (
-            <Alert variant="info" className="mt-3">
-              No available times found.
-            </Alert>
-          ) : (
-            <Row className="g-3 mt-3">
-              {availableDays.map((item) => {
-                const sortedDays = [...item.availableDays].sort((a, b) => {
-                  const aKey = `${a.date}T${a.startTime ?? ""}`;
-                  const bKey = `${b.date}T${b.startTime ?? ""}`;
-                  return aKey.localeCompare(bKey);
-                });
-
-                const groupedByDate: Record<string, typeof item.availableDays> = {};
-                for (const ad of sortedDays) {
-                  const dateLabel = localDate(ad.date);
-                  if (!groupedByDate[dateLabel]) {
-                    groupedByDate[dateLabel] = [];
-                  }
-                  groupedByDate[dateLabel].push(ad);
-                }
-
-                return (
-                  <Col
-                    key={item.healthcarePersonnel.userId}
-                    xs={12}
-                    md={6}
-                    lg={4}
-                  >
-                    <Card className="h-100 hover-card">
-                      <Card.Header className="bg-light">
-                        <h5 className="mb-1">
-                          {item.healthcarePersonnel.name}
-                        </h5>
-                        <small className="text-muted">
-                          {item.healthcarePersonnel.email}
-                        </small>
-                      </Card.Header>
-
-                      <Card.Body>
-                        {item.availableDays.length === 0 ? (
-                          <p className="text-muted mb-0">
-                            No available time slots
-                          </p>
-                        ) : (
-                          <div className="d-flex flex-column gap-3">
-                            {Object.entries(groupedByDate).map(
-                              ([dateLabel, slots]) => (
-                                <div key={dateLabel}>
-                                  <div className="fw-semibold mb-1">
-                                    {dateLabel}
-                                  </div>
-                                  <div className="d-flex flex-column gap-2">
-                                    {slots.map((availableDay) => (
-                                      <div
-                                        key={availableDay.availableDayId}
-                                        className="d-flex justify-content-between align-items-center border rounded-3 px-2 py-2 bg-light"
-                                      >
-                                        <span className="small">
-                                          {hhmm(availableDay.startTime)} –{" "}
-                                          {hhmm(availableDay.endTime)}
-                                        </span>
-                                        <Link
-                                          className="btn btn-success btn-sm"
-                                          to={`/appointments/book/${availableDay.availableDayId}`}
-                                        >
-                                          Book
-                                        </Link>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )
-                            )}
-                          </div>
-                        )}
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                );
-              })}
-            </Row>
-          )}
-        </div>
-      )}
 
       {/* Appointments */}
       {role === "Client" && (
@@ -337,6 +241,100 @@ const AppointmentsPage: React.FC = () => {
             </Col>
           ))}
         </Row>
+      )}
+
+      {/* AVAILABLE TIMES FOR CLIENT */}
+      {role === "Client" && (
+        <div className="mb-5 mt-5">
+          <h3>Available times for booking</h3>
+          {loadingAvailableDays ? (
+            <div className="text-center mt-3">
+              <Spinner size="sm" />
+            </div>
+          ) : !availableDays || availableDays.length === 0 ? (
+            <Alert variant="info" className="mt-3">
+              No available times found.
+            </Alert>
+          ) : (
+            <Row className="g-3 mt-3">
+              {availableDays.map((item) => {
+                const sortedDays = [...item.availableDays].sort((a, b) => {
+                  const aKey = `${a.date}T${a.startTime ?? ""}`;
+                  const bKey = `${b.date}T${b.startTime ?? ""}`;
+                  return aKey.localeCompare(bKey);
+                });
+
+                const groupedByDate: Record<string, typeof item.availableDays> = {};
+                for (const ad of sortedDays) {
+                  const dateLabel = localDate(ad.date);
+                  if (!groupedByDate[dateLabel]) {
+                    groupedByDate[dateLabel] = [];
+                  }
+                  groupedByDate[dateLabel].push(ad);
+                }
+
+                return (
+                  <Col
+                    key={item.healthcarePersonnel.userId}
+                    xs={12}
+                    md={6}
+                    lg={4}
+                  >
+                    <Card className="h-100 hover-card">
+                      <Card.Header className="bg-light">
+                        <h5 className="mb-1">
+                          {item.healthcarePersonnel.name}
+                        </h5>
+                        <small className="text-muted">
+                          {item.healthcarePersonnel.email}
+                        </small>
+                      </Card.Header>
+
+                      <Card.Body>
+                        {item.availableDays.length === 0 ? (
+                          <p className="text-muted mb-0">
+                            No available time slots
+                          </p>
+                        ) : (
+                          <div className="d-flex flex-column gap-3">
+                            {Object.entries(groupedByDate).map(
+                              ([dateLabel, slots]) => (
+                                <div key={dateLabel}>
+                                  <div className="fw-semibold mb-1">
+                                    {dateLabel}
+                                  </div>
+                                  <div className="d-flex flex-column gap-2">
+                                    {slots.map((availableDay) => (
+                                      <div
+                                        key={availableDay.availableDayId}
+                                        className="d-flex justify-content-between align-items-center border rounded-3 px-2 py-2 bg-light"
+                                      >
+                                        <span className="small">
+                                          {hhmm(availableDay.startTime)} –{" "}
+                                          {hhmm(availableDay.endTime)}
+                                        </span>
+                                        <Link
+                                          className="btn btn-success btn-sm"
+                                          to={`/appointments/book/${availableDay.availableDayId}`}
+                                        >
+                                          Book
+                                        </Link>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        )}
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                );
+              })}
+            </Row>
+          )}
+        </div>
       )}
     </Container>
   );
