@@ -34,19 +34,19 @@ const Footer: React.FC = () => {
             <h6 className="mb-2">Contact us</h6>
             <ul className="list-unstyled small">
               <li>
-                <a 
-                  href="mailto:support@homecare.example" 
+                <a
+                  href="mailto:support@homecare.no"
                   className="text-light text-decoration-none"
                 >
-                  support@homecare.example
+                  support@homecare.no
                 </a>
               </li>
               <li>
                 <a
-                  href="tel:+4722000000"
+                  href="tel:+4700000000"
                   className="text-light text-decoration-none"
                 >
-                  +47 22 00 00 00
+                  +47 00 00 00 00
                 </a>
               </li>
             </ul>
