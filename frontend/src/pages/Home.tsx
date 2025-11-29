@@ -102,7 +102,7 @@ const Home: React.FC = () => {
         {!isAuthenticated && (
           <>
             <Col md={6} lg={6}>
-              <Card className="h-100 hover-card">
+              <Card className="h-100">
                 <Card.Body>
                   <Card.Subtitle className="text-uppercase text-muted mb-2">
                     For clients & relatives
@@ -122,7 +122,7 @@ const Home: React.FC = () => {
             </Col>
 
             <Col md={6} lg={6}>
-              <Card className="h-100 hover-card">
+              <Card className="h-100">
                 <Card.Body>
                   <Card.Subtitle className="text-uppercase text-muted mb-2">
                     About the service
@@ -150,7 +150,7 @@ const Home: React.FC = () => {
         {/* Client dashboard card */}
         {isClient && (
           <Col xs={12}>
-            <Card className="h-100 hover-card">
+            <Card className="h-100">
               <Card.Body>
                 <Card.Subtitle className="text-uppercase text-muted mb-2">
                   Client dashboard
@@ -174,7 +174,7 @@ const Home: React.FC = () => {
         {isHPOrAdmin && (
           <>
             <Col md={6} lg={6}>
-              <Card className="h-100 hover-card">
+              <Card className="h-100">
                 <Card.Body>
                   <Card.Subtitle className="text-uppercase text-muted mb-2">
                     Healthcare personnel
@@ -194,7 +194,7 @@ const Home: React.FC = () => {
             </Col>
 
             <Col md={6} lg={6}>
-              <Card className="h-100 hover-card">
+              <Card className="h-100">
                 <Card.Body>
                   <Card.Subtitle className="text-uppercase text-muted mb-2">
                     Appointments overview
