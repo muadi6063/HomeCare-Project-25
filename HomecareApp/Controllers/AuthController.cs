@@ -87,7 +87,7 @@ public class AuthAPIController : ControllerBase
         return Ok(new { message = "Logout successful" });
     }
 
-    [HttpPost("ResetPassword")] // Dobbeltsjekk denne metoden
+    [HttpPost("ResetPassword")] 
     public async Task<IActionResult> ResetPassword(string userId, string token, string newPassword)
     {
         var user = await _userManager.FindByIdAsync(userId);

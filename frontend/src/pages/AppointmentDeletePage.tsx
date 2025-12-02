@@ -50,15 +50,15 @@ const AppointmentDeletePage: React.FC = () => {
     }
   };
 
-  if (!item) return <Container className="mt-4">Laster…</Container>;
+  if (!item) return <Container className="mt-4">Loading…</Container>;
 
   return (
     <Container className="mt-4">
-      <h2>Slett avtale</h2>
+      <h2>Delete appointment</h2>
 
       {!canDelete && (
         <Alert variant="warning" className="mt-3">
-          Du har ikke tilgang til å slette denne avtalen.
+          You do not have permission to delete this appointment.
         </Alert>
       )}
 
@@ -67,23 +67,23 @@ const AppointmentDeletePage: React.FC = () => {
       <Card>
         <Card.Body>
           <p className="mb-3">
-            Er du sikker på at du vil slette avtale <strong>#{item.appointmentId}</strong>?
+            Sure you want to delete this appointment? <strong>#{item.appointmentId}</strong>?
           </p>
 
           <div className="mb-3">
-            <strong>Klient:</strong> {item.clientName ?? "Ukjent"} ({item.clientEmail ?? "—"})
+            <strong>Client:</strong> {item.clientName ?? "Ukjent"} ({item.clientEmail ?? "—"})
           </div>
           <div className="mb-3">
-            <strong>Adresse:</strong> {item.address ?? "—"}
+            <strong>Adress:</strong> {item.address ?? "—"}
           </div>
           <div className="mb-3">
-            <strong>Tid:</strong> {item.availableDayDate ? new Date(item.availableDayDate).toLocaleDateString("no-NO") : "—"} {hhmm(item.startTime)}–{hhmm(item.endTime)}
+            <strong>Time:</strong> {item.availableDayDate ? new Date(item.availableDayDate).toLocaleDateString("no-NO") : "—"} {hhmm(item.startTime)}–{hhmm(item.endTime)}
           </div>
           <div className="mb-3">
-            <strong>Oppgave:</strong> {item.taskDescription || "—"}
+            <strong>Assigment:</strong> {item.taskDescription || "—"}
           </div>
           <div className="mb-3">
-            <strong>Personell:</strong> {item.healthcarePersonnelName ?? "—"}
+            <strong>Personnel:</strong> {item.healthcarePersonnelName ?? "—"}
           </div>
 
           <Button
@@ -99,7 +99,7 @@ const AppointmentDeletePage: React.FC = () => {
             onClick={() => navigate("/appointments")}
             disabled={busy}
           >
-            Avbryt
+            Cancel
           </Button>
         </Card.Body>
       </Card>

@@ -101,12 +101,12 @@ const AppointmentCreatePage: React.FC = () => {
       <Card>
         <Card.Body>
           <div className="mb-4 p-3 bg-light rounded">
-            <h5>Timeinformasjon</h5>
-            <p><strong>Dato:</strong> {new Date(availableDay.date).toLocaleDateString("no-NO")}</p>
-            <p><strong>Tid:</strong> {hhmm(availableDay.startTime)} – {hhmm(availableDay.endTime)}</p>
+            <h5>Appointment details</h5>
+            <p><strong>Date:</strong> {new Date(availableDay.date).toLocaleDateString("no-NO")}</p>
+            <p><strong>Time:</strong> {hhmm(availableDay.startTime)} – {hhmm(availableDay.endTime)}</p>
             <p><strong>Healthcare personell:</strong> {personnelLabel}</p>
             <p><strong>Available Day ID:</strong> {availableDay.availableDayId}</p>
-            <p><strong>Booket av:</strong> {email}</p>
+            <p><strong>Booked by:</strong> {email}</p>
           </div>
 
           <Form onSubmit={handleSubmit}>
@@ -157,7 +157,7 @@ const AppointmentCreatePage: React.FC = () => {
               className="ms-2"
               disabled={busy}
             >
-              Avbryt
+              Cancel
             </Button>
           </Form>
         </Card.Body>

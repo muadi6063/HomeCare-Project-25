@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const LoginPage: React.FC = () => {
-  const { login } = useAuth();
+  const { login } = useAuth(); // Global auth handler (calls backend + stores JWT)
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -16,9 +16,10 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     setError(null);
     setBusy(true);
+
     try {
       await login({ email, password });
-      navigate('/');
+      navigate('/'); // Redirect after successful login
     } catch {
       setError('Login failed: Check username and password');
     } finally {

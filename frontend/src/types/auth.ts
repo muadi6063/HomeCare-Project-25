@@ -1,10 +1,10 @@
-// DTO for innlogging som sendes TIL backend
+// DTO for login that is sent TO the backend
 export interface LoginCredentials {
     email: string;
     password: string;
 }
 
-// Typen for responsen som kommer FRA backend ved vellykket innlogging
+// The type for the response coming FROM the backend upon successful login
 export interface AuthResponse {
     token: string;
 }

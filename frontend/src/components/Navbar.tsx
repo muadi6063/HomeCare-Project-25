@@ -91,17 +91,17 @@ const AppNavbar: React.FC = () => {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Bekreft utlogging</Modal.Title>
+          <Modal.Title>Confirm logout</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Er du sikker på at du vil logge ut?
+          Sure you want to log out?
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowLogoutModal(false)}>
-            Avbryt
+            Cancel
           </Button>
           <Button variant="danger" onClick={confirmLogout}>
-            Logg ut
+            Log out
           </Button>
         </Modal.Footer>
       </Modal>

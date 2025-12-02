@@ -61,15 +61,15 @@ const AvailableDayDeletePage: React.FC = () => {
     }
   };
 
-  if (!item) return <div className="container mt-4">Laster…</div>;
+  if (!item) return <div className="container mt-4">Loading…</div>;
 
   return (
     <div className="container mt-4">
-      <h2>Slett tilgjengelig dag</h2>
+      <h2>Delete available day</h2>
 
       {!canDelete && (
         <Alert variant="warning" className="mt-3">
-          Du har ikke tilgang til å slette denne tilgjengelige dagen.
+          You do not have permission to delete this available day.
         </Alert>
       )}
 
@@ -77,7 +77,7 @@ const AvailableDayDeletePage: React.FC = () => {
 
       <div className="mt-3">
         <p className="mb-3">
-          Er du sikker på at du vil slette ID <strong>{item.availableDayId}</strong> —{" "}
+          Are you sure you want to delete ID <strong>{item.availableDayId}</strong> —{" "}
           {new Date(item.date).toLocaleDateString("no-NO")}{" "}
           {hhmm(item.startTime)}–{hhmm(item.endTime)}?
         </p>
@@ -88,14 +88,14 @@ const AvailableDayDeletePage: React.FC = () => {
           onClick={handleDelete}
           disabled={!canDelete || busy}
         >
-          {busy ? "Sletter..." : "Slett"}
+          {busy ? "Deleting..." : "Delete"}
         </Button>
         <Button
           variant="secondary"
           onClick={() => navigate("/availabledays")}
           disabled={busy}
         >
-          Avbryt
+          Cancel
         </Button>
       </div>
     </div>

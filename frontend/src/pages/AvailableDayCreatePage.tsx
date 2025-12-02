@@ -31,26 +31,26 @@ const AvailableDayCreatePage: React.FC = () => {
 
   const canCreate = role === "Admin" || role === "HealthcarePersonnel";
 
-  // Last inn helsepersonell-liste for Admin,
-  // og sett egen id automatisk for HealthcarePersonnel
+  // Load the healthcare personnel list for Admin,
+// and automatically set own ID for HealthcarePersonnel
   useEffect(() => {
-    // HealthcarePersonnel: alltid seg selv
+    // HealthcarePersonnel: always themselves
     if (role === "HealthcarePersonnel" && userId) {
       setHealthcarePersonnelId(userId);
     }
 
-    // Admin: hent alle brukere og filtrer til HealthcarePersonnel
+    // Admin: fetch all users and filter to HealthcarePersonnel
     if (role === "Admin") {
       (async () => {
         try {
           setLoadingPersonnel(true);
 
-          // Henter hele user-listen
+          // Fetch the entire user list
           const data = await ApiService.get<HealthcarePersonnel[]>(
             "/UserAPI/userlist"
           );
 
-          // Filtrer kun helsepersonell
+          // Filter only healthcare personnel
           const hpOnly = data.filter(
             (u) => u.role === "HealthcarePersonnel"
           );

@@ -5,7 +5,8 @@ import ApiService from '../services/ApiService';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-
+ 
+  // Local form state for the registration payload
     const [userData, setUserData] = useState({
         name: '',
         email: '',
@@ -16,10 +17,12 @@ const RegisterPage: React.FC = () => {
     const [registrationSuccess, setRegistrationSuccess] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+// Generic input handler: maps form field "name" -> corresponding property in userData
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
+    // Submit handler: posts to AuthAPI/register and handles basic success/error flow
     const handleRegistration = async (e: React.FormEvent) => {
         e.preventDefault();
         setRegistrationError(null);
@@ -27,6 +30,8 @@ const RegisterPage: React.FC = () => {
 
         try {
         setIsSubmitting(true);
+           
+      // Payload must match the backend AuthAPI RegisterDTO structure
         const payload = {
             username: userData.email,
             name: userData.name,
