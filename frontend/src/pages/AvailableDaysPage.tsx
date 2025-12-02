@@ -14,9 +14,11 @@ const AvailableDaysPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Check who can create new available days
   const canCreate =
     isAuthenticated && (role === "Admin" || role === "HealthcarePersonnel");
 
+  // Check if user can edit a specific available day
   const canEditDay = (ad: { healthcarePersonnelId: number }) => {
     if (!isAuthenticated) return false;
     if (role === "Admin") return true;
@@ -26,6 +28,7 @@ const AvailableDaysPage: React.FC = () => {
     return false;
   };
 
+  // Check if user can delete a specific available day
   const canDeleteDay = (ad: { healthcarePersonnelId: number }) => {
     if (!isAuthenticated) return false;
     if (role === "Admin") return true;
@@ -35,6 +38,7 @@ const AvailableDaysPage: React.FC = () => {
     return false;
   };
 
+  // Load available days grouped by healthcare personnel
   useEffect(() => {
     let cancelled = false;
 
@@ -47,7 +51,7 @@ const AvailableDaysPage: React.FC = () => {
           "/AvailableDayAPI/availableDaysList"
         );
 
-        // Sort per person: date + start time
+        // Sort days by date and start time within each group
         data.forEach((group) => {
           group.availableDays.sort((a, b) => {
             const dateCompare =
@@ -120,6 +124,7 @@ const AvailableDaysPage: React.FC = () => {
       ) : (
         <div className="row g-3">
           {groups.map((item) => {
+            // Group available days by date for better display
             const groupedByDate: Record<string, typeof item.availableDays> = {};
 
             for (const ad of item.availableDays) {

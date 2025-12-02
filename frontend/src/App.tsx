@@ -62,7 +62,7 @@ const App: React.FC = () => {
                 } 
               />
               
-              {/* Appointments - alle autoriserte brukere */}
+              {/* Appointments - All authorized users */}
               <Route 
                 path="/appointments" 
                 element={

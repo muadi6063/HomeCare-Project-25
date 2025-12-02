@@ -24,6 +24,7 @@ const AvailableDayEditPage = () => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
+  // Admin can edit all, healthcare personnel only their own slots
   const canEdit =
     role === "Admin" ||
     (role === "HealthcarePersonnel" &&
@@ -86,7 +87,7 @@ const AvailableDayEditPage = () => {
 
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
-          <Form.Label>HealthcarePersonnelId</Form.Label>
+          <Form.Label>Healthcare Personnel ID</Form.Label>
           <Form.Control value={model.healthcarePersonnelId} disabled />
         </Form.Group>
 

@@ -7,6 +7,7 @@ const AppNavbar: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated, role, name, logout } = useAuth();
 
+  // Check user roles for conditional menu rendering
   const isClient = isAuthenticated && role === "Client";
   const isHPOrAdmin =
     isAuthenticated && (role === "HealthcarePersonnel" || role === "Admin");
@@ -94,7 +95,7 @@ const AppNavbar: React.FC = () => {
           <Modal.Title>Confirm logout</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Sure you want to log out?
+         Are you sure you want to log out?
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowLogoutModal(false)}>

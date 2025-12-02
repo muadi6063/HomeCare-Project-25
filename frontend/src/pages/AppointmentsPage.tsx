@@ -23,6 +23,7 @@ const AppointmentsPage: React.FC = () => {
   const [err, setErr] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Check if current user can delete a specific appointment
   const canDeleteAppointment = (appointment: AppointmentDto) => {
     if (!isAuthenticated) return false;
     if (role === "Admin" || role === "HealthcarePersonnel") return true;
@@ -35,6 +36,7 @@ const AppointmentsPage: React.FC = () => {
     return false;
   };
 
+   // Check if current user can edit a specific appointment
   const canEditAppointment = (appointment: AppointmentDto) => {
     if (!isAuthenticated) return false;
     if (role === "Admin" || role === "HealthcarePersonnel") return true;
@@ -47,6 +49,7 @@ const AppointmentsPage: React.FC = () => {
     return false;
   };
 
+    // Load appointments on component mount
   useEffect(() => {
     let cancelled = false;
     async function loadAppointments() {
@@ -69,6 +72,7 @@ const AppointmentsPage: React.FC = () => {
     };
   }, []);
 
+   // Load available days for clients to book new appointments
   useEffect(() => {
     if (role !== "Client") return;
 
@@ -92,6 +96,7 @@ const AppointmentsPage: React.FC = () => {
     };
   }, [role]);
 
+  // Filter and sort appointments based on search query
   const appointmentsToShow = useMemo(() => {
     if (!appointments) return [];
     

@@ -20,6 +20,7 @@ const AppointmentCreatePage: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
 
+   // Load available day data when component mounts
   useEffect(() => {
     let cancelled = false;
 
@@ -85,12 +86,13 @@ const AppointmentCreatePage: React.FC = () => {
     );
   }
 
+  // Helper function to format time strings
   const hhmm = (s: string) => (s ?? "").split(":").slice(0, 2).join(":");
 
   const personnelLabel =
     availableDay.healthcarePersonnelName ??
     availableDay.healthcarePersonnelEmail ??
-    "Ukjent personell";
+    "Unknown personnel";
 
   return (
     <Container className="mt-4">
@@ -104,7 +106,7 @@ const AppointmentCreatePage: React.FC = () => {
             <h5>Appointment details</h5>
             <p><strong>Date:</strong> {new Date(availableDay.date).toLocaleDateString("no-NO")}</p>
             <p><strong>Time:</strong> {hhmm(availableDay.startTime)} – {hhmm(availableDay.endTime)}</p>
-            <p><strong>Healthcare personell:</strong> {personnelLabel}</p>
+            <p><strong>Healthcare personnel:</strong> {personnelLabel}</p>
             <p><strong>Available Day ID:</strong> {availableDay.availableDayId}</p>
             <p><strong>Booked by:</strong> {email}</p>
           </div>

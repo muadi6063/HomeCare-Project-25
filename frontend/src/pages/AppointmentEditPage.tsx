@@ -17,7 +17,7 @@ const AppointmentEditPage: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  // Admin and personnel can update all, client can only update their own
+  // Admin and personnel can edit all, client can only update their own
   const canEdit =
     role === "Admin" ||
     role === "HealthcarePersonnel" ||
@@ -90,7 +90,7 @@ const AppointmentEditPage: React.FC = () => {
                 rows={3}
                 value={model.taskDescription || ""}
                 onChange={(e) => setModel({ ...model, taskDescription: e.target.value })}
-                placeholder="Tell us about your needs, your adress and other relevant information"
+                placeholder="Tell us about your needs, your address and other relevant information"
                 disabled={busy}
                 required
                 minLength={5}

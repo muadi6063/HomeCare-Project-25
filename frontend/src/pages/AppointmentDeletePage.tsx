@@ -16,7 +16,7 @@ const AppointmentDeletePage: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  // Admin and pesonnel can delete all, client can only delete their own
+   // Authorization check: admin/personnel can delete all, client only their own
   const canDelete = role === "Admin" || role === "HealthcarePersonnel" || 
     (role === "Client" && item && (item.clientEmail === userId || item.clientId.toString() === userId));
 
@@ -29,7 +29,7 @@ const AppointmentDeletePage: React.FC = () => {
         const data = await ApiService.get<AppointmentDto>(`/AppointmentAPI/${id}`);
         if (!cancelled) setItem(data);
       } catch {
-        if (!cancelled) setError("Kunne ikke laste avtalen.");
+        if (!cancelled) setError("Could not load the element.");
       }
     }
 
@@ -44,7 +44,7 @@ const AppointmentDeletePage: React.FC = () => {
       await ApiService.delete(`/AppointmentAPI/delete/${id}`);
       navigate("/appointments");
     } catch {
-      setError("Sletting feilet.");
+      setError("Delete failed.");
     } finally {
       setBusy(false);
     }
@@ -71,16 +71,16 @@ const AppointmentDeletePage: React.FC = () => {
           </p>
 
           <div className="mb-3">
-            <strong>Client:</strong> {item.clientName ?? "Ukjent"} ({item.clientEmail ?? "—"})
+            <strong>Client:</strong> {item.clientName ?? "Unknown"} ({item.clientEmail ?? "—"})
           </div>
           <div className="mb-3">
-            <strong>Adress:</strong> {item.address ?? "—"}
+            <strong>Address:</strong> {item.address ?? "—"}
           </div>
           <div className="mb-3">
             <strong>Time:</strong> {item.availableDayDate ? new Date(item.availableDayDate).toLocaleDateString("no-NO") : "—"} {hhmm(item.startTime)}–{hhmm(item.endTime)}
           </div>
           <div className="mb-3">
-            <strong>Assigment:</strong> {item.taskDescription || "—"}
+            <strong>Assignment:</strong> {item.taskDescription || "—"}
           </div>
           <div className="mb-3">
             <strong>Personnel:</strong> {item.healthcarePersonnelName ?? "—"}
@@ -92,7 +92,7 @@ const AppointmentDeletePage: React.FC = () => {
             onClick={handleDelete}
             disabled={!canDelete || busy}
           >
-            {busy ? "Sletter..." : "Slett"}
+            {busy ? "Deleting..." : "Delete"}
           </Button>
           <Button
             variant="secondary"

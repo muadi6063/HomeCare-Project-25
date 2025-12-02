@@ -15,6 +15,7 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+// Extract user ID from JWT claims (different claim names from .NET Identity)
 function pickUserId(d: any) {
   return (
     d?.nameid ??
@@ -31,6 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [role, setRole] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null); 
 
+    // Decode JWT token and extract user info when token changes
   useEffect(() => {
     if (!token) return;
 
@@ -50,6 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       );
       setUserId(pickUserId(d));
     } catch {
+      // Invalid token - clear auth state
       logoutApi();
       setToken(null);
       setEmail(null);

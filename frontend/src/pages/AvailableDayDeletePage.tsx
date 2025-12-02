@@ -23,6 +23,7 @@ const AvailableDayDeletePage: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
+   // Admin can delete all, healthcare personnel only their own
   const canDelete =
     role === "Admin" ||
     (role === "HealthcarePersonnel" &&
@@ -38,7 +39,7 @@ const AvailableDayDeletePage: React.FC = () => {
         const data = await ApiService.get<AvailableDayDto>(`/AvailableDayAPI/${id}`);
         if (!cancelled) setItem(data);
       } catch {
-        if (!cancelled) setError("Kunne ikke laste elementet.");
+        if (!cancelled) setError("Could not load the element.");
       }
     }
 
@@ -55,7 +56,7 @@ const AvailableDayDeletePage: React.FC = () => {
       await ApiService.delete(`/AvailableDayAPI/delete/${id}`);
       navigate("/availabledays");
     } catch {
-      setError("Sletting feilet.");
+      setError("Delete failed.");
     } finally {
       setBusy(false);
     }

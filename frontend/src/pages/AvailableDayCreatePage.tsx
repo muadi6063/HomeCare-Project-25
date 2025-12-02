@@ -31,26 +31,19 @@ const AvailableDayCreatePage: React.FC = () => {
 
   const canCreate = role === "Admin" || role === "HealthcarePersonnel";
 
-  // Load the healthcare personnel list for Admin,
-// and automatically set own ID for HealthcarePersonnel
+    // Admin sees dropdown of all personnel, healthcare personnel only see themselves
   useEffect(() => {
-    // HealthcarePersonnel: always themselves
     if (role === "HealthcarePersonnel" && userId) {
       setHealthcarePersonnelId(userId);
     }
 
-    // Admin: fetch all users and filter to HealthcarePersonnel
     if (role === "Admin") {
       (async () => {
         try {
           setLoadingPersonnel(true);
-
-          // Fetch the entire user list
           const data = await ApiService.get<HealthcarePersonnel[]>(
             "/UserAPI/userlist"
           );
-
-          // Filter only healthcare personnel
           const hpOnly = data.filter(
             (u) => u.role === "HealthcarePersonnel"
           );
