@@ -62,7 +62,8 @@ const AvailableDaysPage: React.FC = () => {
         });
 
         if (!cancelled) setGroups(data);
-      } catch {
+      } catch(e) {
+        console.error("Could not load available days: ", e)
         setError("Could not load available days.");
       } finally {
         if (!cancelled) setLoading(false);
