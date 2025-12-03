@@ -81,12 +81,9 @@ const AvailableDayCreatePage: React.FC = () => {
         startTime: startTime + ":00",
       });
       navigate("/availabledays");
-    } catch (err: any) {
-      // Strip generic API prefix from error message (if present) to show cleaner feedback
-      const errorMessage =
-        err?.message.replace(/^API \d+ [^:]+:\s*/, "") ||
-        "Could not create available day";
-      setError(errorMessage);
+    } catch (e) {
+      console.error("Could not create available day: ", e)
+      setError("Could not create available day");
     } finally {
       setBusy(false);
     }

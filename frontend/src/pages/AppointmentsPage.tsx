@@ -90,8 +90,8 @@ const AppointmentsPage: React.FC = () => {
           "/AvailableDayAPI/availableDaysList"
         );
         if (!cancelled) setAvailableDays(data);
-      } catch {
-        console.error("Could not get available days");
+      } catch(e) {
+        console.error("Could not get available days: ", e);
       } finally {
         if (!cancelled) {
           setLoadingAvailableDays(false);
