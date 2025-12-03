@@ -79,20 +79,20 @@ const AvailableDayEditPage = () => {
     }
   };
 
-  // 1) Først: loading / error mens vi ikke har model
+  // 1) First: loading / error when we don't have model yet
   if (!model) {
     return (
       <div className="container mt-4">
         {error ? (
           <Alert variant="danger">{error}</Alert>
         ) : (
-          <>Loading...</>
+          "Loading..."
         )}
       </div>
     );
   }
 
-  // 2) Når model finnes, kan vi sjekke canEdit
+  // 2) When we have model: check authorization
   const canEdit =
     role === "Admin" ||
     (role === "HealthcarePersonnel" &&

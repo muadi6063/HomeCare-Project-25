@@ -68,7 +68,7 @@ const AvailableDayDeletePage: React.FC = () => {
         {error ? (
           <Alert variant="danger">{error}</Alert>
         ) : (
-          <>Loading…</>
+          "Loading…"
         )}
       </div>
     );

@@ -56,10 +56,10 @@ const AppointmentDeletePage: React.FC = () => {
     return (
       <Container className="mt-4">
         {error ? (
-          <Alert variant="danger">{error}</Alert>
-        ) : (
-          <>Loading…</>
-        )}
+        <Alert variant="danger">{error}</Alert>
+      ) : (
+        "Loading…"
+      )}
       </Container>
     );
   }
