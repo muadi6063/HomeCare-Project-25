@@ -72,7 +72,8 @@ const AvailableDayEditPage = () => {
         endTime: hhmmss(model.endTime),
       });
       navigate("/availabledays");
-    } catch {
+    } catch (e) {
+      console.error("Update failed: ", e)
       setError("Update failed.");
     } finally {
       setBusy(false);

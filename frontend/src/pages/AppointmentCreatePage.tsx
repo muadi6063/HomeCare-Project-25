@@ -76,8 +76,9 @@ const AppointmentCreatePage: React.FC = () => {
 
       await ApiService.post("/AppointmentAPI/create", dto);
       navigate("/appointments");
-    } catch (e: any) {
-      setError(e?.message ?? "Booking failed");
+    } catch (e) {
+      console.error("Booking failed: ", e)
+      setError("Booking failed");
     } finally {
       setBusy(false);
     }
