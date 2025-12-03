@@ -89,9 +89,7 @@ const AppointmentsPage: React.FC = () => {
         const data = await ApiService.get<AvailableDaysGrouped[]>(
           "/AvailableDayAPI/availableDaysList"
         );
-        if (!cancelled) {
-          setAvailableDays(data);
-        }
+        if (!cancelled) setAvailableDays(data);
       } catch {
         console.error("Could not get available days");
       } finally {

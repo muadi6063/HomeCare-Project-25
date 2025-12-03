@@ -24,10 +24,12 @@ import AppointmentDeletePage from "./pages/AppointmentDeletePage";
 
 const App: React.FC = () => {
   return (
+    // Global authentication provider — exposes login state and JWT-based user info to the entire app
     <AuthProvider>
       <Router>
         <div className="d-flex flex-column min-vh-100">
           <AppNavbar />
+
           <main className="flex-grow-1 pb-5">
             <Routes>
               {/* Public routes */}
@@ -35,7 +37,7 @@ const App: React.FC = () => {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
 
-              {/* AvailableDays - Admin/HealthcarePersonnel */}
+              {/* Available days (Admin & HealthcarePersonnel only) */}
               <Route 
                 path="/availabledays"
                 element={
@@ -44,69 +46,76 @@ const App: React.FC = () => {
                   </ProtectedRoute>
                 }
               />
+
               <Route 
-                path="/availabledays/create" 
+                path="/availabledays/create"
                 element={
                   <ProtectedRoute roles={["Admin", "HealthcarePersonnel"]}>
                     <AvailableDayCreatePage />
                   </ProtectedRoute>
-                } 
+                }
               />
+
               <Route 
-                path="/availabledays/edit/:id" 
+                path="/availabledays/edit/:id"
                 element={
                   <ProtectedRoute roles={["Admin", "HealthcarePersonnel"]}>
                     <AvailableDayEditPage />
                   </ProtectedRoute>
-                } 
+                }
               />
+
               <Route 
-                path="/availabledays/delete/:id" 
+                path="/availabledays/delete/:id"
                 element={
                   <ProtectedRoute roles={["Admin", "HealthcarePersonnel"]}>
                     <AvailableDayDeletePage />
                   </ProtectedRoute>
-                } 
+                }
               />
               
-              {/* Appointments - All authorized users */}
+              {/* Appointments (role-based access for Admin, Personnel, and Client) */}
               <Route 
-                path="/appointments" 
+                path="/appointments"
                 element={
                   <ProtectedRoute roles={["Admin", "HealthcarePersonnel", "Client"]}>
                     <AppointmentsPage />
                   </ProtectedRoute>
-                } 
+                }
               />
+
               <Route 
-                path="/appointments/book/:availableDayId" 
+                path="/appointments/book/:availableDayId"
                 element={
                   <ProtectedRoute roles={["Client"]}>
                     <AppointmentCreatePage />
                   </ProtectedRoute>
-                } 
+                }
               />
+
               <Route 
-                path="/appointments/edit/:id" 
+                path="/appointments/edit/:id"
                 element={
                   <ProtectedRoute roles={["Admin", "HealthcarePersonnel", "Client"]}>
                     <AppointmentEditPage />
                   </ProtectedRoute>
-                } 
+                }
               />
+
               <Route 
-                path="/appointments/delete/:id" 
+                path="/appointments/delete/:id"
                 element={
                   <ProtectedRoute roles={["Admin", "HealthcarePersonnel", "Client"]}>
                     <AppointmentDeletePage />
                   </ProtectedRoute>
-                } 
+                }
               />
 
-              {/* Catch-all route */}
+              {/* Catch-all */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
+
           <Footer />
         </div>
       </Router>

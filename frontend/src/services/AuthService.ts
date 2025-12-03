@@ -5,6 +5,7 @@ export interface LoginRequest {
   password: string;
 }
 
+// Extracts user ID from various possible claim names used by .NET Identity
 function pickUserId(d: any) {
   return (
     d?.nameid ??
@@ -18,9 +19,10 @@ export async function loginApi({ email, password }: LoginRequest) {
   const res = await fetch("/api/AuthAPI/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username: email, password }),
+    body: JSON.stringify({ username: email, password }), // backend expects "username"
   });
 
+  // Detailed and safe login error parsing (handles raw text, JSON, and ASP.NET model errors)
   if (!res.ok) {
     const text = await res.text();
     let msg = "Login failed.";
@@ -32,14 +34,12 @@ export async function loginApi({ email, password }: LoginRequest) {
         if (typeof errJson === "string") {
           msg = errJson;
         } else if (typeof errJson.message === "string") {
-          // f.eks. { "message": "Invalid username or password" }
-          msg = errJson.message;
+          msg = errJson.message; // e.g. { message: "Invalid username or password" }
         } else {
           msg = text;
         }
       } catch {
-        // ikke gyldig JSON → bruk rå tekst
-        msg = text || `Login failed ${res.status}`;
+        msg = text || `Login failed ${res.status}`; // raw non-JSON response
       }
     } else {
       msg = `Login failed ${res.status}`;
@@ -47,12 +47,15 @@ export async function loginApi({ email, password }: LoginRequest) {
 
     throw new Error(msg);
   }
-  
+
   const data = await res.json();
   const token: string = data.token;
 
+  // Decode JWT token to extract claims (.NET Identity uses mixed claim naming)
   const d: any = jwtDecode(token);
+
   const emailFromToken = d?.email ?? null;
+
   const roleFromToken =
     d?.role ??
     d?.roles ??
@@ -61,6 +64,7 @@ export async function loginApi({ email, password }: LoginRequest) {
 
   const userIdFromToken = pickUserId(d);
 
+  // Persist JWT for authenticated API requests
   localStorage.setItem("token", token);
 
   return {
@@ -92,7 +96,8 @@ export async function registerApi(data: RegisterRequest) {
 
   const text = await res.text();
 
-    if (!res.ok) {
+  // Robust registration error extraction
+  if (!res.ok) {
     let msg = "Registration failed.";
 
     if (text) {
@@ -104,6 +109,7 @@ export async function registerApi(data: RegisterRequest) {
         } else if (typeof errJson.message === "string") {
           msg = errJson.message;
         } else if (errJson.errors) {
+          // ASP.NET-style model validation errors (object of string arrays)
           const allErrors = Object.values(errJson.errors)
             .flat()
             .filter((x) => typeof x === "string") as string[];
@@ -113,7 +119,7 @@ export async function registerApi(data: RegisterRequest) {
           }
         }
       } catch {
-        msg = text;
+        msg = text; // not valid JSON -> fallback to raw server response
       }
     } else {
       msg = `Registration failed ${res.status}`;
@@ -122,6 +128,7 @@ export async function registerApi(data: RegisterRequest) {
     throw new Error(msg);
   }
 
+  // Registration success may return plain text or JSON -> handle both
   try {
     const json = JSON.parse(text);
     return json;

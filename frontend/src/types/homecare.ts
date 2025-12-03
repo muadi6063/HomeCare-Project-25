@@ -29,6 +29,7 @@ export interface UserDto {
   role: string;
 }
 
+// used for grouping available days by personnel
 export interface AvailableDaysGrouped {
   healthcarePersonnel: UserDto;
   availableDays: AvailableDayDto[];
