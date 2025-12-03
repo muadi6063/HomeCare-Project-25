@@ -34,9 +34,16 @@ const App: React.FC = () => {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
-              <Route path="/availabledays" element={<AvailableDaysPage />} />
-              
+
               {/* AvailableDays - Admin/HealthcarePersonnel */}
+              <Route 
+                path="/availabledays"
+                element={
+                  <ProtectedRoute roles={["Admin", "HealthcarePersonnel"]}>
+                    <AvailableDaysPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route 
                 path="/availabledays/create" 
                 element={
@@ -100,9 +107,7 @@ const App: React.FC = () => {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
-
           <Footer />
-
         </div>
       </Router>
     </AuthProvider>
