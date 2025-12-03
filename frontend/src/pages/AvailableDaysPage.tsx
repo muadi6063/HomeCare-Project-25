@@ -5,6 +5,7 @@ import ApiService from "../services/ApiService";
 import { useAuth } from "../context/AuthContext";
 import type { AvailableDaysGrouped } from "../types/homecare";
 
+// Format time string from "HH:MM:SS" to "HH:MM"
 const hhmm = (s: string | null | undefined) =>
   (s ?? "").split(":").slice(0, 2).join(":");
 
@@ -14,11 +15,11 @@ const AvailableDaysPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Check who can create new available days
+  // Only admins and healthcare personnel can create new available days
   const canCreate =
     isAuthenticated && (role === "Admin" || role === "HealthcarePersonnel");
 
-  // Check if user can edit a specific available day
+  // Check if user can edit a specific available day (RBAC)
   const canEditDay = (ad: { healthcarePersonnelId: string | number }) => {
     if (!isAuthenticated) return false;
     if (role === "Admin") return true;
@@ -28,7 +29,7 @@ const AvailableDaysPage: React.FC = () => {
     return false;
   };
 
-  // Check if user can delete a specific available day
+  // Check if user can delete a specific available day (RBAC)
   const canDeleteDay = (ad: { healthcarePersonnelId: string | number }) => {
     if (!isAuthenticated) return false;
     if (role === "Admin") return true;
@@ -61,16 +62,22 @@ const AvailableDaysPage: React.FC = () => {
           });
         });
 
-        if (!cancelled) setGroups(data);
-      } catch(e) {
-        console.error("Could not load available days: ", e)
+        if (!cancelled) {
+          setGroups(data);
+        }
+      } catch (e) {
+        console.error("Could not load available days: ", e);
         setError("Could not load available days.");
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
     load();
+
+    // Avoid setting state if component unmounts during request
     return () => {
       cancelled = true;
     };
@@ -105,10 +112,9 @@ const AvailableDaysPage: React.FC = () => {
 
       {role === "HealthcarePersonnel" && (
         <p className="text-muted" style={{ maxWidth: "650px" }}>
-          Here you register and manage the days and time when you are
-          available for home visits. Clients can only book appointments inside
-          the time slots you publish here, so it is important to keep them
-          up to date.
+          Here you register and manage the days and time when you are available
+          for home visits. Clients can only book appointments inside the time
+          slots you publish here, so it is important to keep them up to date.
         </p>
       )}
 
@@ -120,7 +126,7 @@ const AvailableDaysPage: React.FC = () => {
         </p>
       )}
 
-      {(!groups || groups.length === 0) ? (
+      {!groups || groups.length === 0 ? (
         <Alert variant="info">No available days found.</Alert>
       ) : (
         <div className="row g-3">
