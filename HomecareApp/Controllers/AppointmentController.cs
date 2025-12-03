@@ -42,14 +42,17 @@ public class AppointmentAPIController : Controller
 
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+        // Role based filtering of appointments
         if (User.IsInRole("Client"))
         {
+            // Clients can only see their own appointments
             appointments = appointments
                 .Where(a => !IsClientAccessingOthers(a.ClientId))
                 .ToList();
         }
         else if (User.IsInRole("HealthcarePersonnel"))
         {
+            // Healthcare personnel can only see appointments assigned to them
             if (currentUserId != null)
             {
                 appointments = appointments
@@ -58,6 +61,7 @@ public class AppointmentAPIController : Controller
             }
         }
 
+        // Map to DTO for response
         var dtos = appointments.Select(a =>  new AppointmentDto{
             AppointmentId = a.AppointmentId,
             ClientId = a.ClientId,
@@ -84,13 +88,14 @@ public class AppointmentAPIController : Controller
         if (dto == null)
             return BadRequest("Appointment cannot be null");
 
+        // Verify that the selected available day exists
         var availableDay = await _availableDayRepository.GetAvailableDayById(dto.AvailableDayId);
         if (availableDay == null)
         {
             _logger.LogWarning("[AppointmentAPIController] AvailableDay {AvailableDayId} not found", dto.AvailableDayId);
             return BadRequest("The selected available day does not exist");
         }
-
+        // Auto set client ID for client users
         if (User.IsInRole("Client"))
         {
 
@@ -145,6 +150,7 @@ public class AppointmentAPIController : Controller
             _logger.LogError("[AppointmentAPIController] Appointment not found for the AppointmentId {AppointmentId:0000}", id);
             return NotFound("Appointment not found for the AppointmentId");
         }
+        // Security check: prevent clients from accessing others appointments
         if (IsClientAccessingOthers(appointment.ClientId))
         {
             _logger.LogWarning("Client {UserId} attempted to access appointment {AppointmentId} not theirs",
@@ -180,7 +186,8 @@ public class AppointmentAPIController : Controller
         if (existing == null)
             return NotFound("Appointment not found");
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+         
+        // Security check for client users
         if (User.IsInRole("Client"))
         {
             if (IsClientAccessingOthers(existing.ClientId))
@@ -190,9 +197,10 @@ public class AppointmentAPIController : Controller
                 return Forbid();
             }
 
-            dto.ClientId = currentUserId!;
+            dto.ClientId = currentUserId!; // Ensure client can only update their own ID
         }
 
+        // Update appointment properties
         existing.ClientId = dto.ClientId!;
         existing.AvailableDayId = dto.AvailableDayId;
         existing.StartTime = dto.StartTime;
@@ -233,6 +241,8 @@ public class AppointmentAPIController : Controller
         var appointment = await _appointmentRepository.GetAppointmentById(id);
         if (appointment == null)
             return NotFound("Appointment not found");
+
+        // Security check: prevent clients from deleting others appointments
         if (IsClientAccessingOthers(appointment.ClientId))
         {
             _logger.LogWarning("Client {UserId} attempted to delete appointment {AppointmentId} not theirs",

@@ -19,13 +19,13 @@ public class AppointmentRepository : IAppointmentRepository
         try
         {
             var appointments = await _db.Appointments
-                .Include(a => a.Client)
+                .Include(a => a.Client) // Load related data
                 .Include(a => a.AvailableDay)
-                    .ThenInclude(d => d!.HealthcarePersonnel)
+                    .ThenInclude(d => d!.HealthcarePersonnel) // Load healthcare personnel
                 .OrderBy(a => a.AvailableDay!.Date)
                 .ToListAsync();
 
-            return appointments.OrderBy(a => a.StartTime);
+            return appointments.OrderBy(a => a.StartTime); // Secondary sort by time
         }
 
         catch (Exception e)

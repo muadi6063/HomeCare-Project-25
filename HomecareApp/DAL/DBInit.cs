@@ -6,6 +6,7 @@ namespace HomeCareApp.DAL;
 
 public static class DBInit
 {
+    // Seed the database with initial test data
     public static async void Seed(IApplicationBuilder app)
     {
         using var serviceScope = app.ApplicationServices.CreateScope();
@@ -16,6 +17,7 @@ public static class DBInit
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
 
+        // Create roles if they don't exist
         var roles = new[] { "Client", "HealthcarePersonnel", "Admin" };
         foreach (var role in roles)
         {
@@ -26,6 +28,7 @@ public static class DBInit
         }
 
         if (!context.Users.Any()) {
+            // Create sample users with different roles
             var john = new User
 {
     UserName = "john@client.com",
@@ -130,6 +133,7 @@ await userManager.AddToRoleAsync(admin, "Admin");
 
 await context.SaveChangesAsync();
 
+// Create sample available days for healthcare personnel
 if (!context.AvailableDays.Any())
 {
     var availableDays = new List<AvailableDay>
@@ -197,6 +201,7 @@ if (!context.AvailableDays.Any())
     await context.SaveChangesAsync();
 }
 
+// Create sample appointments for testing
 if (!context.Appointments.Any())
 {
     var firstAvailableDay = await context.AvailableDays.OrderBy(a => a.AvailableDayId).FirstAsync();

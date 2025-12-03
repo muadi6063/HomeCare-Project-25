@@ -101,7 +101,7 @@ public class AuthAPIController : ControllerBase
         return BadRequest(result.Errors);
     }
 
-
+    // Generate JWT token with user claims and roles
     private async Task<string> GenerateJwtToken(User user)
     {
         var secret = _configuration["JwtSettings:SecretKey"];
@@ -125,6 +125,7 @@ public class AuthAPIController : ControllerBase
             new Claim(ClaimTypes.Name, user.Name ?? "") 
         };
 
+        // Add user roles as claims
         foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));

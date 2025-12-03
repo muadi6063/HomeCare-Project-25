@@ -10,6 +10,7 @@ public class HomeCareDbContext : IdentityDbContext<User>
     {
     }
 
+    // Database sets representing tables
     public DbSet<AvailableDay> AvailableDays { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
 

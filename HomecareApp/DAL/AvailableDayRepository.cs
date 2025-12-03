@@ -19,7 +19,7 @@ public class AvailableDayRepository : IAvailableDayRepository
         try
         {
             return await _db.AvailableDays
-                .Include(ad => ad.HealthcarePersonnel)
+                .Include(ad => ad.HealthcarePersonnel)  // Load related data
                 .Include(ad => ad.Appointments)
                 .OrderBy(ad => ad.HealthcarePersonnel!.Name)
                 .ThenBy(ad => ad.Date)

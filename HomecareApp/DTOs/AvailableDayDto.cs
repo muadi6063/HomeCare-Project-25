@@ -6,7 +6,7 @@ public class AvailableDayDto
 {
     public int AvailableDayId { get; set; }
 
-    [Required(ErrorMessage = "Healthcare personell is required")]
+    [Required(ErrorMessage = "Healthcare personnel is required")]
     public string HealthcarePersonnelId { get; set; } = string.Empty;
     public string? HealthcarePersonnelName { get; set; }
     public string? HealthcarePersonnelEmail { get; set; }
@@ -25,6 +25,7 @@ public class AvailableDayDto
     public TimeSpan EndTime { get; set; }
 }
 
+// Custom validation to ensure date is in the future
 public class FutureDateAttribute : ValidationAttribute
 {
     public override bool IsValid(object? value)
