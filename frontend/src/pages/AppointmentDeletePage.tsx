@@ -45,7 +45,8 @@ const AppointmentDeletePage: React.FC = () => {
       setBusy(true);
       await ApiService.delete(`/AppointmentAPI/delete/${id}`);
       navigate("/appointments");
-    } catch {
+    } catch(e) {
+      console.error("Delete failed: ", e)
       setError("Delete failed.");
     } finally {
       setBusy(false);

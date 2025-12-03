@@ -52,7 +52,8 @@ const AppointmentEditPage: React.FC = () => {
     });
     
       navigate("/appointments");
-    } catch {
+    } catch(e) {
+      console.error("Update failed: ", e)
       setError("Update failed");
     } finally {
       setBusy(false);

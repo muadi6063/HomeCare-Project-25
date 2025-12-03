@@ -55,7 +55,8 @@ const AvailableDayDeletePage: React.FC = () => {
       setBusy(true);
       await ApiService.delete(`/AvailableDayAPI/delete/${id}`);
       navigate("/availabledays");
-    } catch {
+    } catch (e) {
+      console.error("Delete failed:", e)
       setError("Delete failed.");
     } finally {
       setBusy(false);
