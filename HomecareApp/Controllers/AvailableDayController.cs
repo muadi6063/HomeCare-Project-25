@@ -35,12 +35,14 @@ public class AvailableDayAPIController : ControllerBase
             _logger.LogError("[AvailableDayAPIController] Available day list not found while executing _availableDayRepository.GetAll()");
             return NotFound("Available day list not found");
         }
-
+        
+        // Filter out days that already have appointments
         availableDays = availableDays.Where(ad => ad.Appointments == null || ad.Appointments.Count == 0)
         .ToList();
 
         var groupedData = new List<Object>();
         
+        // Group available days by healthcare personnel
         foreach (var personnelGroup in availableDays 
             .Where(ad => ad.HealthcarePersonnel != null)
             .GroupBy(ad => ad.HealthcarePersonnel))
@@ -54,7 +56,7 @@ public class AvailableDayAPIController : ControllerBase
                 {
                     UserId = personnel.Id,
                     Name = personnel.Name,
-                    Email = personnel.Email ?? "Unkown Email",
+                    Email = personnel.Email ?? "Unknown Email",
                     Role = roles.FirstOrDefault() ?? "Unknown Role" 
                 },
                 AvailableDays = personnelGroup.Select(ad => new AvailableDayDto
@@ -86,6 +88,7 @@ public class AvailableDayAPIController : ControllerBase
         var existingDays = await _availableDayRepository.GetAll();
         var endTime = availableDayDto.StartTime.Add(TimeSpan.FromMinutes(45));
 
+        // Check for overlapping time slots for the same healthcare personnel
         var availableDayExists = existingDays
             .Where(ad => ad.HealthcarePersonnelId == availableDayDto.HealthcarePersonnelId)
             .Where(ad => ad.Date.Date == availableDayDto.Date.Date)
@@ -102,7 +105,7 @@ public class AvailableDayAPIController : ControllerBase
             HealthcarePersonnelId = availableDayDto.HealthcarePersonnelId,
             Date = availableDayDto.Date,
             StartTime = availableDayDto.StartTime,
-            EndTime = availableDayDto.StartTime.Add(TimeSpan.FromMinutes(45)),
+            EndTime = availableDayDto.StartTime.Add(TimeSpan.FromMinutes(45)), // 45-minute appointment slots
             Appointments = new List<Appointment>()
         };
         bool returnOk = await _availableDayRepository.Create(newAvailableDay);

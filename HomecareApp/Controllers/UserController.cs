@@ -45,8 +45,8 @@ public class UserAPIController : ControllerBase
             {
                 UserId = u.Id,
                 Name = u.Name,
-                Email = u.Email ?? "Unknown Email",  
-                Role = roles.FirstOrDefault() ?? "Unknown Role"
+                Email = u.Email ?? "Unknown Email",  // Provide default for null email
+                Role = roles.FirstOrDefault() ?? "Unknown Role"  // Provide default for null role
             });
         }
 

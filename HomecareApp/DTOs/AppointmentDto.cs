@@ -31,6 +31,7 @@ public class AppointmentDto
     public string TaskDescription { get; set; } = string.Empty;
 }
 
+// Custom validation attribute for checking appointment times
 public class EndTimeAfterStartTime : ValidationAttribute
 {
     public override bool IsValid(object? value)
