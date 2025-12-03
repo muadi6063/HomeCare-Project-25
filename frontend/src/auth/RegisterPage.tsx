@@ -5,60 +5,62 @@ import { registerApi } from '../services/AuthService';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
- 
-  // Local form state for the registration payload
-    const [userData, setUserData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        role: 'Client',
-    });
-    const [registrationError, setRegistrationError] = useState<string | null>(null);
-    const [registrationSuccess, setRegistrationSuccess] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
-// Generic input handler: maps form field "name" -> corresponding property in userData
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Local registration form state (mirrors the payload expected by the backend)
+  const [userData, setUserData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'Client',
+  });
+
+  const [registrationError, setRegistrationError] = useState<string | null>(null);
+  const [registrationSuccess, setRegistrationSuccess] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Generic input handler: uses input "name" attribute to update matching field in userData
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
-    // Submit handler: posts to AuthAPI/register and handles basic success/error flow
-    const handleRegistration = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setRegistrationError(null);
-  setRegistrationSuccess(null);
-  setIsSubmitting(true);
+  // Submit handler: builds registration payload, posts to backend, and manages success/error UI
+  const handleRegistration = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegistrationError(null);
+    setRegistrationSuccess(null);
+    setIsSubmitting(true);
 
-  try {
-    const payload = {
-      username: userData.email,
-      name: userData.name,
-      email: userData.email,
-      password: userData.password,
-      role: userData.role,
-    };
+    try {
+      const payload = {
+        username: userData.email, // Backend expects these exact property names
+        name: userData.name,
+        email: userData.email,
+        password: userData.password,
+        role: userData.role,
+      };
 
-    const res = await registerApi(payload);
+      const res = await registerApi(payload);
 
-    const msg =
-      res && typeof res.message === 'string'
-        ? res.message
-        : 'Registration successful! You can now log in.';
+      const msg =
+        res && typeof res.message === 'string'
+          ? res.message
+          : 'Registration successful! You can now log in.';
 
-    setRegistrationSuccess(msg);
-    setTimeout(() => navigate('/login'), 2000);
-  } catch (err: any) {
-    setRegistrationError(
-      err instanceof Error && err.message
-        ? err.message
-        : 'Registration failed.'
-    );
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      setRegistrationSuccess(msg);
 
-    return (
+      // Delay redirect to let user read success message
+      setTimeout(() => navigate('/login'), 2000);
+    } catch (err: any) {
+      // Normalize unknown backend error shapes into a readable message
+      setRegistrationError(
+        err instanceof Error && err.message ? err.message : 'Registration failed.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
     <Container className="mt-5 d-flex justify-content-center">
       <Card style={{ maxWidth: 500, width: '100%' }}>
         <Card.Body>
@@ -118,7 +120,8 @@ const RegisterPage: React.FC = () => {
                 title="Password must be at least 6 characters and include uppercase, lowercase, number, and special character"
               />
               <Form.Text className="text-muted">
-                Password must be at least 6 characters long and include uppercase, number and special character .
+                Password must be at least 6 characters long and include uppercase, number and
+                special character.
               </Form.Text>
             </Form.Group>
 
@@ -157,6 +160,7 @@ const RegisterPage: React.FC = () => {
               </Button>
             </div>
           </Form>
+
         </Card.Body>
       </Card>
     </Container>

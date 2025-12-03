@@ -20,47 +20,60 @@ const AppointmentCreatePage: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
 
-   // Load available day data when component mounts
+  // Load available day details from API when the page is opened
   useEffect(() => {
     let cancelled = false;
 
     async function loadAvailableDay() {
       try {
         setError("");
-        const data = await ApiService.get<AvailableDayDto>(`/AvailableDayAPI/${availableDayId}`);
-        if (!cancelled) setAvailableDay(data);
+        const data = await ApiService.get<AvailableDayDto>(
+          `/AvailableDayAPI/${availableDayId}`
+        );
+        if (!cancelled) {
+          setAvailableDay(data);
+        }
       } catch {
-        if (!cancelled) setError("Could not load available day.");
+        if (!cancelled) {
+          setError("Could not load available day.");
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
     if (availableDayId) {
       loadAvailableDay();
     }
+
+    // Prevent state updates if component unmounts before request completes
     return () => {
       cancelled = true;
     };
   }, [availableDayId]);
 
+  // Handle form submit: validate local data and post booking to backend
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     if (!availableDayId || !email || !userId) {
-    setError("Missing required information for booking");
-    return;
-    } 
+      setError("Missing required information for booking");
+      return;
+    }
 
     try {
       setBusy(true);
+
       const dto = {
-        ClientId: userId,
+        ClientId: userId, // Backend expects PascalCase property names
         AvailableDayId: Number(availableDayId),
         TaskDescription: taskDescription.trim(),
         Address: address.trim(),
       };
+
       await ApiService.post("/AppointmentAPI/create", dto);
       navigate("/appointments");
     } catch (e: any) {
@@ -86,7 +99,7 @@ const AppointmentCreatePage: React.FC = () => {
     );
   }
 
-  // Helper function to format time strings
+  // Helper to format time strings from HH:mm:ss to HH:mm
   const hhmm = (s: string | null) => (s ?? "").split(":").slice(0, 2).join(":");
 
   const personnelLabel =
@@ -104,11 +117,23 @@ const AppointmentCreatePage: React.FC = () => {
         <Card.Body>
           <div className="mb-4 p-3 bg-light rounded">
             <h5>Appointment details</h5>
-            <p><strong>Date:</strong> {new Date(availableDay.date).toLocaleDateString("no-NO")}</p>
-            <p><strong>Time:</strong> {hhmm(availableDay.startTime)} – {hhmm(availableDay.endTime)}</p>
-            <p><strong>Healthcare personnel:</strong> {personnelLabel}</p>
-            <p><strong>Available Day ID:</strong> {availableDay.availableDayId}</p>
-            <p><strong>Booked by:</strong> {email}</p>
+            <p>
+              <strong>Date:</strong>{" "}
+              {new Date(availableDay.date).toLocaleDateString("no-NO")}
+            </p>
+            <p>
+              <strong>Time:</strong> {hhmm(availableDay.startTime)} –{" "}
+              {hhmm(availableDay.endTime)}
+            </p>
+            <p>
+              <strong>Healthcare personnel:</strong> {personnelLabel}
+            </p>
+            <p>
+              <strong>Available Day ID:</strong> {availableDay.availableDayId}
+            </p>
+            <p>
+              <strong>Booked by:</strong> {email}
+            </p>
           </div>
 
           <Form onSubmit={handleSubmit}>
@@ -132,23 +157,22 @@ const AppointmentCreatePage: React.FC = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-            <Form.Label>Address *</Form.Label>
-            <Form.Control
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="Where should the visit take place? (e.g., Pilestredet 35, Oslo)"
-              required
-              disabled={busy}
-              minLength={5}
-              maxLength={200}
-              title="Address must be between 5 and 200 characters."
-            />
-            <Form.Text className="text-muted">
-              Enter the address where you need the service
-            </Form.Text>
-          </Form.Group>
-
+              <Form.Label>Address *</Form.Label>
+              <Form.Control
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Where should the visit take place? (e.g., Pilestredet 35, Oslo)"
+                required
+                disabled={busy}
+                minLength={5}
+                maxLength={200}
+                title="Address must be between 5 and 200 characters."
+              />
+              <Form.Text className="text-muted">
+                Enter the address where you need the service
+              </Form.Text>
+            </Form.Group>
 
             <Button type="submit" disabled={busy} variant="success">
               {busy ? "Booking..." : "Book appointment"}

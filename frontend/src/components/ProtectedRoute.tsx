@@ -10,7 +10,9 @@ export const ProtectedRoute: React.FC<{
   const { isAuthenticated, role } = useAuth();
 
   // Redirect to login if not authenticated
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
   // Check role authorization if roles are specified
   if (roles && roles.length > 0) {
@@ -19,5 +21,6 @@ export const ProtectedRoute: React.FC<{
     }
   }
 
+  // Authorized -> render protected content
   return children;
 };

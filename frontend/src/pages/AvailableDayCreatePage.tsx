@@ -13,7 +13,7 @@ type HealthcarePersonnel = {
 
 const AvailableDayCreatePage: React.FC = () => {
   const navigate = useNavigate();
-  const { role, userId ,name } = useAuth() as {
+  const { role, userId, name } = useAuth() as {
     role?: string;
     userId?: string | null;
     name?: string | null;
@@ -29,9 +29,10 @@ const AvailableDayCreatePage: React.FC = () => {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
+  // Only admins and healthcare personnel can create available days
   const canCreate = role === "Admin" || role === "HealthcarePersonnel";
 
-    // Admin sees dropdown of all personnel, healthcare personnel only see themselves
+  // Admin sees dropdown of all personnel; healthcare personnel see only themselves
   useEffect(() => {
     if (role === "HealthcarePersonnel" && userId) {
       setHealthcarePersonnelId(userId);
@@ -41,15 +42,10 @@ const AvailableDayCreatePage: React.FC = () => {
       (async () => {
         try {
           setLoadingPersonnel(true);
-          const data = await ApiService.get<HealthcarePersonnel[]>(
-            "/UserAPI/userlist"
-          );
-          const hpOnly = data.filter(
-            (u) => u.role === "HealthcarePersonnel"
-          );
-
+          const data = await ApiService.get<HealthcarePersonnel[]>("/UserAPI/userlist");
+          const hpOnly = data.filter((u) => u.role === "HealthcarePersonnel");
           setPersonnel(hpOnly);
-        } catch  {
+        } catch {
           setError("Could not load healthcare personnel list.");
         } finally {
           setLoadingPersonnel(false);
@@ -58,6 +54,7 @@ const AvailableDayCreatePage: React.FC = () => {
     }
   }, [role, userId]);
 
+  // Handle form submit: validate date/time and post new available day to API
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -85,6 +82,7 @@ const AvailableDayCreatePage: React.FC = () => {
       });
       navigate("/availabledays");
     } catch (err: any) {
+      // Strip generic API prefix from error message (if present) to show cleaner feedback
       const errorMessage =
         err?.message.replace(/^API \d+ [^:]+:\s*/, "") ||
         "Could not create available day";
@@ -101,7 +99,6 @@ const AvailableDayCreatePage: React.FC = () => {
       </div>
     );
   }
-
 
   return (
     <div className="container mt-4">
@@ -132,7 +129,7 @@ const AvailableDayCreatePage: React.FC = () => {
               ))}
             </Form.Select>
           ) : (
-            // HealthcarePersonnel: show own id
+            // HealthcarePersonnel: show own name as read-only
             <Form.Control type="text" value={name ?? ""} disabled readOnly />
           )}
         </Form.Group>
@@ -161,11 +158,12 @@ const AvailableDayCreatePage: React.FC = () => {
 
         <Button type="submit" disabled={busy}>
           {busy ? "Saving..." : "Save"}
-        </Button>{" "}
+        </Button>
         <Button
           variant="secondary"
           onClick={() => navigate("/availabledays")}
           disabled={busy}
+          className="ms-2"
         >
           Cancel
         </Button>

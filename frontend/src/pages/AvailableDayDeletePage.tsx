@@ -12,6 +12,7 @@ type AvailableDayDto = {
   healthcarePersonnelId: string;
 };
 
+// Format time string from "HH:MM:SS" to "HH:MM"
 const hhmm = (s?: string) => (s ?? "").split(":").slice(0, 2).join(":");
 
 const AvailableDayDeletePage: React.FC = () => {
@@ -23,7 +24,7 @@ const AvailableDayDeletePage: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-   // Admin can delete all, healthcare personnel only their own
+  // Authorization check: admin can delete all, healthcare personnel only their own
   const canDelete =
     role === "Admin" ||
     (role === "HealthcarePersonnel" &&
@@ -37,13 +38,21 @@ const AvailableDayDeletePage: React.FC = () => {
       try {
         setError("");
         const data = await ApiService.get<AvailableDayDto>(`/AvailableDayAPI/${id}`);
-        if (!cancelled) setItem(data);
+        if (!cancelled) {
+          setItem(data);
+        }
       } catch {
-        if (!cancelled) setError("Could not load the element.");
+        if (!cancelled) {
+          setError("Could not load the element.");
+        }
       }
     }
 
-    if (id) load();
+    if (id) {
+      load();
+    }
+
+    // Prevent state updates if component is unmounted during request
     return () => {
       cancelled = true;
     };
@@ -65,15 +74,10 @@ const AvailableDayDeletePage: React.FC = () => {
   if (!item) {
     return (
       <div className="container mt-4">
-        {error ? (
-          <Alert variant="danger">{error}</Alert>
-        ) : (
-          "Loading…"
-        )}
+        {error ? <Alert variant="danger">{error}</Alert> : "Loading…"}
       </div>
     );
   }
-
 
   return (
     <div className="container mt-4">

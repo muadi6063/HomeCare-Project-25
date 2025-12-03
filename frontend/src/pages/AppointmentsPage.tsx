@@ -5,7 +5,10 @@ import ApiService from "../services/ApiService";
 import { useAuth } from "../context/AuthContext";
 import type { AppointmentDto, AvailableDaysGrouped } from "../types/homecare";
 
+// Format time strings from "HH:MM:SS" to "HH:MM"
 const hhmm = (s?: string | null) => (s ?? "").split(":").slice(0, 2).join(":");
+
+// Format date to a local Norwegian readable string
 const localDate = (d: any) =>
   new Date(d).toLocaleDateString("no-NO", {
     year: "numeric",
@@ -23,7 +26,7 @@ const AppointmentsPage: React.FC = () => {
   const [err, setErr] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Check if current user can delete a specific appointment
+  // Check if current user can delete a specific appointment (RBAC)
   const canDeleteAppointment = (appointment: AppointmentDto) => {
     if (!isAuthenticated) return false;
     if (role === "Admin" || role === "HealthcarePersonnel") return true;
@@ -33,7 +36,7 @@ const AppointmentsPage: React.FC = () => {
     return false;
   };
 
-  // Check if current user can edit a specific appointment
+  // Check if current user can edit a specific appointment (RBAC)
   const canEditAppointment = (appointment: AppointmentDto) => {
     if (!isAuthenticated) return false;
     if (role === "Admin" || role === "HealthcarePersonnel") return true;
@@ -43,9 +46,10 @@ const AppointmentsPage: React.FC = () => {
     return false;
   };
 
-  // Load appointments on component mount
+  // Load all appointments when the page is opened
   useEffect(() => {
     let cancelled = false;
+
     async function loadAppointments() {
       setErr(null);
       setLoading(true);
@@ -53,71 +57,86 @@ const AppointmentsPage: React.FC = () => {
         const data = await ApiService.get<AppointmentDto[]>(
           "/AppointmentAPI/appointmentlist"
         );
-        if (!cancelled) setAppointments(data);
+        if (!cancelled) {
+          setAppointments(data);
+        }
       } catch {
-        if (!cancelled) setErr("Could not get appointments");
+        if (!cancelled) {
+          setErr("Could not get appointments");
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
+
     loadAppointments();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  // Load available days for clients to book new appointments
+  // Load available days (only relevant for clients booking new appointments)
   useEffect(() => {
     if (role !== "Client") return;
 
     let cancelled = false;
+
     async function loadAvailableDays() {
       setLoadingAvailableDays(true);
       try {
         const data = await ApiService.get<AvailableDaysGrouped[]>(
           "/AvailableDayAPI/availableDaysList"
         );
-        if (!cancelled) setAvailableDays(data);
+        if (!cancelled) {
+          setAvailableDays(data);
+        }
       } catch {
         console.error("Could not get available days");
       } finally {
-        if (!cancelled) setLoadingAvailableDays(false);
+        if (!cancelled) {
+          setLoadingAvailableDays(false);
+        }
       }
     }
+
     loadAvailableDays();
     return () => {
       cancelled = true;
     };
   }, [role]);
 
-  // Filter and sort appointments based on search query
+  // Filter and sort appointments based on search query and date
   const appointmentsToShow = useMemo(() => {
     if (!appointments) return [];
-    
+
     let filtered = [...appointments];
-    
+
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(a => {
-        const matchesText = 
+      filtered = filtered.filter((a) => {
+        const matchesText =
           a.clientName?.toLowerCase().includes(query) ||
           a.clientEmail?.toLowerCase().includes(query) ||
           a.healthcarePersonnelName?.toLowerCase().includes(query) ||
           a.taskDescription?.toLowerCase().includes(query);
-        
-        const dateStr = a.availableDayDate ? localDate(a.availableDayDate).toLowerCase() : "";
+
+        const dateStr = a.availableDayDate
+          ? localDate(a.availableDayDate).toLowerCase()
+          : "";
         const matchesDate = dateStr.includes(query);
-        
+
         return matchesText || matchesDate;
       });
     }
-    
+
     filtered.sort((a, b) => {
       const dateA = new Date(a.availableDayDate || 0).getTime();
       const dateB = new Date(b.availableDayDate || 0).getTime();
       return dateA - dateB;
     });
-    
+
     return filtered;
   }, [appointments, searchQuery]);
 
@@ -128,6 +147,7 @@ const AppointmentsPage: React.FC = () => {
       </Container>
     );
   }
+
   if (err) {
     return (
       <Container className="mt-4">
@@ -148,36 +168,33 @@ const AppointmentsPage: React.FC = () => {
 
       {role === "Client" && (
         <p className="text-muted" style={{ maxWidth: "850px" }}>
-          This page gives you an overview of your homecare visits.
-          Your personal appointments are listed below, and further down the page you can book new visits based on the available time slots from our healthcare personnel.
+          This page gives you an overview of your homecare visits. Your personal appointments
+          are listed below, and further down the page you can book new visits based on the
+          available time slots from our healthcare personnel.
         </p>
       )}
 
       {role === "HealthcarePersonnel" && (
         <p className="text-muted" style={{ maxWidth: "700px" }}>
-          Here you can see all the homecare visits assigned to you. Use this overview 
-          to stay updated on upcoming tasks, review client details, and manage any 
-          changes when needed.
+          Here you can see all the homecare visits assigned to you. Use this overview to stay
+          updated on upcoming tasks, review client details, and manage any changes when needed.
         </p>
       )}
 
       {role === "Admin" && (
         <p className="text-muted" style={{ maxWidth: "650px" }}>
-          Here you can view all homecare visits across the service. Use this overview 
-          to follow up clients, coordinate staff, and manage appointments when needed.
+          Here you can view all homecare visits across the service. Use this overview to follow
+          up clients, coordinate staff, and manage appointments when needed.
         </p>
       )}
 
-      {/* Appointments */}
-      {role === "Client" && (
-        <h3 className="mb-3">My appointments</h3>
-      )}
+      {role === "Client" && <h3 className="mb-3">My appointments</h3>}
 
       {appointments && appointments.length > 0 && (
         <Form.Control
           type="text"
-          style={{ maxWidth: '400px' }}
-          placeholder="Search by name, email, date etc, E.g. 27.nov. 2025 "
+          style={{ maxWidth: "400px" }}
+          placeholder="Search by name, email, date etc, e.g. 27.nov. 2025"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="mb-3"
@@ -186,7 +203,9 @@ const AppointmentsPage: React.FC = () => {
 
       {appointmentsToShow.length === 0 ? (
         <Alert>
-          {searchQuery ? "No appointments match your search" : "No appointments found"} 
+          {searchQuery
+            ? "No appointments match your search"
+            : "No appointments found"}
         </Alert>
       ) : (
         <Row xs={1} md={2} lg={3} xl={4} className="g-3">
@@ -214,9 +233,7 @@ const AppointmentsPage: React.FC = () => {
                   <div className="mt-3">
                     <div className="small text-muted">Date</div>
                     <div>
-                      {a.availableDayDate
-                        ? localDate(a.availableDayDate)
-                        : "—"}
+                      {a.availableDayDate ? localDate(a.availableDayDate) : "—"}
                     </div>
                   </div>
 
@@ -266,7 +283,7 @@ const AppointmentsPage: React.FC = () => {
         </Row>
       )}
 
-            {/* AVAILABLE TIMES FOR CLIENT */}
+      {/* Available times for clients to book new appointments */}
       {role === "Client" && (
         <div className="mb-5 mt-5">
           <h3>Available times for booking</h3>
@@ -281,6 +298,7 @@ const AppointmentsPage: React.FC = () => {
           ) : (
             <Row className="g-3 mt-3">
               {availableDays.map((item) => {
+                // Sort and group available slots by date for each healthcare personnel
                 const sortedDays = [...item.availableDays].sort((a, b) => {
                   const aKey = `${a.date}T${a.startTime ?? ""}`;
                   const bKey = `${b.date}T${b.startTime ?? ""}`;
