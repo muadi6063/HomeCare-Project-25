@@ -12,7 +12,7 @@ const LoginPage: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmit(e: React.FormEvent) {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setBusy(true);
@@ -20,12 +20,16 @@ const LoginPage: React.FC = () => {
     try {
       await login({ email, password });
       navigate('/'); // Redirect after successful login
-    } catch {
-      setError('Login failed: Check username and password');
+    } catch (err: any) {
+      const msg =
+        err instanceof Error && err.message
+          ? err.message
+          : 'Login failed: Check username and password';
+      setError(msg);
     } finally {
       setBusy(false);
     }
-  }
+  };
 
   return (
     <div className="d-flex justify-content-center mt-5">
@@ -43,6 +47,7 @@ const LoginPage: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 title="Please enter your email address"
+                disabled={busy}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="password">
@@ -54,6 +59,7 @@ const LoginPage: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 title="Please enter your password"
+                disabled={busy}
               />
             </Form.Group>
             <div className="d-grid">

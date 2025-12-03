@@ -5,6 +5,7 @@ import ApiService from "../services/ApiService";
 import { useAuth } from "../context/AuthContext";
 import type { AppointmentDto } from "../types/homecare";
 
+// Helper to convert "HH:MM:SS" or "HH:MM:SS.sss" to "HH:MM"
 const hhmm = (s: string) => (s ?? "").split(":").slice(0, 2).join(":");
 const hhmmss = (s: string) => (s.includes(":") ? `${s}:00` : s);
 
@@ -16,14 +17,6 @@ const AppointmentEditPage: React.FC = () => {
   const [model, setModel] = useState<AppointmentDto | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-
-  // Admin and personnel can edit all, client can only update their own
-  const canEdit =
-    role === "Admin" ||
-    role === "HealthcarePersonnel" ||
-    (role === "Client" &&
-      model &&
-      (model.clientEmail === userId || model.clientId.toString() === userId));
 
   useEffect(() => {
     async function load() {
@@ -50,13 +43,14 @@ const AppointmentEditPage: React.FC = () => {
     try {
       setBusy(true);
       await ApiService.put(`/AppointmentAPI/update/${id}`, {
-        clientId: model.clientId,
-        availableDayId: model.availableDayId,
-        startTime: hhmmss(model.startTime),
-        endTime: hhmmss(model.endTime),
-        taskDescription: model.taskDescription,
-        address: model.address,
-      });
+      ClientId: model.clientId,
+      AvailableDayId: model.availableDayId,
+      StartTime: hhmmss(model.startTime),
+      EndTime: hhmmss(model.endTime),
+      TaskDescription: model.taskDescription,
+      Address: model.address,
+    });
+    
       navigate("/appointments");
     } catch {
       setError("Update failed");
@@ -65,13 +59,31 @@ const AppointmentEditPage: React.FC = () => {
     }
   };
 
-  if (!canEdit)
+  // First: if we don't have model yet, show loading/error
+  if (!model) {
+  return (
+    <Container className="mt-4">
+      {error ? <Alert variant="danger">{error}</Alert> : "Loading..."}
+    </Container>
+  );
+}
+
+  // We have the model: check authorization
+  const canEdit =
+    role === "Admin" ||
+    role === "HealthcarePersonnel" ||
+    (role === "Client" && userId === model.clientId);
+
+  if (!canEdit) {
     return (
       <Container className="mt-4">
-        <Alert variant="warning">You do not have access to edit this appointment.</Alert>
+        <Alert variant="warning">
+          You do not have access to edit this appointment.
+        </Alert>
       </Container>
     );
-  if (!model) return <Container className="mt-4">Loading...</Container>;
+  }
+
 
   return (
     <Container className="mt-4">

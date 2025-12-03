@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import heroImg from "../assets/home-hero.jpg";

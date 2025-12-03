@@ -19,7 +19,7 @@ const AvailableDaysPage: React.FC = () => {
     isAuthenticated && (role === "Admin" || role === "HealthcarePersonnel");
 
   // Check if user can edit a specific available day
-  const canEditDay = (ad: { healthcarePersonnelId: number }) => {
+  const canEditDay = (ad: { healthcarePersonnelId: string | number }) => {
     if (!isAuthenticated) return false;
     if (role === "Admin") return true;
     if (role === "HealthcarePersonnel") {
@@ -29,7 +29,7 @@ const AvailableDaysPage: React.FC = () => {
   };
 
   // Check if user can delete a specific available day
-  const canDeleteDay = (ad: { healthcarePersonnelId: number }) => {
+  const canDeleteDay = (ad: { healthcarePersonnelId: string | number }) => {
     if (!isAuthenticated) return false;
     if (role === "Admin") return true;
     if (role === "HealthcarePersonnel") {

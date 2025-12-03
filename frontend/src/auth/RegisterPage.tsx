@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button, Card, Form, Container } from 'react-bootstrap';
-import ApiService from '../services/ApiService';
+import { registerApi } from '../services/AuthService';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -24,30 +24,39 @@ const RegisterPage: React.FC = () => {
 
     // Submit handler: posts to AuthAPI/register and handles basic success/error flow
     const handleRegistration = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setRegistrationError(null);
-        setRegistrationSuccess(null);
+  e.preventDefault();
+  setRegistrationError(null);
+  setRegistrationSuccess(null);
+  setIsSubmitting(true);
 
-        try {
-        setIsSubmitting(true);
-           
-      // Payload must match the backend AuthAPI RegisterDTO structure
-        const payload = {
-            username: userData.email,
-            name: userData.name,
-            email: userData.email,
-            password: userData.password,
-            role: userData.role,
-        };
-        await ApiService.post('/AuthAPI/register', payload);
-        setRegistrationSuccess('Registrering vellykket! Du kan nå logge inn.');
-        setTimeout(() => navigate('/login'), 2000);
-        } catch {
-          setRegistrationError('Registrering feilet.');
-        } finally {
-          setIsSubmitting(false);
-        }
+  try {
+    const payload = {
+      username: userData.email,
+      name: userData.name,
+      email: userData.email,
+      password: userData.password,
+      role: userData.role,
     };
+
+    const res = await registerApi(payload);
+
+    const msg =
+      res && typeof res.message === 'string'
+        ? res.message
+        : 'Registration successful! You can now log in.';
+
+    setRegistrationSuccess(msg);
+    setTimeout(() => navigate('/login'), 2000);
+  } catch (err: any) {
+    setRegistrationError(
+      err instanceof Error && err.message
+        ? err.message
+        : 'Registration failed.'
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
     return (
     <Container className="mt-5 d-flex justify-content-center">

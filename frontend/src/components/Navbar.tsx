@@ -8,7 +8,6 @@ const AppNavbar: React.FC = () => {
   const { isAuthenticated, role, name, logout } = useAuth();
 
   // Check user roles for conditional menu rendering
-  const isClient = isAuthenticated && role === "Client";
   const isHPOrAdmin =
     isAuthenticated && (role === "HealthcarePersonnel" || role === "Admin");
 
@@ -34,6 +33,7 @@ const AppNavbar: React.FC = () => {
         expand="lg"
         fixed="top"
         className="shadow-sm"
+        aria-label="Main navigation" // For accessibility
       >
         <Container fluid className="px-3">
           <Navbar.Brand as={Link} to="/">
@@ -43,26 +43,20 @@ const AppNavbar: React.FC = () => {
 
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-
-              {isHPOrAdmin && (
-                <>
-                  <Nav.Link as={NavLink} to="/appointments">
-                    Appointments
-                  </Nav.Link>
-                  <Nav.Link as={NavLink} to="/availabledays">
-                    Available Days
-                  </Nav.Link>
-                </>
-              )}
-
-              {isClient && (
+              {isAuthenticated && (
                 <Nav.Link as={NavLink} to="/appointments">
                   Appointments
                 </Nav.Link>
               )}
+
+              {isHPOrAdmin && (
+                <Nav.Link as={NavLink} to="/availabledays">
+                  Available Days
+                </Nav.Link>
+              )}
             </Nav>
 
-            <Nav d-flex align-items-center>
+            <Nav className="d-flex align-items-center">
               {isAuthenticated ? (
                 <>
                   <Nav.Link disabled className="me-3 text-light">  {/* We use nav.Link disabled to keep displayname at same heigh as the rest */}

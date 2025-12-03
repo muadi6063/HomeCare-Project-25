@@ -28,28 +28,22 @@ const AppointmentsPage: React.FC = () => {
     if (!isAuthenticated) return false;
     if (role === "Admin" || role === "HealthcarePersonnel") return true;
     if (role === "Client") {
-      return (
-        appointment.clientEmail === userId ||
-        appointment.clientId === userId
-      );
+      return appointment.clientId === userId;
     }
     return false;
   };
 
-   // Check if current user can edit a specific appointment
+  // Check if current user can edit a specific appointment
   const canEditAppointment = (appointment: AppointmentDto) => {
     if (!isAuthenticated) return false;
     if (role === "Admin" || role === "HealthcarePersonnel") return true;
     if (role === "Client") {
-      return (
-        appointment.clientEmail === userId ||
-        appointment.clientId === userId
-      );
+      return appointment.clientId === userId;
     }
     return false;
   };
 
-    // Load appointments on component mount
+  // Load appointments on component mount
   useEffect(() => {
     let cancelled = false;
     async function loadAppointments() {
@@ -72,7 +66,7 @@ const AppointmentsPage: React.FC = () => {
     };
   }, []);
 
-   // Load available days for clients to book new appointments
+  // Load available days for clients to book new appointments
   useEffect(() => {
     if (role !== "Client") return;
 

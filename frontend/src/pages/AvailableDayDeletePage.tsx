@@ -62,7 +62,18 @@ const AvailableDayDeletePage: React.FC = () => {
     }
   };
 
-  if (!item) return <div className="container mt-4">Loading…</div>;
+  if (!item) {
+    return (
+      <div className="container mt-4">
+        {error ? (
+          <Alert variant="danger">{error}</Alert>
+        ) : (
+          <>Loading…</>
+        )}
+      </div>
+    );
+  }
+
 
   return (
     <div className="container mt-4">
@@ -74,11 +85,16 @@ const AvailableDayDeletePage: React.FC = () => {
         </Alert>
       )}
 
-      {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+      {error && (
+        <Alert variant="danger" className="mt-3">
+          {error}
+        </Alert>
+      )}
 
-      <div className="mt-3">
+      <div className="mt-3 p-3 border rounded bg-light">
         <p className="mb-3">
-          Are you sure you want to delete ID <strong>{item.availableDayId}</strong> —{" "}
+          Are you sure you want to delete available day{" "}
+          <strong>#{item.availableDayId}</strong> on{" "}
           {new Date(item.date).toLocaleDateString("no-NO")}{" "}
           {hhmm(item.startTime)}–{hhmm(item.endTime)}?
         </p>

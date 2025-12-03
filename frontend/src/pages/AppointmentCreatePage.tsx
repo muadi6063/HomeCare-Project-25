@@ -87,7 +87,7 @@ const AppointmentCreatePage: React.FC = () => {
   }
 
   // Helper function to format time strings
-  const hhmm = (s: string) => (s ?? "").split(":").slice(0, 2).join(":");
+  const hhmm = (s: string | null) => (s ?? "").split(":").slice(0, 2).join(":");
 
   const personnelLabel =
     availableDay.healthcarePersonnelName ??

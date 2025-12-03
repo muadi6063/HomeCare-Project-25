@@ -1,10 +1,9 @@
-import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 
 // Footer component for the application
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-dark text-light mt-auto py-4 border-top">
+    <footer className="bg-dark text-light mt-auto py-4 border-top" aria-label="Site Footer">
       <Container>
         <Row className="gy-3">
 
@@ -28,7 +27,6 @@ const Footer: React.FC = () => {
               <li>Homecare Appointment Tool</li>
             </ul>
           </Col>
-          
           
           {/* CONTACT US — replaces the Information section */}
           <Col md={3}>

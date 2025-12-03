@@ -17,8 +17,10 @@ const AppointmentDeletePage: React.FC = () => {
   const [error, setError] = useState("");
 
    // Authorization check: admin/personnel can delete all, client only their own
-  const canDelete = role === "Admin" || role === "HealthcarePersonnel" || 
-    (role === "Client" && item && (item.clientEmail === userId || item.clientId.toString() === userId));
+  const canDelete =
+  role === "Admin" ||
+  role === "HealthcarePersonnel" ||
+  (role === "Client" && item && userId === item.clientId);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,7 +52,17 @@ const AppointmentDeletePage: React.FC = () => {
     }
   };
 
-  if (!item) return <Container className="mt-4">Loading…</Container>;
+  if (!item) {
+    return (
+      <Container className="mt-4">
+        {error ? (
+          <Alert variant="danger">{error}</Alert>
+        ) : (
+          <>Loading…</>
+        )}
+      </Container>
+    );
+  }
 
   return (
     <Container className="mt-4">

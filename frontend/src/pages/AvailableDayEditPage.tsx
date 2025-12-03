@@ -10,10 +10,26 @@ type AvailableDayDto = {
   date: string;
   startTime: string;
   endTime: string;
+  healthcarePersonnelName?: string;
+  healthcarePersonnelEmail?: string;
 };
 
+// Helper to convert "HH:MM:SS" or "HH:MM:SS.sss" to "HH:MM"
 const hhmm = (s: string) => (s ?? "").split(":").slice(0, 2).join(":");
 const hhmmss = (s: string) => (s.includes(":") ? `${s}:00` : s);
+
+// Helper to add minutes to "HH:MM"
+const addMinutes = (hhmm: string, minutes: number) => {
+  const [hStr, mStr] = hhmm.split(":");
+  const h = parseInt(hStr || "0", 10);
+  const m = parseInt(mStr || "0", 10);
+
+  const total = h * 60 + m + minutes;
+  const newH = Math.floor(total / 60) % 24;
+  const newM = total % 60;
+
+  return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
+};
 
 const AvailableDayEditPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,13 +39,6 @@ const AvailableDayEditPage = () => {
   const [model, setModel] = useState<AvailableDayDto | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-
-  // Admin can edit all, healthcare personnel only their own slots
-  const canEdit =
-    role === "Admin" ||
-    (role === "HealthcarePersonnel" &&
-      model &&
-      String(model.healthcarePersonnelId) === String(userId));
 
   useEffect(() => {
     async function load() {
@@ -70,14 +79,34 @@ const AvailableDayEditPage = () => {
     }
   };
 
-  if (!canEdit)
+  // 1) Først: loading / error mens vi ikke har model
+  if (!model) {
     return (
       <div className="container mt-4">
-        <Alert variant="warning">You don't have access to edit this available time</Alert>
+        {error ? (
+          <Alert variant="danger">{error}</Alert>
+        ) : (
+          <>Loading...</>
+        )}
       </div>
     );
+  }
 
-  if (!model) return <div className="container mt-4">Loading...</div>;
+  // 2) Når model finnes, kan vi sjekke canEdit
+  const canEdit =
+    role === "Admin" ||
+    (role === "HealthcarePersonnel" &&
+      String(model.healthcarePersonnelId) === String(userId));
+
+  if (!canEdit) {
+    return (
+      <div className="container mt-4">
+        <Alert variant="warning">
+          You don't have access to edit this available time
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-4">
@@ -87,13 +116,20 @@ const AvailableDayEditPage = () => {
 
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
-          <Form.Label>Healthcare Personnel ID</Form.Label>
-          <Form.Control value={model.healthcarePersonnelId} disabled />
-        </Form.Group>
+        <Form.Label>Healthcare Personnel</Form.Label>
+        <Form.Control
+          value={
+            model.healthcarePersonnelName
+              ? `${model.healthcarePersonnelName} (${model.healthcarePersonnelEmail})`
+              : model.healthcarePersonnelId
+          }
+          disabled
+        />
+      </Form.Group>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Date</Form.Label>
-          <Form.Control
+      <Form.Group className="mb-3">
+        <Form.Label>Date</Form.Label>
+        <Form.Control
             type="date"
             value={model.date}
             onChange={(e) => setModel({ ...model, date: e.target.value })}
@@ -108,7 +144,14 @@ const AvailableDayEditPage = () => {
           <Form.Control
             type="time"
             value={model.startTime}
-            onChange={(e) => setModel({ ...model, startTime: e.target.value })}
+            onChange={(e) => {
+              const newStart = e.target.value;
+              setModel({
+                ...model,
+                startTime: newStart,
+                endTime: addMinutes(newStart, 45), // auto-set end time
+              });
+            }}
             required
             disabled={busy}
             title="Please select a start time"

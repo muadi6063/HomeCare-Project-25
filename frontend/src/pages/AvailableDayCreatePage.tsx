@@ -95,8 +95,13 @@ const AvailableDayCreatePage: React.FC = () => {
   };
 
   if (!canCreate) {
-    return <Alert variant="warning">No access</Alert>;
+    return (
+      <div className="container mt-4">
+        <Alert variant="warning">No access</Alert>
+      </div>
+    );
   }
+
 
   return (
     <div className="container mt-4">
