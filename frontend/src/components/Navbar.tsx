@@ -38,7 +38,7 @@ const AppNavbar: React.FC = () => {
       >
         <Container fluid className="px-3">
           <Navbar.Brand as={Link} to="/">
-            HomeCare
+            HomeCareHub
           </Navbar.Brand>
 
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
