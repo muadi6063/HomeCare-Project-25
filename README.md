@@ -1,42 +1,21 @@
 # HomeCare Appointment Management System
 
-Note: This mini project currently implements basic CRUD functionality without authentication or authorization. We can therefore choose client from dropdown when booking appointment, and same with personnel for availableDays. This will later be fixed so that the person logged in will be booking for themselves as well as general access control.
+This project consists of a backend and frontend. The backend is developed using .NET and the frontend is based on React.
 
-The access level when running the app can be considered as admin.
-
-## What you need to run the app
-- .NET 8.0 SDK
+## Directory structure
+The .NET backend is located in the "HomecareApp" folder.
+The React frontend is located in the "frontend" folder.
 
 ## How to Run the Application
+To run the backend, navigate to the "HomecareApp" folder. And use the commands:
 
-1. Navigate to the project directory:
-   ```bash
-   cd HomecareApp
+dotnet build
+dotnet run
 
-2. Restore dependencies:
-   dotnet restore
+This will start the backend on localhost:5011.
 
-3. dotnet build
-4. dotnet run
-5. 
-Open your browser and go to the url shown after running dotnet run
+To run the frontend, navigate to the "frontend" folder. And use the command:
 
-## Features
-Healthcare personnel can create/update/delete available days
-Clients can book appointments with task descriptions (CRUD functionality)
-Complete user management system
-Real-time scheduling and booking
+npm run dev
 
-## Database
-SQLite database created automatically on first run
-No additional setup required
-
-## Tech stack
-.NET 8.0 MVC
-Entity Framework Core
-SQLite
-Bootstrap
-
-
-
-  
+This will start the backend on localhost:3000/
