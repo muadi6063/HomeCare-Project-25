@@ -158,42 +158,42 @@ if (!context.AvailableDays.Any())
             HealthcarePersonnelId = sarah.Id, 
             Date = DateTime.Today.AddDays(3),
             StartTime = new TimeSpan(10, 0, 0),
-            EndTime = new TimeSpan(11, 0, 0)
+            EndTime = new TimeSpan(10, 45, 0)
         },
         new AvailableDay 
         { 
             HealthcarePersonnelId = anna.Id, 
             Date = DateTime.Today.AddDays(1),
             StartTime = new TimeSpan(13, 0, 0),
-            EndTime = new TimeSpan(14, 0, 0)
+            EndTime = new TimeSpan(13, 45, 0)
         },
         new AvailableDay 
         { 
             HealthcarePersonnelId = anna.Id, 
             Date = DateTime.Today.AddDays(4),
             StartTime = new TimeSpan(9, 0, 0),
-            EndTime = new TimeSpan(10, 30, 0)
+            EndTime = new TimeSpan(9, 45, 0)
         },
         new AvailableDay 
         { 
             HealthcarePersonnelId = tom.Id, 
             Date = DateTime.Today.AddDays(2),
             StartTime = new TimeSpan(11, 0, 0),
-            EndTime = new TimeSpan(12, 0, 0)
+            EndTime = new TimeSpan(11, 45, 0)
         },
         new AvailableDay 
         { 
             HealthcarePersonnelId = tom.Id, 
             Date = DateTime.Today.AddDays(5),
             StartTime = new TimeSpan(15, 0, 0),
-            EndTime = new TimeSpan(16, 30, 0)
+            EndTime = new TimeSpan(15, 45, 0)
         },
         new AvailableDay 
         { 
             HealthcarePersonnelId = mike.Id, 
             Date = DateTime.Today.AddDays(3),
             StartTime = new TimeSpan(8, 0, 0),
-            EndTime = new TimeSpan(9, 0, 0)
+            EndTime = new TimeSpan(8, 45, 0)
         }
     };
 
@@ -234,7 +234,7 @@ if (!context.Appointments.Any())
             ClientId = erik.Id,
             AvailableDayId = thirdAvailableDay.AvailableDayId,
             StartTime = new TimeSpan(10, 0, 0),
-            EndTime = new TimeSpan(11, 0, 0),
+            EndTime = new TimeSpan(10, 45, 0),
             TaskDescription = "Physical therapy exercises",
             Address = "Majorstuen 15, Oslo"
         },
